@@ -11,7 +11,8 @@ import SwiftUI
 struct netdataApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            TabberView()
+                .environmentObject(ServerService.shared)
         }
     }
 }
