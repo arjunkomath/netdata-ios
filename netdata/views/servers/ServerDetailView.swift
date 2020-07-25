@@ -25,60 +25,73 @@ struct ServerDetailView: View {
     
     var body: some View {
         List {
-            if self.loading {
-                RowLoadingView()
-            } else {
-                Section(header: Text("Info")) {
-                    Text("\(serverInfo.osName) \(serverInfo.osVersion)")
-                    Text("\(serverInfo.kernelName) (\(serverInfo.architecture))")
-                }
-                
-                Section(header: Text("CPU Usage")) {
-                    VStack {
-                        Spacer()
-                        HStack {
-                            Meter(progress: self.$cpuUsageGauge, title: .constant("Total"))
-                                .frame(width: 110)
-                            
-                            if (self.cpuUsage.labels.count > 1) {
-                                LazyVGrid(columns: [GridItem(.adaptive(minimum: 50))], spacing: 10) {
-                                    ForEach(1..<self.cpuUsage.labels.count) { i in
-                                        PercentageUsageData(usage: .constant(CGFloat(self.cpuUsage.data[i])), title: self.$cpuUsage.labels[i])
-                                    }
+            Section(header: Text("Info")) {
+                Text("\(serverInfo.osName) \(serverInfo.osVersion)")
+                    .redacted(reason: loading ? .placeholder : .init())
+                Text("\(serverInfo.kernelName) (\(serverInfo.architecture))")
+                    .redacted(reason: loading ? .placeholder : .init())
+            }
+            
+            Section(header: Text("CPU Usage")) {
+                VStack {
+                    Spacer()
+                    HStack {
+                        Meter(progress: self.$cpuUsageGauge, title: .constant("Total"))
+                            .frame(width: 110)
+                            .redacted(reason: cpuUsage.labels.count < 1 ? .placeholder : .init())
+                        
+                        if cpuUsage.labels.count > 1 {
+                            LazyVGrid(columns: [GridItem(.adaptive(minimum: 50))], spacing: 10) {
+                                ForEach(1..<self.cpuUsage.labels.count) { i in
+                                    PercentageUsageData(usage: .constant(CGFloat(self.cpuUsage.data[i])), title: self.$cpuUsage.labels[i])
+                                }
+                            }
+                        } else {
+                            LazyVGrid(columns: [GridItem(.adaptive(minimum: 50))], spacing: 10) {
+                                ForEach((1...6), id: \.self) { _ in
+                                    PercentageUsageData(usage: .constant(0.1), title: .constant("loading"))
+                                        .redacted(reason: .placeholder)
                                 }
                             }
                         }
-                        Spacer()
                     }
+                    Spacer()
                 }
-                
-                Section(header: Text("Memory Usage")) {
-                    VStack {
-                        Spacer()
-                        HStack {
-                            Meter(progress: self.$ramUsageGauge, title: .constant("Total"))
-                                .frame(width: 110)
-                            
-                            if (self.ramUsage.labels.count > 1) {
-                                LazyVGrid(columns: [GridItem(.adaptive(minimum: 50))], spacing: 10) {
-                                    ForEach(1..<self.ramUsage.labels.count) { i in
-                                        AbsoluteUsageData(usage: .constant(CGFloat(self.ramUsage.data[i])), title: self.$ramUsage.labels[i])
-                                    }
+            }
+            
+            Section(header: Text("Memory Usage")) {
+                VStack {
+                    Spacer()
+                    HStack {
+                        Meter(progress: self.$ramUsageGauge, title: .constant("Total"))
+                            .frame(width: 110)
+                            .redacted(reason: ramUsage.labels.count < 1 ? .placeholder : .init())
+                        
+                        if ramUsage.labels.count > 1 {
+                            LazyVGrid(columns: [GridItem(.adaptive(minimum: 50))], spacing: 10) {
+                                ForEach(1..<self.ramUsage.labels.count) { i in
+                                    AbsoluteUsageData(usage: .constant(CGFloat(self.ramUsage.data[i])), title: self.$ramUsage.labels[i])
+                                }
+                            }
+                        } else {
+                            LazyVGrid(columns: [GridItem(.adaptive(minimum: 50))], spacing: 10) {
+                                ForEach((1...6), id: \.self) { _ in
+                                    AbsoluteUsageData(usage: .constant(0.1), title: .constant("loading"))
+                                        .redacted(reason: .placeholder)
                                 }
                             }
                         }
-                        Spacer()
                     }
-                }
-                
-                .onReceive(timer) { input in
-                    self.fetchCharts()
+                    Spacer()
                 }
             }
         }
+        .onAppear(perform: self.fetchServerInfo)
         .listStyle(InsetGroupedListStyle())
         .navigationTitle(server.name)
-        .onAppear(perform: self.fetchServerInfo)
+        .onReceive(timer) { _ in
+            self.fetchCharts()
+        }
     }
     
     private func fetchCharts() {
@@ -107,9 +120,7 @@ struct ServerDetailView: View {
         }
     }
     
-    private func fetchServerInfo() {
-        self.loading = true
-        
+    private func fetchServerInfo() {        
         NetDataApiService.getServerInfo(baseUrl: server.url) { data in
             self.loading = false
             
