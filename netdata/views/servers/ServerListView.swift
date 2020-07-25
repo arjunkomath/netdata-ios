@@ -15,13 +15,25 @@ struct ServerListView: View {
     var body: some View {
         NavigationView {
             List {
-                if !self.service.canAddServer {
+                if !self.service.canAddServer && !service.isSynching {
                     Text("iCloud not enabled, you need an iCloud account to add servers")
                         .foregroundColor(.red)
                 }
                 
                 if service.isSynching && service.servers.isEmpty {
-                    RowLoadingView()
+                    ForEach((1...4), id: \.self) { _ in
+                        Group {
+                            VStack(alignment: .leading, spacing: 8) {
+                                Text("name")
+                                    .font(.system(.title3, design: .rounded))
+                                Text("description")
+                                    .font(.subheadline)
+                                    .foregroundColor(.gray)
+                            }
+                            .redacted(reason: .placeholder)
+                        }
+                        .padding(5)
+                    }
                 } else {
                     ForEach(service.servers) { server in
                         Group {
@@ -32,11 +44,8 @@ struct ServerListView: View {
                                     Text(server.description)
                                         .font(.subheadline)
                                         .foregroundColor(.gray)
-                                    Text(server.url)
-                                        .font(.caption)
-                                        .foregroundColor(.gray)
                                 }
-                                .padding(10)
+                                .padding(5)
                             }
                             .contextMenu {
                                 Button(action: {

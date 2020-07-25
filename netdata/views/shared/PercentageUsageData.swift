@@ -22,7 +22,7 @@ struct PercentageUsageData: View {
                 .font(.headline)
                 .padding(0)
         }
-        .frame(width: 75, height: 50)
+        .frame(width: 85, height: 50)
     }
 }
 

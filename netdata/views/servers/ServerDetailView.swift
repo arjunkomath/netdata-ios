@@ -20,8 +20,14 @@ struct ServerDetailView: View {
     @State private var cpuUsage: NDServerData = NDServerData.placeholder()
     @State private var cpuUsageGauge : CGFloat = 0
     
+    @State private var load: NDServerData = NDServerData.placeholder()
+    
     @State private var ramUsage: NDServerData = NDServerData.placeholder()
     @State private var ramUsageGauge : CGFloat = 0
+    
+    @State private var diskIO: NDServerData = NDServerData.placeholder()
+    
+    @State private var network: NDServerData = NDServerData.placeholder()
     
     var body: some View {
         List {
@@ -40,20 +46,23 @@ struct ServerDetailView: View {
                             .frame(width: 110)
                             .redacted(reason: cpuUsage.labels.count < 1 ? .placeholder : .init())
                         
-                        if cpuUsage.labels.count > 1 {
-                            LazyVGrid(columns: [GridItem(.adaptive(minimum: 50))], spacing: 10) {
-                                ForEach(1..<self.cpuUsage.labels.count) { i in
-                                    PercentageUsageData(usage: .constant(CGFloat(self.cpuUsage.data[i])), title: self.$cpuUsage.labels[i])
-                                }
-                            }
-                        } else {
-                            LazyVGrid(columns: [GridItem(.adaptive(minimum: 50))], spacing: 10) {
-                                ForEach((1...6), id: \.self) { _ in
-                                    PercentageUsageData(usage: .constant(0.1), title: .constant("loading"))
-                                        .redacted(reason: .placeholder)
-                                }
-                            }
-                        }
+                        DataGrid(labels: self.$cpuUsage.labels,
+                                 data: self.$cpuUsage.data,
+                                 dataType: .constant(.percentage),
+                                 showArrows: .constant(false))
+                    }
+                    Spacer()
+                }
+            }
+            
+            Section(header: Text("Load")) {
+                VStack {
+                    Spacer()
+                    HStack {
+                        DataGrid(labels: self.$load.labels,
+                                 data: self.$load.data,
+                                 dataType: .constant(.absolute),
+                                 showArrows: .constant(false))
                     }
                     Spacer()
                 }
@@ -67,20 +76,36 @@ struct ServerDetailView: View {
                             .frame(width: 110)
                             .redacted(reason: ramUsage.labels.count < 1 ? .placeholder : .init())
                         
-                        if ramUsage.labels.count > 1 {
-                            LazyVGrid(columns: [GridItem(.adaptive(minimum: 50))], spacing: 10) {
-                                ForEach(1..<self.ramUsage.labels.count) { i in
-                                    AbsoluteUsageData(usage: .constant(CGFloat(self.ramUsage.data[i])), title: self.$ramUsage.labels[i])
-                                }
-                            }
-                        } else {
-                            LazyVGrid(columns: [GridItem(.adaptive(minimum: 50))], spacing: 10) {
-                                ForEach((1...6), id: \.self) { _ in
-                                    AbsoluteUsageData(usage: .constant(0.1), title: .constant("loading"))
-                                        .redacted(reason: .placeholder)
-                                }
-                            }
-                        }
+                        DataGrid(labels: self.$ramUsage.labels,
+                                 data: self.$ramUsage.data,
+                                 dataType: .constant(.absolute),
+                                 showArrows: .constant(false))
+                    }
+                    Spacer()
+                }
+            }
+            
+            Section(header: Text("Disk I/O")) {
+                VStack {
+                    Spacer()
+                    HStack {
+                        DataGrid(labels: self.$diskIO.labels,
+                                 data: self.$diskIO.data,
+                                 dataType: .constant(.absolute),
+                                 showArrows: .constant(true))
+                    }
+                    Spacer()
+                }
+            }
+            
+            Section(header: Text("Network")) {
+                VStack {
+                    Spacer()
+                    HStack {
+                        DataGrid(labels: self.$network.labels,
+                                 data: self.$network.data,
+                                 dataType: .constant(.absolute),
+                                 showArrows: .constant(true))
                     }
                     Spacer()
                 }
@@ -106,6 +131,13 @@ struct ServerDetailView: View {
             }
         }
         
+        NetDataApiService.getChartData(baseUrl: server.url, chart: "system.load") { data in
+            if let json = try? JSON(data: data) {
+                self.load = NDServerData(labels: json["labels"].arrayValue.map { $0.stringValue},
+                                             data: json["data"][0].arrayValue.map { $0.doubleValue } )
+            }
+        }
+        
         NetDataApiService.getChartData(baseUrl: server.url, chart: "system.ram") { data in
             if let json = try? JSON(data: data) {
                 self.ramUsage = NDServerData(labels: json["labels"].arrayValue.map { $0.stringValue},
@@ -116,6 +148,20 @@ struct ServerDetailView: View {
                 withAnimation(Animation.default.speed(0.55)){
                     self.ramUsageGauge = CGFloat(latestEntry[1] / (latestEntry[1] + latestEntry[2]))
                 }
+            }
+        }
+        
+        NetDataApiService.getChartData(baseUrl: server.url, chart: "system.io") { data in
+            if let json = try? JSON(data: data) {
+                self.diskIO = NDServerData(labels: json["labels"].arrayValue.map { $0.stringValue},
+                                             data: json["data"][0].arrayValue.map { $0.doubleValue } )
+            }
+        }
+        
+        NetDataApiService.getChartData(baseUrl: server.url, chart: "system.net") { data in
+            if let json = try? JSON(data: data) {
+                self.network = NDServerData(labels: json["labels"].arrayValue.map { $0.stringValue},
+                                             data: json["data"][0].arrayValue.map { $0.doubleValue } )
             }
         }
     }
