@@ -8,10 +8,10 @@
 import Foundation
 
 public struct NDServerData {
-    public let labels: [String]
-    public var data: [[Double]]
+    public var labels: [String]
+    public var data: [Double]
     
-    public init(labels: [String], data: [[Double]]) {
+    public init(labels: [String], data: [Double]) {
         self.labels = labels
         self.data = data
     }

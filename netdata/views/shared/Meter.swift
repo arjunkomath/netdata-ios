@@ -13,28 +13,24 @@ struct Meter : View {
     
     var body: some View {
         VStack(spacing: 20){
-            Spacer()
-            
             ZStack {
                 Circle()
-                    .stroke(Color.gray, lineWidth: 20)
+                    .stroke(Color.gray, lineWidth: 10)
                     .opacity(0.1)
                 
                 Circle()
                     .trim(from: 0, to: self.progress)
-                    .stroke(self.getColor(), lineWidth: 20)
+                    .stroke(self.getColor(), lineWidth: 10)
                     .rotationEffect(.degrees(-90))
                     .overlay(
                         Text("\(Int(self.progress * 100.0))%"))
                 
             }
             .padding(10)
-            .frame(height: 150)
+            .frame(height: 100)
             
             Text(title)
                 .font(.headline)
-            
-            Spacer()
         }
     }
     
