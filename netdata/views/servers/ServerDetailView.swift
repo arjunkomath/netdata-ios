@@ -33,15 +33,14 @@ struct ServerDetailView: View {
                     Text("\(serverInfo.kernelName) (\(serverInfo.architecture))")
                 }
                 
-                Section(header: Text("CPU Usage")) {
-                    VStack {
-                        Spacer()
-                        Meter(progress: self.$cpuUsageGauge)
-                            .frame(minWidth: 0, maxWidth: .infinity, minHeight: 200, maxHeight: 200, alignment: .center)
-                            .onReceive(timer) { input in
-                                self.fetchCharts()
-                            }
+                Section(header: Text("System Usage")) {
+                    HStack {
+                        Meter(progress: self.$cpuUsageGauge, title: .constant("CPU"))
+                        Meter(progress: self.$ramUsageGauge, title: .constant("RAM"))
                     }
+                }
+                .onReceive(timer) { input in
+                    self.fetchCharts()
                 }
             }
         }
@@ -57,7 +56,7 @@ struct ServerDetailView: View {
                                              data: json["data"].arrayValue.map { $0.arrayValue.map { $0.doubleValue } })
                 
                 withAnimation(Animation.default.speed(0.55)){
-                    self.cpuUsageGauge = CGFloat(Array(self.cpuUsage.data.first![1..<self.cpuUsage.data.first!.count]).reduce(0, +))
+                    self.cpuUsageGauge = CGFloat(Array(self.cpuUsage.data.first![1..<self.cpuUsage.data.first!.count]).reduce(0, +) / 100)
                 }
             }
         }
@@ -66,6 +65,12 @@ struct ServerDetailView: View {
             if let json = try? JSON(data: data) {
                 self.ramUsage = NDServerData(labels: json["labels"].arrayValue.map { $0.stringValue},
                                              data: json["data"].arrayValue.map { $0.arrayValue.map { $0.doubleValue } })
+                
+                let latestEntry = self.ramUsage.data.first!
+                
+                withAnimation(Animation.default.speed(0.55)){
+                    self.ramUsageGauge = CGFloat(latestEntry[1] / (latestEntry[1] + latestEntry[2]))
+                }
             }
         }
     }

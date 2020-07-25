@@ -28,15 +28,24 @@ struct ServerListView: View {
                             NavigationLink(destination: ServerDetailView(server: server)) {
                                 VStack(alignment: .leading, spacing: 8) {
                                     Text(server.name)
-                                        .font(.headline)
+                                        .font(.system(.title3, design: .rounded))
                                     Text(server.description)
                                         .font(.subheadline)
+                                        .foregroundColor(.gray)
                                     Text(server.url)
                                         .font(.caption)
+                                        .foregroundColor(.gray)
                                 }
                                 .padding(10)
                             }
                             .contextMenu {
+                                Button(action: {
+                                    // change country setting
+                                }) {
+                                    Text("Edit")
+                                    Image(systemName: "pencil")
+                                }
+                                
                                 Button(action: {
                                     // change country setting
                                 }) {
@@ -73,7 +82,6 @@ struct ServerListView: View {
     }
     
     func deleteServer(at offsets: IndexSet) {
-        print("deleteServer", service.servers[offsets.first!])
         self.service.delete(server: service.servers[offsets.first!])
     }
     
