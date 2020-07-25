@@ -42,7 +42,8 @@ public class ServerService: ObservableObject, PublicCloudService {
     }
     
     public func add(server: Server) {
-        isSynching = true
+        self.isSynching = true
+        
         let record = server.toRecord(owner: nil)
         var server = server
         database.save(record) { (record, error) in
@@ -80,7 +81,7 @@ public class ServerService: ObservableObject, PublicCloudService {
     }
     
     private func fetchServers() {
-        isSynching = true
+        self.isSynching = true
         let query = CKQuery(recordType: Server.RecordType, predicate: NSPredicate(value: true))
         query.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: false)]
         

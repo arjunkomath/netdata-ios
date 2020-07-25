@@ -111,7 +111,12 @@ struct ServerDetailView: View {
                 }
             }
         }
-        .onAppear(perform: self.fetchServerInfo)
+        .onAppear(perform: {
+            self.fetchServerInfo()
+            
+            // hide scroll indicators
+            UITableView.appearance().showsVerticalScrollIndicator = false
+        })
         .listStyle(InsetGroupedListStyle())
         .navigationTitle(server.name)
         .onReceive(timer) { _ in
@@ -134,7 +139,7 @@ struct ServerDetailView: View {
         NetDataApiService.getChartData(baseUrl: server.url, chart: "system.load") { data in
             if let json = try? JSON(data: data) {
                 self.load = NDServerData(labels: json["labels"].arrayValue.map { $0.stringValue},
-                                             data: json["data"][0].arrayValue.map { $0.doubleValue } )
+                                         data: json["data"][0].arrayValue.map { $0.doubleValue } )
             }
         }
         
@@ -154,14 +159,14 @@ struct ServerDetailView: View {
         NetDataApiService.getChartData(baseUrl: server.url, chart: "system.io") { data in
             if let json = try? JSON(data: data) {
                 self.diskIO = NDServerData(labels: json["labels"].arrayValue.map { $0.stringValue},
-                                             data: json["data"][0].arrayValue.map { $0.doubleValue } )
+                                           data: json["data"][0].arrayValue.map { $0.doubleValue } )
             }
         }
         
         NetDataApiService.getChartData(baseUrl: server.url, chart: "system.net") { data in
             if let json = try? JSON(data: data) {
                 self.network = NDServerData(labels: json["labels"].arrayValue.map { $0.stringValue},
-                                             data: json["data"][0].arrayValue.map { $0.doubleValue } )
+                                            data: json["data"][0].arrayValue.map { $0.doubleValue } )
             }
         }
     }

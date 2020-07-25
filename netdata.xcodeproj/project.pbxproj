@@ -20,6 +20,7 @@
 		55C638F924CBE6B800395B23 /* PercentageUsageData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55C638F824CBE6B800395B23 /* PercentageUsageData.swift */; };
 		55C638FB24CBEFCA00395B23 /* AbsoluteUsageData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55C638FA24CBEFCA00395B23 /* AbsoluteUsageData.swift */; };
 		55C638FD24CBFBA400395B23 /* DataGrid.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55C638FC24CBFBA400395B23 /* DataGrid.swift */; };
+		55C638FF24CC1A4D00395B23 /* BorderedBarButtonStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55C638FE24CC1A4D00395B23 /* BorderedBarButtonStyle.swift */; };
 		55D1C50224B95E6D0087F8A2 /* netdataApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55D1C50124B95E6D0087F8A2 /* netdataApp.swift */; };
 		55D1C50424B95E6D0087F8A2 /* TabberView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55D1C50324B95E6D0087F8A2 /* TabberView.swift */; };
 		55D1C50624B95E6F0087F8A2 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55D1C50524B95E6F0087F8A2 /* Assets.xcassets */; };
@@ -64,6 +65,7 @@
 		55C638F824CBE6B800395B23 /* PercentageUsageData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PercentageUsageData.swift; sourceTree = "<group>"; };
 		55C638FA24CBEFCA00395B23 /* AbsoluteUsageData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AbsoluteUsageData.swift; sourceTree = "<group>"; };
 		55C638FC24CBFBA400395B23 /* DataGrid.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataGrid.swift; sourceTree = "<group>"; };
+		55C638FE24CC1A4D00395B23 /* BorderedBarButtonStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BorderedBarButtonStyle.swift; sourceTree = "<group>"; };
 		55D1C4FE24B95E6D0087F8A2 /* netdata.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = netdata.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		55D1C50124B95E6D0087F8A2 /* netdataApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = netdataApp.swift; sourceTree = "<group>"; };
 		55D1C50324B95E6D0087F8A2 /* TabberView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabberView.swift; sourceTree = "<group>"; };
@@ -139,6 +141,7 @@
 				55C638F824CBE6B800395B23 /* PercentageUsageData.swift */,
 				55C638FA24CBEFCA00395B23 /* AbsoluteUsageData.swift */,
 				55C638FC24CBFBA400395B23 /* DataGrid.swift */,
+				55C638FE24CC1A4D00395B23 /* BorderedBarButtonStyle.swift */,
 			);
 			path = shared;
 			sourceTree = "<group>";
@@ -421,6 +424,7 @@
 				55D1C52E24B95F580087F8A2 /* ServerListView.swift in Sources */,
 				55C638FB24CBEFCA00395B23 /* AbsoluteUsageData.swift in Sources */,
 				551420A924C3D6D200A22E9A /* Meter.swift in Sources */,
+				55C638FF24CC1A4D00395B23 /* BorderedBarButtonStyle.swift in Sources */,
 				558CABB724B9A435002D115B /* AddServerForm.swift in Sources */,
 				55FC8F6E24BADA5B00CA8751 /* SettingsView.swift in Sources */,
 			);

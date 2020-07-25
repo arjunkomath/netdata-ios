@@ -61,8 +61,11 @@ struct AddServerForm: View {
             self.presentationMode.wrappedValue.dismiss()
         }) {
             Image(systemName: "xmark")
-                .foregroundColor(.red)
+                .imageScale(.medium)
         }
+        .buttonStyle(BorderedBarButtonStyle())
+        .foregroundColor(.red)
+        .accentColor(Color.red.opacity(0.2))
     }
     
     private var saveButton: some View {
@@ -91,8 +94,12 @@ struct AddServerForm: View {
             }
             
         }) {
-            Image(systemName: "checkmark").imageScale(.large)
+            Image(systemName: "checkmark")
+                .imageScale(.medium)
         }
+        .buttonStyle(BorderedBarButtonStyle())
+        .foregroundColor(.green)
+        .accentColor(Color.green.opacity(0.2))
     }
 }
 

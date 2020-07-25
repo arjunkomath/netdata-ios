@@ -98,8 +98,12 @@ struct ServerListView: View {
         Button(action: {
             self.addServer()
         }) {
-            Text("Add Server")
+            Image(systemName: "plus")
+                .imageScale(.medium)
         }
+        .buttonStyle(BorderedBarButtonStyle())
+        .foregroundColor(.green)
+        .accentColor(Color.green.opacity(0.2))
     }
     
     private var refreshButton: some View {
@@ -109,8 +113,12 @@ struct ServerListView: View {
             if service.isSynching {
                 ProgressView()
             } else {
-                Image(systemName: "arrow.counterclockwise").imageScale(.large)
+                Image(systemName: "arrow.counterclockwise")
+                    .imageScale(.small)
             }
         }
+        .buttonStyle(BorderedBarButtonStyle())
+        .foregroundColor(.blue)
+        .accentColor(Color.blue.opacity(0.2))
     }
 }
