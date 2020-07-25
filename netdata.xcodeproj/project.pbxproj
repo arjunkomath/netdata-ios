@@ -3,20 +3,21 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 52;
+	objectVersion = 50;
 	objects = {
 
 /* Begin PBXBuildFile section */
 		551420A924C3D6D200A22E9A /* Meter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 551420A824C3D6D200A22E9A /* Meter.swift */; };
-		553138FB24BB108300AB5568 /* NetDataApiService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 553138FA24BB108300AB5568 /* NetDataApiService.swift */; };
-		5531390124BB16BA00AB5568 /* SwiftyJSON in Frameworks */ = {isa = PBXBuildFile; productRef = 5531390024BB16BA00AB5568 /* SwiftyJSON */; };
 		558CABAC24B99931002D115B /* CloudModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 558CABAB24B99931002D115B /* CloudModel.swift */; };
 		558CABAF24B999F7002D115B /* ServerService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 558CABAE24B999F7002D115B /* ServerService.swift */; };
 		558CABB124B99B42002D115B /* CloudService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 558CABB024B99B42002D115B /* CloudService.swift */; };
 		558CABB424B9A05A002D115B /* RowLoadingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 558CABB324B9A05A002D115B /* RowLoadingView.swift */; };
 		558CABB724B9A435002D115B /* AddServerForm.swift in Sources */ = {isa = PBXBuildFile; fileRef = 558CABB624B9A435002D115B /* AddServerForm.swift */; };
-		55BA431024C332C900599345 /* NDServerInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55BA430F24C332C900599345 /* NDServerInfo.swift */; };
-		55BA431224C3395400599345 /* NDServerData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55BA431124C3395400599345 /* NDServerData.swift */; };
+		55BA431024C332C900599345 /* NDServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55BA430F24C332C900599345 /* NDServer.swift */; };
+		55BA431224C3395400599345 /* NDChartData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55BA431124C3395400599345 /* NDChartData.swift */; };
+		55BFBA2524CC474A004461D3 /* NetDataAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55BFBA2424CC474A004461D3 /* NetDataAPI.swift */; };
+		55BFBA2724CC4EA1004461D3 /* Agent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55BFBA2624CC4EA1004461D3 /* Agent.swift */; };
+		55BFBA2924CC5875004461D3 /* ServerListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55BFBA2824CC5875004461D3 /* ServerListViewModel.swift */; };
 		55C638F924CBE6B800395B23 /* PercentageUsageData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55C638F824CBE6B800395B23 /* PercentageUsageData.swift */; };
 		55C638FB24CBEFCA00395B23 /* AbsoluteUsageData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55C638FA24CBEFCA00395B23 /* AbsoluteUsageData.swift */; };
 		55C638FD24CBFBA400395B23 /* DataGrid.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55C638FC24CBFBA400395B23 /* DataGrid.swift */; };
@@ -31,7 +32,6 @@
 		55D1C52E24B95F580087F8A2 /* ServerListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55D1C52D24B95F580087F8A2 /* ServerListView.swift */; };
 		55D1C53424B9636E0087F8A2 /* ServerModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55D1C53324B9636E0087F8A2 /* ServerModel.swift */; };
 		55D1C53824B969AC0087F8A2 /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 55D1C53724B969AC0087F8A2 /* CloudKit.framework */; };
-		55FC8F6924BACC3800CA8751 /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 55FC8F6824BACC3800CA8751 /* Alamofire */; };
 		55FC8F6B24BAD8F100CA8751 /* ServerDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55FC8F6A24BAD8F100CA8751 /* ServerDetailView.swift */; };
 		55FC8F6E24BADA5B00CA8751 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55FC8F6D24BADA5B00CA8751 /* SettingsView.swift */; };
 /* End PBXBuildFile section */
@@ -55,14 +55,16 @@
 
 /* Begin PBXFileReference section */
 		551420A824C3D6D200A22E9A /* Meter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Meter.swift; sourceTree = "<group>"; };
-		553138FA24BB108300AB5568 /* NetDataApiService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetDataApiService.swift; sourceTree = "<group>"; };
 		558CABAB24B99931002D115B /* CloudModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudModel.swift; sourceTree = "<group>"; };
 		558CABAE24B999F7002D115B /* ServerService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerService.swift; sourceTree = "<group>"; };
 		558CABB024B99B42002D115B /* CloudService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudService.swift; sourceTree = "<group>"; };
 		558CABB324B9A05A002D115B /* RowLoadingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RowLoadingView.swift; sourceTree = "<group>"; };
 		558CABB624B9A435002D115B /* AddServerForm.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddServerForm.swift; sourceTree = "<group>"; };
-		55BA430F24C332C900599345 /* NDServerInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NDServerInfo.swift; sourceTree = "<group>"; };
-		55BA431124C3395400599345 /* NDServerData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NDServerData.swift; sourceTree = "<group>"; };
+		55BA430F24C332C900599345 /* NDServer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NDServer.swift; sourceTree = "<group>"; };
+		55BA431124C3395400599345 /* NDChartData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NDChartData.swift; sourceTree = "<group>"; };
+		55BFBA2424CC474A004461D3 /* NetDataAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetDataAPI.swift; sourceTree = "<group>"; };
+		55BFBA2624CC4EA1004461D3 /* Agent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Agent.swift; sourceTree = "<group>"; };
+		55BFBA2824CC5875004461D3 /* ServerListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerListViewModel.swift; sourceTree = "<group>"; };
 		55C638F824CBE6B800395B23 /* PercentageUsageData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PercentageUsageData.swift; sourceTree = "<group>"; };
 		55C638FA24CBEFCA00395B23 /* AbsoluteUsageData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AbsoluteUsageData.swift; sourceTree = "<group>"; };
 		55C638FC24CBFBA400395B23 /* DataGrid.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataGrid.swift; sourceTree = "<group>"; };
@@ -94,8 +96,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				55D1C53824B969AC0087F8A2 /* CloudKit.framework in Frameworks */,
-				5531390124BB16BA00AB5568 /* SwiftyJSON in Frameworks */,
-				55FC8F6924BACC3800CA8751 /* Alamofire in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -130,7 +130,8 @@
 			children = (
 				55BA430E24C332B800599345 /* models */,
 				558CABAE24B999F7002D115B /* ServerService.swift */,
-				553138FA24BB108300AB5568 /* NetDataApiService.swift */,
+				55BFBA2424CC474A004461D3 /* NetDataAPI.swift */,
+				55BFBA2624CC4EA1004461D3 /* Agent.swift */,
 			);
 			path = services;
 			sourceTree = "<group>";
@@ -162,8 +163,8 @@
 		55BA430E24C332B800599345 /* models */ = {
 			isa = PBXGroup;
 			children = (
-				55BA430F24C332C900599345 /* NDServerInfo.swift */,
-				55BA431124C3395400599345 /* NDServerData.swift */,
+				55BA430F24C332C900599345 /* NDServer.swift */,
+				55BA431124C3395400599345 /* NDChartData.swift */,
 			);
 			path = models;
 			sourceTree = "<group>";
@@ -246,6 +247,7 @@
 		55D1C52F24B962F50087F8A2 /* viewModels */ = {
 			isa = PBXGroup;
 			children = (
+				55BFBA2824CC5875004461D3 /* ServerListViewModel.swift */,
 			);
 			path = viewModels;
 			sourceTree = "<group>";
@@ -291,8 +293,6 @@
 			);
 			name = netdata;
 			packageProductDependencies = (
-				55FC8F6824BACC3800CA8751 /* Alamofire */,
-				5531390024BB16BA00AB5568 /* SwiftyJSON */,
 			);
 			productName = netdata;
 			productReference = 55D1C4FE24B95E6D0087F8A2 /* netdata.app */;
@@ -366,8 +366,6 @@
 			);
 			mainGroup = 55D1C4F524B95E6D0087F8A2;
 			packageReferences = (
-				55FC8F6724BACC3800CA8751 /* XCRemoteSwiftPackageReference "Alamofire" */,
-				553138FF24BB16BA00AB5568 /* XCRemoteSwiftPackageReference "SwiftyJSON" */,
 			);
 			productRefGroup = 55D1C4FF24B95E6D0087F8A2 /* Products */;
 			projectDirPath = "";
@@ -413,16 +411,18 @@
 			files = (
 				55FC8F6B24BAD8F100CA8751 /* ServerDetailView.swift in Sources */,
 				558CABB424B9A05A002D115B /* RowLoadingView.swift in Sources */,
+				55BFBA2924CC5875004461D3 /* ServerListViewModel.swift in Sources */,
 				55D1C50424B95E6D0087F8A2 /* TabberView.swift in Sources */,
 				558CABAC24B99931002D115B /* CloudModel.swift in Sources */,
 				558CABAF24B999F7002D115B /* ServerService.swift in Sources */,
+				55BFBA2524CC474A004461D3 /* NetDataAPI.swift in Sources */,
 				55D1C50224B95E6D0087F8A2 /* netdataApp.swift in Sources */,
-				553138FB24BB108300AB5568 /* NetDataApiService.swift in Sources */,
 				55D1C53424B9636E0087F8A2 /* ServerModel.swift in Sources */,
-				55BA431224C3395400599345 /* NDServerData.swift in Sources */,
+				55BFBA2724CC4EA1004461D3 /* Agent.swift in Sources */,
+				55BA431224C3395400599345 /* NDChartData.swift in Sources */,
 				55C638F924CBE6B800395B23 /* PercentageUsageData.swift in Sources */,
 				55C6390124CC300500395B23 /* ReadableGuidePadding.swift in Sources */,
-				55BA431024C332C900599345 /* NDServerInfo.swift in Sources */,
+				55BA431024C332C900599345 /* NDServer.swift in Sources */,
 				55C638FD24CBFBA400395B23 /* DataGrid.swift in Sources */,
 				558CABB124B99B42002D115B /* CloudService.swift in Sources */,
 				55D1C52E24B95F580087F8A2 /* ServerListView.swift in Sources */,
@@ -752,38 +752,6 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
-
-/* Begin XCRemoteSwiftPackageReference section */
-		553138FF24BB16BA00AB5568 /* XCRemoteSwiftPackageReference "SwiftyJSON" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/SwiftyJSON/SwiftyJSON.git";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 5.0.0;
-			};
-		};
-		55FC8F6724BACC3800CA8751 /* XCRemoteSwiftPackageReference "Alamofire" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/Alamofire/Alamofire.git";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 5.2.1;
-			};
-		};
-/* End XCRemoteSwiftPackageReference section */
-
-/* Begin XCSwiftPackageProductDependency section */
-		5531390024BB16BA00AB5568 /* SwiftyJSON */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 553138FF24BB16BA00AB5568 /* XCRemoteSwiftPackageReference "SwiftyJSON" */;
-			productName = SwiftyJSON;
-		};
-		55FC8F6824BACC3800CA8751 /* Alamofire */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 55FC8F6724BACC3800CA8751 /* XCRemoteSwiftPackageReference "Alamofire" */;
-			productName = Alamofire;
-		};
-/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 55D1C4F624B95E6D0087F8A2 /* Project object */;
 }

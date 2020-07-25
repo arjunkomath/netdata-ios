@@ -6,7 +6,7 @@
 //
 
 import SwiftUI
-import Alamofire
+import Combine
 
 struct AddServerForm: View {
     @EnvironmentObject private var service: ServerService
@@ -70,29 +70,39 @@ struct AddServerForm: View {
     
     private var saveButton: some View {
         Button(action: {
-            self.checkForMissingField()
-            if self.validationError {
-                return
-            }
+                        self.checkForMissingField()
+                        if self.validationError {
+                            return
+                        }
             
-            self.validatingUrl = true
+                        self.validatingUrl = true
+
+            var cancellable = Set<AnyCancellable>()
             
-            NetDataApiService.validateServerInfo(baseUrl: self.url) { (valid) in
-                if valid == false {
+            NetDataAPI
+                .getInfo(baseUrl: self.url)
+                .subscribe(on: DispatchQueue.global())
+                .sink(receiveCompletion: { completion in
+                    print(completion)
+                    switch completion {
+                    case .finished:
+                        break
+                    case .failure(let error):
+                        self.validatingUrl = false
+                        debugPrint(error)
+                    }
+                },
+                receiveValue: { info in
                     self.validatingUrl = false
-                    return
-                }
-                
-                self.validatingUrl = false
-                let server = Server(name: self.name,
-                                    description: self.description,
-                                    url: self.url)
-                
-                ServerService.shared.add(server: server)
-                
-                self.presentationMode.wrappedValue.dismiss()
-            }
-            
+                    let server = Server(name: self.name,
+                                        description: self.description,
+                                        url: self.url)
+    
+                    ServerService.shared.add(server: server)
+    
+                    self.presentationMode.wrappedValue.dismiss()
+                })
+                .store(in: &cancellable)
         }) {
             Image(systemName: "checkmark")
                 .imageScale(.medium)
