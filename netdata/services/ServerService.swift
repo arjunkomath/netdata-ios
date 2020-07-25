@@ -17,12 +17,12 @@ public class ServerService: ObservableObject, PublicCloudService {
     @Published public var servers: [Server] = []
     @Published public var mostRecentError: Error?
     @Published public var isSynching = true
-    @Published public var canAddServer = false
+    @Published public var isCloudEnabled = true
     
     init() {
         container.accountStatus { (status, error) in
             DispatchQueue.main.async {
-                self.canAddServer = status == .available
+                self.isCloudEnabled = status == .available
             }
         }
         
@@ -36,7 +36,7 @@ public class ServerService: ObservableObject, PublicCloudService {
         
         container.accountStatus { (status, error) in
             DispatchQueue.main.async {
-                self.canAddServer = status == .available
+                self.isCloudEnabled = status == .available
             }
         }
     }

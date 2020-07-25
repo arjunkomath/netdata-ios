@@ -15,7 +15,7 @@ struct ServerListView: View {
     var body: some View {
         NavigationView {
             List {
-                if !self.service.canAddServer && !service.isSynching {
+                if !self.service.isCloudEnabled && !service.isSynching {
                     Text("iCloud not enabled, you need an iCloud account to add servers")
                         .foregroundColor(.red)
                 }
@@ -71,7 +71,7 @@ struct ServerListView: View {
             .navigationBarItems(trailing:
                                     HStack(spacing: 16) {
                                         refreshButton
-                                        if self.service.canAddServer {
+                                        if self.service.isCloudEnabled {
                                             addButton
                                         }
                                     }
@@ -83,7 +83,7 @@ struct ServerListView: View {
     }
     
     func addServer() {
-        if !self.service.canAddServer {
+        if !self.service.isCloudEnabled {
             return
         }
         
