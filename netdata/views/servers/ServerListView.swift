@@ -79,7 +79,14 @@ struct ServerListView: View {
             .listStyle(InsetGroupedListStyle())
             .navigationTitle("Servers")
             .onAppear(perform: service.refresh)
-        }        
+         
+            VStack {
+                Image(systemName: "tray")
+                    .imageScale(.large)
+                    .frame(width: 48, height: 48)
+                Text("Select a server")
+            }
+        }
     }
     
     func addServer() {

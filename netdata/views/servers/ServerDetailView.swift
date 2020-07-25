@@ -37,6 +37,9 @@ struct ServerDetailView: View {
                 Text("\(serverInfo.kernelName) (\(serverInfo.architecture))")
                     .redacted(reason: loading ? .placeholder : .init())
             }
+            .onReceive(timer) { _ in
+                self.fetchCharts()
+            }
             
             Section(header: Text("CPU Usage")) {
                 VStack {
@@ -111,6 +114,7 @@ struct ServerDetailView: View {
                 }
             }
         }
+        .readableGuidePadding()
         .onAppear(perform: {
             self.fetchServerInfo()
             
@@ -119,12 +123,12 @@ struct ServerDetailView: View {
         })
         .listStyle(InsetGroupedListStyle())
         .navigationTitle(server.name)
-        .onReceive(timer) { _ in
-            self.fetchCharts()
-        }
+        .navigationViewStyle(DoubleColumnNavigationViewStyle())
     }
     
     private func fetchCharts() {
+//        debugPrint("fetch charts")
+        
         NetDataApiService.getChartData(baseUrl: server.url, chart: "system.cpu") { data in
             if let json = try? JSON(data: data) {
                 self.cpuUsage = NDServerData(labels: json["labels"].arrayValue.map { $0.stringValue},
@@ -171,7 +175,9 @@ struct ServerDetailView: View {
         }
     }
     
-    private func fetchServerInfo() {        
+    private func fetchServerInfo() {
+        debugPrint("fetch server")
+        
         NetDataApiService.getServerInfo(baseUrl: server.url) { data in
             self.loading = false
             

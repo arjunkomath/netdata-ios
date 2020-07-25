@@ -74,16 +74,18 @@ struct SettingsView: View {
                 Section(header: Text("About")) {
                     makeRow(image: "desktopcomputer", text: "Source code",
                             link: URL(string: "https://github.com/arjunkomath/netdata-ios")!)
-                    makeRow(image: "ant", text: "NetData Open Source Client 1.0",
+                    makeRow(image: "ant", text: "Report an issue",
                             link: URL(string: "https://github.com/arjunkomath/netdata-ios/issues")!)
                     makeDetailRow(image: "tag",
                                   text: "App version",
                                   detail: "\(versionNumber) (\(buildNumber))")
                 }
             }
+            .readableGuidePadding()
             .listStyle(InsetGroupedListStyle())
             .navigationTitle("Settings")
         }
+        .navigationViewStyle(StackNavigationViewStyle())
     }
 }
 
