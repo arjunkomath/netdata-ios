@@ -11,6 +11,7 @@ import WidgetKit
 struct ServerListView: View {
     @EnvironmentObject private var serverService: ServerService
     
+    @ObservedObject var userSettings = UserSettings()
     @State private var showAddServerSheet = false
     
     var body: some View {
@@ -43,8 +44,16 @@ struct ServerListView: View {
                         Group {
                             NavigationLink(destination: ServerDetailView(server: server)) {
                                 VStack(alignment: .leading, spacing: 5) {
-                                    Text(server.name)
-                                        .font(.headline)
+                                    HStack {
+                                        if userSettings.favouriteServerId == server.id {
+                                            Image(systemName: "star.fill")
+                                                .foregroundColor(.accentColor)
+                                        }
+                                        
+                                        Text(server.name)
+                                            .font(.headline)
+                                    }
+                                    
                                     Text(server.description)
                                         .font(.caption)
                                         .foregroundColor(.gray)
@@ -68,11 +77,25 @@ struct ServerListView: View {
                                     Image(systemName: "pencil")
                                 }
                                 
-                                Button(action: {
-                                    // change country setting
-                                }) {
-                                    Text("Delete")
-                                    Image(systemName: "trash")
+                                if userSettings.favouriteServerId == server.id {
+                                    Button(action: {
+                                        self.userSettings.favouriteServerId = ""
+                                        self.userSettings.favouriteServerUrl = ""
+                                    }) {
+                                        Text("Unfavourite")
+                                        Image(systemName: "star")
+                                    }
+                                } else {
+                                    Button(action: {
+                                        self.userSettings.favouriteServerId = ""
+                                        self.userSettings.favouriteServerUrl = ""
+                                        
+                                        self.userSettings.favouriteServerId = server.id
+                                        self.userSettings.favouriteServerUrl = server.url
+                                    }) {
+                                        Text("Favourite")
+                                        Image(systemName: "star.fill")
+                                    }
                                 }
                             }
                         }

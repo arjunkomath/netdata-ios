@@ -37,6 +37,7 @@
 		55D1C52E24B95F580087F8A2 /* ServerListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55D1C52D24B95F580087F8A2 /* ServerListView.swift */; };
 		55D1C53424B9636E0087F8A2 /* NDServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55D1C53324B9636E0087F8A2 /* NDServer.swift */; };
 		55D1C53824B969AC0087F8A2 /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 55D1C53724B969AC0087F8A2 /* CloudKit.framework */; };
+		55EE682A24CD962100546B1A /* UserSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55EE682924CD962100546B1A /* UserSettings.swift */; };
 		55FC8F6B24BAD8F100CA8751 /* ServerDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55FC8F6A24BAD8F100CA8751 /* ServerDetailView.swift */; };
 		55FC8F6E24BADA5B00CA8751 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55FC8F6D24BADA5B00CA8751 /* SettingsView.swift */; };
 /* End PBXBuildFile section */
@@ -118,6 +119,7 @@
 		55D1C53324B9636E0087F8A2 /* NDServer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NDServer.swift; sourceTree = "<group>"; };
 		55D1C53524B969A50087F8A2 /* netdata.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = netdata.entitlements; sourceTree = "<group>"; };
 		55D1C53724B969AC0087F8A2 /* CloudKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudKit.framework; path = System/Library/Frameworks/CloudKit.framework; sourceTree = SDKROOT; };
+		55EE682924CD962100546B1A /* UserSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserSettings.swift; sourceTree = "<group>"; };
 		55FC8F6A24BAD8F100CA8751 /* ServerDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerDetailView.swift; sourceTree = "<group>"; };
 		55FC8F6D24BADA5B00CA8751 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -193,6 +195,7 @@
 				558CABAE24B999F7002D115B /* ServerService.swift */,
 				55BFBA2424CC474A004461D3 /* NetDataAPI.swift */,
 				55BFBA2624CC4EA1004461D3 /* Agent.swift */,
+				55EE682924CD962100546B1A /* UserSettings.swift */,
 			);
 			path = services;
 			sourceTree = "<group>";
@@ -518,6 +521,7 @@
 				55C6390124CC300500395B23 /* ReadableGuidePadding.swift in Sources */,
 				55BA431024C332C900599345 /* ServerInfo.swift in Sources */,
 				55C638FD24CBFBA400395B23 /* DataGrid.swift in Sources */,
+				55EE682A24CD962100546B1A /* UserSettings.swift in Sources */,
 				558CABB124B99B42002D115B /* CloudService.swift in Sources */,
 				55D1C52E24B95F580087F8A2 /* ServerListView.swift in Sources */,
 				55C638FB24CBEFCA00395B23 /* AbsoluteUsageData.swift in Sources */,

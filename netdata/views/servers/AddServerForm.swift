@@ -14,7 +14,7 @@ struct AddServerForm: View {
     
     @State private var name = ""
     @State private var description = ""
-    @State private var url = ""
+    @State private var url = "https://london.my-netdata.io"
     
     @State private var validatingUrl = false
     @State private var validationError = false
@@ -28,7 +28,7 @@ struct AddServerForm: View {
                     makeRow(image: "gear",
                             text: "View Installation guide",
                             link: URL(string: "https://learn.netdata.cloud/#installation"),
-                            color: .blue)
+                            color: .accentColor)
                 }
                 
                 Section(header: Text("Enter Server details"),

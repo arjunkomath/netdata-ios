@@ -13,9 +13,14 @@ public struct ServerData: Decodable {
     var data: [[Double]]
 }
 
+enum MyError: Error {
+    case runtimeError(String)
+}
+
 struct ServerDataLoader {
     static func fetch(completion: @escaping (Result<ServerData, Error>) -> Void) {
-        let branchContentsURL = URL(string: "https://netdata.code.techulus.com/api/v1/data?chart=system.cpu")!
+        let baseUrl = UserDefaults.standard.object(forKey: "favouriteServerUrl") as? String ?? ""
+        let branchContentsURL = URL(string: "\(baseUrl)/api/v1/data?chart=system.cpu")!
         let task = URLSession.shared.dataTask(with: branchContentsURL) { (data, response, error) in
             guard error == nil else {
                 completion(.failure(error!))
