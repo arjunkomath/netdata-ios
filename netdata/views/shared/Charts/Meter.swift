@@ -8,29 +8,28 @@
 import SwiftUI
 
 struct Meter : View {
-    @Binding var progress: CGFloat
-    @Binding var title: String
+    var progress: CGFloat
     
     var body: some View {
-        VStack(spacing: 20){
+        VStack(spacing: 10){
             ZStack {
                 Circle()
-                    .stroke(Color.gray, lineWidth: 10)
-                    .opacity(0.1)
+                    .stroke(lineWidth: 16.0)
+                    .opacity(0.3)
+                    .foregroundColor(self.getColor())
                 
                 Circle()
-                    .trim(from: 0, to: self.progress)
-                    .stroke(self.getColor(), lineWidth: 10)
-                    .rotationEffect(.degrees(-90))
-                    .overlay(
-                        Text("\(Int(self.progress * 100.0))%"))
+                    .trim(from: 0.0, to: CGFloat(min(self.progress, 1.0)))
+                    .stroke(style: StrokeStyle(lineWidth: 17.0, lineCap: .round, lineJoin: .round))
+                    .foregroundColor(self.getColor())
+                    .rotationEffect(Angle(degrees: 270.0))
+                    .animation(.linear)
                 
+                Text(String(format: "%.0f %%", min(self.progress, 1.0)*100.0))
+                    .font(.caption)
+                    .bold()
             }
-            .padding(10)
-            .frame(height: 100)
-            
-            Text(title)
-                .font(.headline)
+            .frame(height: 72)
         }
     }
     
@@ -49,6 +48,6 @@ struct Meter : View {
 
 struct Meter_Previews: PreviewProvider {
     static var previews: some View {
-        Meter(progress: .constant(CGFloat(0.1)), title: .constant("CPU"))
+        Meter(progress: CGFloat(0.1))
     }
 }

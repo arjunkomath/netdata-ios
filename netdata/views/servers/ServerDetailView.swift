@@ -10,7 +10,7 @@ import Combine
 
 struct ServerDetailView: View {
     var server: NDServer;
-        
+    
     @StateObject var viewModel = ServerListViewModel()
     
     var body: some View {
@@ -19,70 +19,70 @@ struct ServerDetailView: View {
                 VStack {
                     Spacer()
                     HStack {
-                        Meter(progress: $viewModel.cpuUsageGauge, title: .constant("Total"))
+                        Meter(progress: viewModel.cpuUsageGauge)
                             .frame(width: 110)
                             .redacted(reason: self.viewModel.cpuUsage.labels.count < 1 ? .placeholder : .init())
-
-                        DataGrid(labels: $viewModel.cpuUsage.labels,
-                                 data: $viewModel.cpuUsage.data,
-                                 dataType: .constant(.percentage),
-                                 showArrows: .constant(false))
+                        
+                        DataGrid(labels: viewModel.cpuUsage.labels,
+                                 data: viewModel.cpuUsage.data,
+                                 dataType: .percentage,
+                                 showArrows: false)
                     }
                     Spacer()
                 }
             }
-
+            
             Section(header: Text("Load")) {
                 VStack {
                     Spacer()
                     HStack {
-                        DataGrid(labels: $viewModel.load.labels,
-                                 data: $viewModel.load.data,
-                                 dataType: .constant(.absolute),
-                                 showArrows: .constant(false))
+                        DataGrid(labels: viewModel.load.labels,
+                                 data: viewModel.load.data,
+                                 dataType: .absolute,
+                                 showArrows: false)
                     }
                     Spacer()
                 }
             }
-
+            
             Section(header: Text("Memory Usage")) {
                 VStack {
                     Spacer()
                     HStack {
-                        Meter(progress: $viewModel.ramUsageGauge, title: .constant("Total"))
+                        Meter(progress: viewModel.ramUsageGauge)
                             .frame(width: 110)
                             .redacted(reason: viewModel.ramUsage.labels.count < 1 ? .placeholder : .init())
-
-                        DataGrid(labels: $viewModel.ramUsage.labels,
-                                 data: $viewModel.ramUsage.data,
-                                 dataType: .constant(.absolute),
-                                 showArrows: .constant(false))
+                        
+                        DataGrid(labels: viewModel.ramUsage.labels,
+                                 data: viewModel.ramUsage.data,
+                                 dataType: .absolute,
+                                 showArrows: false)
                     }
                     Spacer()
                 }
             }
-
+            
             Section(header: Text("Disk I/O")) {
                 VStack {
                     Spacer()
                     HStack {
-                        DataGrid(labels: $viewModel.diskIO.labels,
-                                 data: $viewModel.diskIO.data,
-                                 dataType: .constant(.absolute),
-                                 showArrows: .constant(true))
+                        DataGrid(labels: viewModel.diskIO.labels,
+                                 data: viewModel.diskIO.data,
+                                 dataType: .absolute,
+                                 showArrows: true)
                     }
                     Spacer()
                 }
             }
-
+            
             Section(header: Text("Network")) {
                 VStack {
                     Spacer()
                     HStack {
-                        DataGrid(labels: $viewModel.network.labels,
-                                 data: $viewModel.network.data,
-                                 dataType: .constant(.absolute),
-                                 showArrows: .constant(true))
+                        DataGrid(labels: viewModel.network.labels,
+                                 data: viewModel.network.data,
+                                 dataType: .absolute,
+                                 showArrows: true)
                     }
                     Spacer()
                 }

@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import WidgetKit
 
 struct ServerListView: View {
     @EnvironmentObject private var serverService: ServerService
@@ -45,7 +46,7 @@ struct ServerListView: View {
                                     Text(server.name)
                                         .font(.headline)
                                     Text(server.description)
-                                        .font(.subheadline)
+                                        .font(.caption)
                                         .foregroundColor(.gray)
                                     
                                     HStack {
@@ -58,7 +59,6 @@ struct ServerListView: View {
                                             .foregroundColor(.gray)
                                     }
                                 }
-                                .padding(5)
                             }
                             .contextMenu {
                                 Button(action: {
@@ -129,6 +129,8 @@ struct ServerListView: View {
     private var refreshButton: some View {
         Button(action: {
             self.serverService.refresh()
+            
+            WidgetCenter.shared.reloadAllTimelines()
         }) {
             if serverService.isSynching {
                 ProgressView()

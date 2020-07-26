@@ -51,7 +51,10 @@ final class ServerListViewModel: ObservableObject {
             .sink(receiveCompletion: { _ in
             }) { data in
                 self.cpuUsage = data
-                self.cpuUsageGauge = CGFloat(Array(self.cpuUsage.data.first![1..<self.cpuUsage.data.first!.count]).reduce(0, +) / 100)
+                
+                withAnimation(.linear(duration: 0.5)) {
+                    self.cpuUsageGauge = CGFloat(Array(self.cpuUsage.data.first![1..<self.cpuUsage.data.first!.count]).reduce(0, +) / 100)
+                }
             }
             .store(in: &self.cancellable)
     }
@@ -74,7 +77,10 @@ final class ServerListViewModel: ObservableObject {
             .sink(receiveCompletion: { _ in
             }) { data in
                 self.ramUsage = data
-                self.ramUsageGauge = CGFloat(self.ramUsage.data.first![1] / (self.ramUsage.data.first![1] + self.ramUsage.data.first![2]))
+                
+                withAnimation(.linear(duration: 0.5)) {
+                    self.ramUsageGauge = CGFloat(self.ramUsage.data.first![1] / (self.ramUsage.data.first![1] + self.ramUsage.data.first![2]))
+                }
             }
             .store(in: &self.cancellable)
     }

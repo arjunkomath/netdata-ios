@@ -8,8 +8,8 @@
 import SwiftUI
 
 struct PercentageUsageData: View {
-    @Binding var usage: CGFloat
-    @Binding var title: String
+    var usage: CGFloat
+    var title: String
     
     var body: some View {
         VStack(spacing: 5){
@@ -28,6 +28,6 @@ struct PercentageUsageData: View {
 
 struct PercentageUsageData_Previews: PreviewProvider {
     static var previews: some View {
-        PercentageUsageData(usage: .constant(0.5), title: .constant("system"))
+        PercentageUsageData(usage: 0.5, title: "system")
     }
 }

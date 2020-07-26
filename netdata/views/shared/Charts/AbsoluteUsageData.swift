@@ -8,9 +8,9 @@
 import SwiftUI
 
 struct AbsoluteUsageData: View {
-    @Binding var usage: CGFloat
-    @Binding var title: String
-    @Binding var showArrows: Bool
+    var usage: CGFloat
+    var title: String
+    var showArrows: Bool
     
     var body: some View {
         HStack(spacing: 10) {
@@ -19,14 +19,16 @@ struct AbsoluteUsageData: View {
                     Image(systemName: "arrow.up.circle.fill")
                         .foregroundColor(.green)
                         .imageScale(.large)
+                        .frame(width: 24)
                 } else {
                     Image(systemName: "arrow.down.circle.fill")
                         .foregroundColor(.red)
                         .imageScale(.large)
+                        .frame(width: 24)
                 }
             }
             
-            VStack(spacing: 5){
+            VStack(alignment: .leading, spacing: 5){
                 Text(title)
                     .font(.caption)
                     .foregroundColor(.gray)
@@ -45,16 +47,16 @@ struct AbsoluteUsageData: View {
 
 struct AbsoluteUsageData_Previews: PreviewProvider {
     static var previews: some View {
-        AbsoluteUsageData(usage: .constant(4254.234235),
-                          title: .constant("system"),
-                          showArrows: .constant(true))
+        AbsoluteUsageData(usage: 4254.234235,
+                          title: "system",
+                          showArrows: true)
         
-        AbsoluteUsageData(usage: .constant(-425.234235),
-                          title: .constant("system"),
-                          showArrows: .constant(true))
+        AbsoluteUsageData(usage: -425.234235,
+                          title: "system",
+                          showArrows: true)
         
-        AbsoluteUsageData(usage: .constant(425.234235),
-                          title: .constant("system"),
-                          showArrows: .constant(false))
+        AbsoluteUsageData(usage: 425.234235,
+                          title: "system",
+                          showArrows: false)
     }
 }
