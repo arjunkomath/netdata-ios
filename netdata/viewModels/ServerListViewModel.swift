@@ -11,22 +11,17 @@ import Combine
 
 final class ServerListViewModel: ObservableObject {
     @Published var loading = true
-    @Published var serverInfo = NDServer(uid: "uuid",
-                                         os_name: "name",
-                                         os_version: "os_version",
-                                         kernel_name: "kernel_name",
-                                         architecture: "architecture")
     
     // MARK:- Charts
-    @Published var cpuUsage: NDChartData = NDChartData(labels: [], data: [])
+    @Published var cpuUsage: ServerData = ServerData(labels: [], data: [])
     @Published var cpuUsageGauge: CGFloat = 0
     
-    @Published  var ramUsage: NDChartData = NDChartData(labels: [], data: [])
+    @Published  var ramUsage: ServerData = ServerData(labels: [], data: [])
     @Published  var ramUsageGauge : CGFloat = 0
     
-    @Published var load: NDChartData = NDChartData(labels: [], data: [])
-    @Published var diskIO: NDChartData = NDChartData(labels: [], data: [])
-    @Published var network: NDChartData = NDChartData(labels: [], data: [])
+    @Published var load: ServerData = ServerData(labels: [], data: [])
+    @Published var diskIO: ServerData = ServerData(labels: [], data: [])
+    @Published var network: ServerData = ServerData(labels: [], data: [])
     
     private var baseUrl = ""
     private var timer = Timer()
@@ -35,23 +30,6 @@ final class ServerListViewModel: ObservableObject {
     func fetch(baseUrl: String) {
         self.loading = true
         self.baseUrl = baseUrl
-        
-        NetDataAPI
-            .getInfo(baseUrl: baseUrl)
-            .sink(receiveCompletion: { completion in
-                self.loading = false
-                
-                switch completion {
-                case .finished:
-                    break
-                case .failure(let error):
-                    debugPrint(error)
-                }
-            }) { info in
-                self.loading = false
-                self.serverInfo = info
-            }
-            .store(in: &self.cancellable)
         
         self.timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { timer in
             self.fetchCpu()

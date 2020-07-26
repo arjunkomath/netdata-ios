@@ -9,19 +9,12 @@ import SwiftUI
 import Combine
 
 struct ServerDetailView: View {
-    var server: Server;
+    var server: NDServer;
         
     @StateObject var viewModel = ServerListViewModel()
     
     var body: some View {
         List {
-            Section(header: Text("Info")) {
-                Text("\(viewModel.serverInfo.os_name) \(viewModel.serverInfo.os_version)")
-                    .redacted(reason: viewModel.loading ? .placeholder : .init())
-                Text("\(viewModel.serverInfo.kernel_name) (\(viewModel.serverInfo.architecture))")
-                    .redacted(reason: viewModel.loading ? .placeholder : .init())
-            }
-            
             Section(header: Text("CPU Usage")) {
                 VStack {
                     Spacer()

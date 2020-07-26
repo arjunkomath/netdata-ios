@@ -7,7 +7,7 @@
 
 import Foundation
 
-public struct NDChartData: Decodable {
+public struct ServerData: Decodable {
     var labels: [String]
     var data: [[Double]]
 }

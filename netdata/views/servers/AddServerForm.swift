@@ -12,9 +12,9 @@ struct AddServerForm: View {
     @EnvironmentObject private var service: ServerService
     @Environment(\.presentationMode) private var presentationMode
     
-    @State private var name = ""
-    @State private var description = ""
-    @State private var url = ""
+    @State private var name = "test"
+    @State private var description = "test"
+    @State private var url = "https://netdata.code.techulus.com"
     
     @State private var validatingUrl = false
     @State private var validationError = false
@@ -70,13 +70,13 @@ struct AddServerForm: View {
     
     private var saveButton: some View {
         Button(action: {
-                        self.checkForMissingField()
-                        if self.validationError {
-                            return
-                        }
+            self.checkForMissingField()
+            if self.validationError {
+                return
+            }
             
-                        self.validatingUrl = true
-
+            self.validatingUrl = true
+            
             var cancellable = Set<AnyCancellable>()
             
             NetDataAPI
@@ -94,12 +94,13 @@ struct AddServerForm: View {
                 },
                 receiveValue: { info in
                     self.validatingUrl = false
-                    let server = Server(name: self.name,
-                                        description: self.description,
-                                        url: self.url)
-    
+                    let server = NDServer(name: self.name,
+                                          description: self.description,
+                                          url: self.url,
+                                          serverInfo: info)
+                    
                     ServerService.shared.add(server: server)
-    
+                    
                     self.presentationMode.wrappedValue.dismiss()
                 })
                 .store(in: &cancellable)

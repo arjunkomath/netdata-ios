@@ -8,24 +8,27 @@
 import SwiftUI
 
 struct ServerListView: View {
-    @EnvironmentObject private var service: ServerService
+    @EnvironmentObject private var serverService: ServerService
     
     @State private var showAddServerSheet = false
     
     var body: some View {
         NavigationView {
             List {
-                if !self.service.isCloudEnabled && !service.isSynching {
-                    Text("iCloud not enabled, you need an iCloud account to add servers")
-                        .foregroundColor(.red)
+                if self.serverService.mostRecentError != nil {
+                    ErrorMessage(message: self.serverService.mostRecentError!.localizedDescription)
                 }
                 
-                if service.isSynching && service.servers.isEmpty {
+                if !self.serverService.isCloudEnabled && !serverService.isSynching {
+                    ErrorMessage(message: "iCloud not enabled, you need an iCloud account to add servers")
+                }
+                
+                if serverService.isSynching && serverService.servers.isEmpty {
                     ForEach((1...4), id: \.self) { _ in
                         Group {
-                            VStack(alignment: .leading, spacing: 8) {
+                            VStack(alignment: .leading, spacing: 5) {
                                 Text("name")
-                                    .font(.system(.title3, design: .rounded))
+                                    .font(.headline)
                                 Text("description")
                                     .font(.subheadline)
                                     .foregroundColor(.gray)
@@ -35,15 +38,25 @@ struct ServerListView: View {
                         .padding(5)
                     }
                 } else {
-                    ForEach(service.servers) { server in
+                    ForEach(serverService.servers) { server in
                         Group {
                             NavigationLink(destination: ServerDetailView(server: server)) {
-                                VStack(alignment: .leading, spacing: 8) {
+                                VStack(alignment: .leading, spacing: 5) {
                                     Text(server.name)
-                                        .font(.system(.title3, design: .rounded))
+                                        .font(.headline)
                                     Text(server.description)
                                         .font(.subheadline)
                                         .foregroundColor(.gray)
+                                    
+                                    HStack {
+                                        Text("\(server.serverInfo.os_name) \(server.serverInfo.os_version)")
+                                            .font(.caption)
+                                            .foregroundColor(.gray)
+                                        Spacer()
+                                        Text("\(server.serverInfo.kernel_name) \(server.serverInfo.architecture)")
+                                            .font(.caption)
+                                            .foregroundColor(.gray)
+                                    }
                                 }
                                 .padding(5)
                             }
@@ -67,18 +80,18 @@ struct ServerListView: View {
                     .onDelete(perform: self.deleteServer)
                 }
             }
-            .sheet(isPresented: $showAddServerSheet, content: { AddServerForm().environmentObject(service) } )
+            .sheet(isPresented: $showAddServerSheet, content: { AddServerForm().environmentObject(serverService) } )
             .navigationBarItems(trailing:
                                     HStack(spacing: 16) {
                                         refreshButton
-                                        if self.service.isCloudEnabled {
+                                        if self.serverService.isCloudEnabled {
                                             addButton
                                         }
                                     }
             )
             .listStyle(InsetGroupedListStyle())
             .navigationTitle("Servers")
-            .onAppear(perform: service.refresh)
+            .onAppear(perform: serverService.refresh)
          
             VStack {
                 Image(systemName: "tray")
@@ -90,7 +103,7 @@ struct ServerListView: View {
     }
     
     func addServer() {
-        if !self.service.isCloudEnabled {
+        if !self.serverService.isCloudEnabled {
             return
         }
         
@@ -98,7 +111,7 @@ struct ServerListView: View {
     }
     
     func deleteServer(at offsets: IndexSet) {
-        self.service.delete(server: service.servers[offsets.first!])
+        self.serverService.delete(server: serverService.servers[offsets.first!])
     }
     
     private var addButton: some View {
@@ -115,9 +128,9 @@ struct ServerListView: View {
     
     private var refreshButton: some View {
         Button(action: {
-            self.service.refresh()
+            self.serverService.refresh()
         }) {
-            if service.isSynching {
+            if serverService.isSynching {
                 ProgressView()
             } else {
                 Image(systemName: "arrow.counterclockwise")

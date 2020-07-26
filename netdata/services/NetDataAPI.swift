@@ -19,13 +19,13 @@ enum NetDataAPI {
 }
 
 extension NetDataAPI {
-    static func getInfo(baseUrl: String) -> AnyPublisher<NDServer, Error> {
+    static func getInfo(baseUrl: String) -> AnyPublisher<ServerInfo, Error> {
         let base = URL(string: baseUrl)!
         
         return run(URLRequest(url: base.appendingPathComponent(NetDataEndpoint.info.rawValue)))
     }
     
-    static func getChartData(baseUrl: String, chart: String) -> AnyPublisher<NDChartData, Error> {
+    static func getChartData(baseUrl: String, chart: String) -> AnyPublisher<ServerData, Error> {
         let base = URL(string: baseUrl)!
         
         return run(URLRequest(url: base.appendingPathComponent(NetDataEndpoint.data.rawValue + chart)))

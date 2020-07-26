@@ -7,7 +7,7 @@
 
 import Foundation
 
-public struct NDServer: Decodable {
+public struct ServerInfo: Encodable, Decodable {
     var uid: String;
     var os_name: String;
     var os_version: String;

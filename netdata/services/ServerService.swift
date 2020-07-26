@@ -14,7 +14,7 @@ public class ServerService: ObservableObject, PublicCloudService {
     public static let shared = ServerService()
     public static var userCloudKitId: CKRecord.ID?
     
-    @Published public var servers: [Server] = []
+    @Published public var servers: [NDServer] = []
     @Published public var mostRecentError: Error?
     @Published public var isSynching = true
     @Published public var isCloudEnabled = true
@@ -41,7 +41,7 @@ public class ServerService: ObservableObject, PublicCloudService {
         }
     }
     
-    public func add(server: Server) {
+    public func add(server: NDServer) {
         self.isSynching = true
         
         let record = server.toRecord(owner: nil)
@@ -59,7 +59,7 @@ public class ServerService: ObservableObject, PublicCloudService {
         }
     }
     
-    public func delete(server: Server) {
+    public func delete(server: NDServer) {
         servers.removeAll(where: { server.id == $0.id })
         if let record = server.record {
             let operation = CKModifyRecordsOperation(recordsToSave: nil,
@@ -82,15 +82,15 @@ public class ServerService: ObservableObject, PublicCloudService {
     
     private func fetchServers() {
         self.isSynching = true
-        let query = CKQuery(recordType: Server.RecordType, predicate: NSPredicate(value: true))
+        let query = CKQuery(recordType: NDServer.RecordType, predicate: NSPredicate(value: true))
         query.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: false)]
         
         database.perform(query, inZoneWith: nil) { (records, error) in
             self.setError(error: error)
             if let records = records {
-                var nativeRecords: [Server] = []
+                var nativeRecords: [NDServer] = []
                 for record in records {
-                    nativeRecords.append(Server(withRecord: record))
+                    nativeRecords.append(NDServer(withRecord: record))
                 }
                 DispatchQueue.main.async {
                     self.servers = nativeRecords
