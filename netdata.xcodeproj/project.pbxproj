@@ -14,6 +14,7 @@
 		552B4E7D24CD16C0008B9DA6 /* Stats.swift in Sources */ = {isa = PBXBuildFile; fileRef = 552B4E7C24CD16C0008B9DA6 /* Stats.swift */; };
 		552B4E7F24CD16C2008B9DA6 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 552B4E7E24CD16C2008B9DA6 /* Assets.xcassets */; };
 		552B4E8324CD16C2008B9DA6 /* StatsExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 552B4E7624CD16C0008B9DA6 /* StatsExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		552E19D324CDB71500CDB97F /* EditServerForm.swift in Sources */ = {isa = PBXBuildFile; fileRef = 552E19D224CDB71500CDB97F /* EditServerForm.swift */; };
 		558CABAC24B99931002D115B /* CloudModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 558CABAB24B99931002D115B /* CloudModel.swift */; };
 		558CABAF24B999F7002D115B /* ServerService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 558CABAE24B999F7002D115B /* ServerService.swift */; };
 		558CABB124B99B42002D115B /* CloudService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 558CABB024B99B42002D115B /* CloudService.swift */; };
@@ -89,6 +90,7 @@
 		552B4E7C24CD16C0008B9DA6 /* Stats.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Stats.swift; sourceTree = "<group>"; };
 		552B4E7E24CD16C2008B9DA6 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		552B4E8024CD16C2008B9DA6 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		552E19D224CDB71500CDB97F /* EditServerForm.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditServerForm.swift; sourceTree = "<group>"; };
 		558CABAB24B99931002D115B /* CloudModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudModel.swift; sourceTree = "<group>"; };
 		558CABAE24B999F7002D115B /* ServerService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerService.swift; sourceTree = "<group>"; };
 		558CABB024B99B42002D115B /* CloudService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudService.swift; sourceTree = "<group>"; };
@@ -217,6 +219,7 @@
 				55D1C52D24B95F580087F8A2 /* ServerListView.swift */,
 				558CABB624B9A435002D115B /* AddServerForm.swift */,
 				55FC8F6A24BAD8F100CA8751 /* ServerDetailView.swift */,
+				552E19D224CDB71500CDB97F /* EditServerForm.swift */,
 			);
 			path = servers;
 			sourceTree = "<group>";
@@ -514,6 +517,7 @@
 				55BFBA2524CC474A004461D3 /* NetDataAPI.swift in Sources */,
 				55D1C50224B95E6D0087F8A2 /* netdataApp.swift in Sources */,
 				55D1C53424B9636E0087F8A2 /* NDServer.swift in Sources */,
+				552E19D324CDB71500CDB97F /* EditServerForm.swift in Sources */,
 				55BFBA2724CC4EA1004461D3 /* Agent.swift in Sources */,
 				552862E524CD018B008E2B0E /* ErrorMessage.swift in Sources */,
 				55BA431224C3395400599345 /* ServerData.swift in Sources */,

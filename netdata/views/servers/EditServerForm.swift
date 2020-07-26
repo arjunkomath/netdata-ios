@@ -1,19 +1,22 @@
 //
-//  AddServerForm.swift
+//  EditServerForm.swift
 //  netdata
 //
-//  Created by Arjun Komath on 11/7/20.
+//  Created by Arjun Komath on 26/7/20.
 //
 
 import SwiftUI
 import Combine
 
-struct AddServerForm: View {
+struct EditServerForm: View {
     @Environment(\.presentationMode) private var presentationMode
+    @ObservedObject var userSettings = UserSettings()
+    
+    let editingServer: NDServer?
     
     @State private var name = ""
     @State private var description = ""
-    @State private var url = "https://london.my-netdata.io"
+    @State private var url = ""
     
     @State private var validatingUrl = false
     @State private var validationError = false
@@ -22,15 +25,7 @@ struct AddServerForm: View {
     var body: some View {
         NavigationView {
             Form {
-                Section(header: Text("Install Netdata Agent on Server"),
-                        footer: Text("The Netdata Agent is 100% open source and powered by more than 300 contributors. All components are available under the GPL v3 license on GitHub.")) {
-                    makeRow(image: "gear",
-                            text: "View Installation guide",
-                            link: URL(string: "https://learn.netdata.cloud/#installation"),
-                            color: .accentColor)
-                }
-                
-                Section(header: Text("Enter Server details"),
+                Section(header: Text("Update Server details"),
                         footer: Text("HTTPS is required to connect")) {
                     if validationError {
                         ErrorMessage(message: self.validationErrorMessage)
@@ -41,32 +36,17 @@ struct AddServerForm: View {
                     TextField("NetData Server URL", text: $url)
                 }
             }
-            .navigationBarTitle("Setup Server")
+            .navigationBarTitle("Edit Server")
             .navigationBarItems(leading: dismissButton, trailing: saveButton)
-        }
-        .navigationViewStyle(StackNavigationViewStyle())
-    }
-    
-    private func makeRow(image: String,
-                         text: LocalizedStringKey,
-                         link: URL? = nil,
-                         color: Color? = .primary) -> some View {
-        HStack {
-            Image(systemName: image)
-                .imageScale(.medium)
-                .foregroundColor(color)
-                .frame(width: 24)
-            Group {
-                if let link = link {
-                    Link(text, destination: link)
-                } else {
-                    Text(text)
+            .onAppear {
+                if let server = self.editingServer {
+                    self.name = server.name
+                    self.description = server.description
+                    self.url = server.url
                 }
             }
-            .font(.body)
-            
-            Spacer()
         }
+        .navigationViewStyle(StackNavigationViewStyle())
     }
     
     private func checkForMissingField() {
@@ -122,12 +102,28 @@ struct AddServerForm: View {
                     }
                 },
                 receiveValue: { info in
-                    let server = NDServer(name: self.name,
+                    var updateFavourite = false
+                    if userSettings.favouriteServerId == self.editingServer?.id {
+                        updateFavourite = true
+                    }
+                    
+                    var server = NDServer(name: self.name,
                                           description: self.description,
                                           url: self.url,
                                           serverInfo: info)
                     
-                    ServerService.shared.add(server: server)
+                    if let record = self.editingServer?.record {
+                        server.record = record
+
+                        ServerService.shared.edit(server: server)
+                        
+                        if updateFavourite {
+                            userSettings.favouriteServerId = server.id
+                            userSettings.favouriteServerUrl = server.url
+                        }
+                        
+                        ServerService.shared.refresh()
+                    }
                     
                     self.presentationMode.wrappedValue.dismiss()
                 })
@@ -136,7 +132,7 @@ struct AddServerForm: View {
             if (self.validatingUrl) {
                 ProgressView()
             } else {
-                Text("Add")
+                Text("Save")
                     .foregroundColor(.green)
             }
         }
@@ -146,8 +142,8 @@ struct AddServerForm: View {
     }
 }
 
-struct AddServerForm_Previews: PreviewProvider {
+struct EditServerForm_Previews: PreviewProvider {
     static var previews: some View {
-        AddServerForm()
+        EditServerForm(editingServer: nil)
     }
 }

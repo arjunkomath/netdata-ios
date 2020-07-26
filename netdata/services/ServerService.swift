@@ -59,6 +59,13 @@ public class ServerService: ObservableObject, PublicCloudService {
         }
     }
     
+    public func edit(server: NDServer) {
+        isSynching = true
+        let operation = CKModifyRecordsOperation(recordsToSave: [server.toRecord(owner: nil)],
+                                                 recordIDsToDelete: nil)
+        addOperation(operation: operation, fetch: true)
+    }
+    
     public func delete(server: NDServer) {
         servers.removeAll(where: { server.id == $0.id })
         if let record = server.record {

@@ -13,6 +13,7 @@ struct ServerListView: View {
     
     @ObservedObject var userSettings = UserSettings()
     @State private var showAddServerSheet = false
+    @State private var showEditServerSheet = false
     
     var body: some View {
         NavigationView {
@@ -69,9 +70,12 @@ struct ServerListView: View {
                                     }
                                 }
                             }
+                            .sheet(isPresented: $showEditServerSheet, content: {
+                                EditServerForm(editingServer: server)
+                            })
                             .contextMenu {
                                 Button(action: {
-                                    // change country setting
+                                    self.showEditServerSheet = true
                                 }) {
                                     Text("Edit")
                                     Image(systemName: "pencil")
@@ -103,7 +107,9 @@ struct ServerListView: View {
                     .onDelete(perform: self.deleteServer)
                 }
             }
-            .sheet(isPresented: $showAddServerSheet, content: { AddServerForm().environmentObject(serverService) } )
+            .sheet(isPresented: $showAddServerSheet, content: {
+                AddServerForm()
+            })
             .navigationBarItems(trailing:
                                     HStack(spacing: 16) {
                                         refreshButton
@@ -115,7 +121,7 @@ struct ServerListView: View {
             .listStyle(InsetGroupedListStyle())
             .navigationTitle("Servers")
             .onAppear(perform: serverService.refresh)
-         
+            
             VStack {
                 Image(systemName: "tray")
                     .imageScale(.large)
