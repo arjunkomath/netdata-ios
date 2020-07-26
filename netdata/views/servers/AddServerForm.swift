@@ -12,48 +12,73 @@ struct AddServerForm: View {
     @EnvironmentObject private var service: ServerService
     @Environment(\.presentationMode) private var presentationMode
     
-    @State private var name = "test"
-    @State private var description = "test"
-    @State private var url = "https://netdata.code.techulus.com"
+    @State private var name = ""
+    @State private var description = ""
+    @State private var url = ""
     
     @State private var validatingUrl = false
     @State private var validationError = false
+    @State private var validationErrorMessage = ""
     
     var body: some View {
         NavigationView {
             Form {
-                Group {
+                Section(header: Text("Install Netdata Agent on Server"),
+                        footer: Text("The Netdata Agent is 100% open source and powered by more than 300 contributors. All components are available under the GPL v3 license on GitHub.")) {
+                    makeRow(image: "gear",
+                            text: "View Installation guide",
+                            link: URL(string: "https://learn.netdata.cloud/#installation"),
+                            color: .blue)
+                }
+                
+                Section(header: Text("Enter Server details"),
+                        footer: Text("HTTPS is required to connect")) {
                     if validationError {
-                        Text("Please fill all the fields")
-                            .foregroundColor(.red)
+                        ErrorMessage(message: self.validationErrorMessage)
                     }
                     
                     TextField("Name", text: $name)
                     TextField("Description", text: $description)
                     TextField("NetData Server URL", text: $url)
                 }
-                
-                Group {
-                    if validatingUrl {
-                        HStack {
-                            RowLoadingView()
-                        }
-                    }
-                }
             }
-            .navigationBarTitle("Add Server")
+            .navigationBarTitle("Setup Server")
             .navigationBarItems(leading: dismissButton, trailing: saveButton)
         }
         .navigationViewStyle(StackNavigationViewStyle())
     }
     
+    private func makeRow(image: String,
+                         text: LocalizedStringKey,
+                         link: URL? = nil,
+                         color: Color? = .primary) -> some View {
+        HStack {
+            Image(systemName: image)
+                .imageScale(.medium)
+                .foregroundColor(color)
+                .frame(width: 24)
+            Group {
+                if let link = link {
+                    Link(text, destination: link)
+                } else {
+                    Text(text)
+                }
+            }
+            .font(.body)
+            
+            Spacer()
+        }
+    }
+    
     private func checkForMissingField() {
         if (name.isEmpty || description.isEmpty || url.isEmpty) {
             validationError = true
+            validationErrorMessage = "Please fill all the fields"
             return
         }
         
         validationError = false
+        validationErrorMessage = ""
     }
     
     private var dismissButton: some View {
@@ -88,12 +113,16 @@ struct AddServerForm: View {
                     case .finished:
                         break
                     case .failure(let error):
-                        self.validatingUrl = false
+                        DispatchQueue.main.async {
+                            self.validatingUrl = false
+                            self.validationError = true
+                            self.validationErrorMessage = "Invalid server URL"
+                        }
+                        
                         debugPrint(error)
                     }
                 },
                 receiveValue: { info in
-                    self.validatingUrl = false
                     let server = NDServer(name: self.name,
                                           description: self.description,
                                           url: self.url,
@@ -105,8 +134,12 @@ struct AddServerForm: View {
                 })
                 .store(in: &cancellable)
         }) {
-            Image(systemName: "checkmark")
-                .imageScale(.medium)
+            if (self.validatingUrl) {
+                ProgressView()
+            } else {
+                Text("Add")
+                    .foregroundColor(.green)
+            }
         }
         .buttonStyle(BorderedBarButtonStyle())
         .foregroundColor(.green)

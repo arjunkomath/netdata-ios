@@ -18,7 +18,7 @@ struct PercentageUsageData: View {
                 .foregroundColor(.gray)
                 .padding(0)
                 .frame(alignment: .leading)
-            Text("\(Int(self.usage * 100))%")
+            Text("\(Int(self.usage))%")
                 .font(.headline)
                 .padding(0)
         }
