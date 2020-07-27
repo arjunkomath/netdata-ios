@@ -63,12 +63,6 @@ struct SettingsView: View {
                     makeRow(image: self.service.isCloudEnabled ? "icloud.fill" : "icloud.slash",
                             text: "iCloud sync \(self.service.isCloudEnabled ? "enabled" : "disabled")",
                             color: self.service.isCloudEnabled ? .green : .red)
-                    
-                    if self.service.isCloudEnabled {
-                        makeRow(image: !self.service.isSynching ? "checkmark.seal.fill" : "xmark.seal.fill",
-                                text: "Synchronized with iCloud",
-                                color: !self.service.isSynching ? .green : .red)
-                    }
                 }
                 
                 Section(header: Text("About")) {
