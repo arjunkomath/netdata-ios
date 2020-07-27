@@ -82,10 +82,9 @@ struct EditServerForm: View {
             self.validatingUrl = true
             
             var cancellable = Set<AnyCancellable>()
-            
+                        
             NetDataAPI
                 .getInfo(baseUrl: self.url)
-                .subscribe(on: DispatchQueue.global())
                 .sink(receiveCompletion: { completion in
                     print(completion)
                     switch completion {
@@ -121,8 +120,6 @@ struct EditServerForm: View {
                             userSettings.favouriteServerId = server.id
                             userSettings.favouriteServerUrl = server.url
                         }
-                        
-                        ServerService.shared.refresh()
                     }
                     
                     self.presentationMode.wrappedValue.dismiss()

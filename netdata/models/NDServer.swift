@@ -18,7 +18,7 @@ public struct NDServer: CloudModel, Equatable, Identifiable {
     public let serverInfoJson: String
     
     public var record: CKRecord?
-    public let serverInfo: ServerInfo
+    public let serverInfo: ServerInfo?
     
     public var creationDate: Date {
         record?.creationDate ?? Date()
@@ -32,18 +32,20 @@ public struct NDServer: CloudModel, Equatable, Identifiable {
         lhs.id == rhs.id
     }
     
-    public init(name: String, description: String, url: String, serverInfo: ServerInfo) {
+    public init(name: String, description: String, url: String, serverInfo: ServerInfo?) {
         self.id = UUID().uuidString
         self.name = name
         self.description = description
         self.url = url
-        
-        let jsonEncoder = JSONEncoder()
-        let jsonData = try? jsonEncoder.encode(serverInfo)
-        
-        self.serverInfoJson = String(data: jsonData!, encoding: String.Encoding.utf8)!
-        debugPrint(self.serverInfoJson)
         self.serverInfo = serverInfo
+        
+        if (serverInfo != nil) {
+            let jsonEncoder = JSONEncoder()
+            let jsonData = try? jsonEncoder.encode(serverInfo)
+            self.serverInfoJson = String(data: jsonData!, encoding: String.Encoding.utf8)!
+        } else {
+            self.serverInfoJson = ""
+        }
     }
     
     public init(withRecord record: CKRecord) {

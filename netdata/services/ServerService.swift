@@ -34,7 +34,7 @@ public class ServerService: ObservableObject, PublicCloudService {
     public func refresh() {
         fetchServers()
         
-        container.accountStatus { (status, error) in
+        container.accountStatus { (status, error) in            
             DispatchQueue.main.async {
                 self.isCloudEnabled = status == .available
             }

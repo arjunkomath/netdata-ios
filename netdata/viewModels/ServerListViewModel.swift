@@ -47,7 +47,6 @@ final class ServerListViewModel: ObservableObject {
     func fetchCpu() {
         NetDataAPI
             .getChartData(baseUrl: self.baseUrl, chart: "system.cpu")
-            .subscribe(on: DispatchQueue.global())
             .sink(receiveCompletion: { _ in
             }) { data in
                 self.cpuUsage = data
@@ -62,7 +61,6 @@ final class ServerListViewModel: ObservableObject {
     func fetchLoad() {
         NetDataAPI
             .getChartData(baseUrl: self.baseUrl, chart: "system.load")
-            .subscribe(on: DispatchQueue.global())
             .sink(receiveCompletion: { _ in
             }) { data in
                 self.load = data
@@ -73,7 +71,6 @@ final class ServerListViewModel: ObservableObject {
     func fetchRam() {
         NetDataAPI
             .getChartData(baseUrl: self.baseUrl, chart: "system.ram")
-            .subscribe(on: DispatchQueue.global())
             .sink(receiveCompletion: { _ in
             }) { data in
                 self.ramUsage = data
@@ -88,7 +85,6 @@ final class ServerListViewModel: ObservableObject {
     func fetchDiskIo() {
         NetDataAPI
             .getChartData(baseUrl: self.baseUrl, chart: "system.io")
-            .subscribe(on: DispatchQueue.global())
             .sink(receiveCompletion: { _ in
             }) { data in
                 self.diskIO = data
@@ -99,7 +95,6 @@ final class ServerListViewModel: ObservableObject {
     func fetchNetwork() {
         NetDataAPI
             .getChartData(baseUrl: self.baseUrl, chart: "system.net")
-            .subscribe(on: DispatchQueue.global())
             .sink(receiveCompletion: { _ in
             }) { data in
                 self.network = data

@@ -11,9 +11,7 @@ import WidgetKit
 struct ServerListView: View {
     @EnvironmentObject private var serverService: ServerService
     
-    @ObservedObject var userSettings = UserSettings()
     @State private var showAddServerSheet = false
-    @State private var showEditServerSheet = false
     
     var body: some View {
         NavigationView {
@@ -42,67 +40,7 @@ struct ServerListView: View {
                     }
                 } else {
                     ForEach(serverService.servers) { server in
-                        Group {
-                            NavigationLink(destination: ServerDetailView(server: server)) {
-                                VStack(alignment: .leading, spacing: 5) {
-                                    HStack {
-                                        if userSettings.favouriteServerId == server.id {
-                                            Image(systemName: "star.fill")
-                                                .foregroundColor(.accentColor)
-                                        }
-                                        
-                                        Text(server.name)
-                                            .font(.headline)
-                                    }
-                                    
-                                    Text(server.description)
-                                        .font(.caption)
-                                        .foregroundColor(.gray)
-                                    
-                                    HStack {
-                                        Text("\(server.serverInfo.os_name) \(server.serverInfo.os_version)")
-                                            .font(.caption)
-                                            .foregroundColor(.gray)
-                                        Spacer()
-                                        Text("\(server.serverInfo.kernel_name) \(server.serverInfo.architecture)")
-                                            .font(.caption)
-                                            .foregroundColor(.gray)
-                                    }
-                                }
-                            }
-                            .sheet(isPresented: $showEditServerSheet, content: {
-                                EditServerForm(editingServer: server)
-                            })
-                            .contextMenu {
-                                Button(action: {
-                                    self.showEditServerSheet = true
-                                }) {
-                                    Text("Edit")
-                                    Image(systemName: "pencil")
-                                }
-                                
-                                if userSettings.favouriteServerId == server.id {
-                                    Button(action: {
-                                        self.userSettings.favouriteServerId = ""
-                                        self.userSettings.favouriteServerUrl = ""
-                                    }) {
-                                        Text("Unfavourite")
-                                        Image(systemName: "star")
-                                    }
-                                } else {
-                                    Button(action: {
-                                        self.userSettings.favouriteServerId = ""
-                                        self.userSettings.favouriteServerUrl = ""
-                                        
-                                        self.userSettings.favouriteServerId = server.id
-                                        self.userSettings.favouriteServerUrl = server.url
-                                    }) {
-                                        Text("Favourite")
-                                        Image(systemName: "star.fill")
-                                    }
-                                }
-                            }
-                        }
+                        ServerListRow(server: server)
                     }
                     .onDelete(perform: self.deleteServer)
                 }
@@ -113,14 +51,17 @@ struct ServerListView: View {
             .navigationBarItems(trailing:
                                     HStack(spacing: 16) {
                                         refreshButton
-                                        if self.serverService.isCloudEnabled {
+                                        
+                                        if self.serverService.isCloudEnabled && self.serverService.mostRecentError == nil {
                                             addButton
                                         }
                                     }
             )
             .listStyle(InsetGroupedListStyle())
             .navigationTitle("Servers")
-            .onAppear(perform: serverService.refresh)
+            .onAppear(perform: {
+                serverService.refresh()
+            })
             
             VStack {
                 Image(systemName: "tray")

@@ -105,7 +105,6 @@ struct AddServerForm: View {
             
             NetDataAPI
                 .getInfo(baseUrl: self.url)
-                .subscribe(on: DispatchQueue.global())
                 .sink(receiveCompletion: { completion in
                     print(completion)
                     switch completion {
