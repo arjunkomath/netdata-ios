@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct ServerListRow: View {
+    @EnvironmentObject private var serverService: ServerService
     @ObservedObject var userSettings = UserSettings()
     
     @State private var showEditServerSheet = false
@@ -59,6 +60,8 @@ struct ServerListRow: View {
                 Button(action: {
                     self.userSettings.favouriteServerId = ""
                     self.userSettings.favouriteServerUrl = ""
+                    
+                    serverService.refresh()
                 }) {
                     Text("Unfavourite")
                     Image(systemName: "star")
@@ -70,6 +73,8 @@ struct ServerListRow: View {
                     
                     self.userSettings.favouriteServerId = server.id
                     self.userSettings.favouriteServerUrl = server.url
+                    
+                    serverService.refresh()
                 }) {
                     Text("Favourite")
                     Image(systemName: "star.fill")

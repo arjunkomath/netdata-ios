@@ -21,6 +21,7 @@ struct ServerDataLoader {
     static func fetch(completion: @escaping (Result<ServerData, Error>) -> Void) {
         let baseUrl = UserDefaults.standard.object(forKey: "favouriteServerUrl") as? String ?? ""
         let branchContentsURL = URL(string: "\(baseUrl)/api/v1/data?chart=system.cpu")!
+        
         let task = URLSession.shared.dataTask(with: branchContentsURL) { (data, response, error) in
             guard error == nil else {
                 completion(.failure(error!))
@@ -37,7 +38,7 @@ struct StatsTimeline: TimelineProvider {
     public typealias Entry = SimpleEntry
     
     public func snapshot(with context: Context, completion: @escaping (SimpleEntry) -> ()) {
-        let entry = SimpleEntry(date: Date(), progress: 0)
+        let entry = SimpleEntry(date: Date(), progress: 0, error: "")
         completion(entry)
     }
     
@@ -47,22 +48,33 @@ struct StatsTimeline: TimelineProvider {
         
         ServerDataLoader.fetch { result in
             let serverData: ServerData
+            var error: String = ""
+            
             if case .success(let fetchedServerData) = result {
                 serverData = fetchedServerData
             } else {
                 serverData = ServerData(labels: [], data: [])
+                error = "Please favourite a server"
             }
             
-            let entry = SimpleEntry(date: currentDate, progress: CGFloat(Array(serverData.data.first![1..<serverData.data.first!.count]).reduce(0, +) / 100))
+            let entry = SimpleEntry(date: currentDate,
+                                    progress: CGFloat(Array(serverData.data.first![1..<serverData.data.first!.count]).reduce(0, +) / 100),
+                                    error: error)
             let timeline = Timeline(entries: [entry], policy: .after(refreshDate))
             completion(timeline)
         }
     }
+    
+    //    func placeholder(with: Context) -> SimpleEntry {
+    //        let entry = SimpleEntry(date: Date(), progress: 0.2, error: "")
+    //        return entry
+    //    }
 }
 
 struct SimpleEntry: TimelineEntry {
     public let date: Date
     public let progress: CGFloat
+    public let error: String
     
     var relevance: TimelineEntryRelevance? {
         return TimelineEntryRelevance(score: Float(progress * 100)) // 0 - not important | 100 - very important
@@ -78,8 +90,9 @@ struct Meter : View {
         VStack(alignment: .leading, spacing: 8) {
             Text(title)
                 .font(.headline)
+                .bold()
             
-            VStack(){
+            VStack(alignment: .leading){
                 ZStack {
                     Circle()
                         .stroke(lineWidth: 16.0)
@@ -101,8 +114,8 @@ struct Meter : View {
             }
             .padding(10)
             
-            Text(date, style: .relative)
-                .font(.system(.caption2))
+            Text("\(date, style: .relative) ago")
+                .font(.caption)
         }
         .frame(minWidth: 0, maxWidth: .infinity, minHeight: 0, maxHeight: .infinity, alignment: .leading)
         .padding()
@@ -123,16 +136,36 @@ struct Meter : View {
 
 struct StatsEntryView : View {
     var entry: StatsTimeline.Entry
+    @Environment(\.widgetFamily) var widgetFamily
     
     var body: some View {
-        Meter(progress: entry.progress, title: "CPU Usage", date: entry.date)
+        if entry.error.isEmpty {
+            HStack {
+                Meter(progress: entry.progress, title: "CPU Usage", date: entry.date)
+                
+                if widgetFamily == .systemMedium {
+                    Meter(progress: entry.progress, title: "Memory Usage", date: entry.date)
+                }
+            }
+        } else {
+            Text(entry.error)
+                .foregroundColor(.red)
+                .font(.headline)
+        }
     }
 }
 
 struct Stats_Previews: PreviewProvider {
     static var previews: some View {
-        StatsEntryView(entry: SimpleEntry(date: Date(), progress: 0.2))
+        StatsEntryView(entry: SimpleEntry(date: Date(), progress: 0.2, error: ""))
             .previewContext(WidgetPreviewContext(family: .systemSmall))
+        
+        StatsEntryView(entry: SimpleEntry(date: Date(), progress: 0.2, error: ""))
+            .previewContext(WidgetPreviewContext(family: .systemSmall))
+            .environment(\.colorScheme, .dark)
+        
+        StatsEntryView(entry: SimpleEntry(date: Date(), progress: 0.2, error: ""))
+            .previewContext(WidgetPreviewContext(family: .systemMedium))
     }
 }
 
@@ -153,7 +186,7 @@ struct StatsPlaceholder_Previews: PreviewProvider {
 
 @main
 struct Stats: Widget {
-    private let kind: String = "NetData Stats"
+    private let kind: String = "Netdata Stats"
     
     public var body: some WidgetConfiguration {
         StaticConfiguration(kind: kind,

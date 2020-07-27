@@ -7,6 +7,7 @@
 
 import Foundation
 import CloudKit
+import WidgetKit
 
 public class ServerService: ObservableObject, PublicCloudService {
     
@@ -34,7 +35,9 @@ public class ServerService: ObservableObject, PublicCloudService {
     public func refresh() {
         fetchServers()
         
-        container.accountStatus { (status, error) in            
+        WidgetCenter.shared.reloadAllTimelines()
+        
+        container.accountStatus { (status, error) in
             DispatchQueue.main.async {
                 self.isCloudEnabled = status == .available
             }

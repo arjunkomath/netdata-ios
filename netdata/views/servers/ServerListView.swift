@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import WidgetKit
 
 struct ServerListView: View {
     @EnvironmentObject private var serverService: ServerService
@@ -99,8 +98,6 @@ struct ServerListView: View {
     private var refreshButton: some View {
         Button(action: {
             self.serverService.refresh()
-            
-            WidgetCenter.shared.reloadAllTimelines()
         }) {
             if serverService.isSynching {
                 ProgressView()
