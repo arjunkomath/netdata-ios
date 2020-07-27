@@ -10,14 +10,7 @@ import Combine
 
 struct AddServerForm: View {
     @Environment(\.presentationMode) private var presentationMode
-    
-    @State private var name = ""
-    @State private var description = ""
-    @State private var url = "https://london.my-netdata.io"
-    
-    @State private var validatingUrl = false
-    @State private var validationError = false
-    @State private var validationErrorMessage = ""
+    @StateObject var viewModel = ServerListViewModel()
     
     var body: some View {
         NavigationView {
@@ -32,13 +25,13 @@ struct AddServerForm: View {
                 
                 Section(header: Text("Enter Server details"),
                         footer: Text("HTTPS is required to connect")) {
-                    if validationError {
-                        ErrorMessage(message: self.validationErrorMessage)
+                    if viewModel.validationError {
+                        ErrorMessage(message: viewModel.validationErrorMessage)
                     }
                     
-                    TextField("Name", text: $name)
-                    TextField("Description", text: $description)
-                    TextField("NetData Server URL", text: $url)
+                    TextField("Name", text: $viewModel.name)
+                    TextField("Description", text: $viewModel.description)
+                    TextField("NetData Server URL", text: $viewModel.url)
                 }
             }
             .navigationBarTitle("Setup Server")
@@ -70,14 +63,14 @@ struct AddServerForm: View {
     }
     
     private func checkForMissingField() {
-        if (name.isEmpty || description.isEmpty || url.isEmpty) {
-            validationError = true
-            validationErrorMessage = "Please fill all the fields"
+        if (viewModel.name.isEmpty || viewModel.description.isEmpty || viewModel.url.isEmpty) {
+            viewModel.validationError = true
+            viewModel.validationErrorMessage = "Please fill all the fields"
             return
         }
         
-        validationError = false
-        validationErrorMessage = ""
+        viewModel.validationError = false
+        viewModel.validationErrorMessage = ""
     }
     
     private var dismissButton: some View {
@@ -95,44 +88,15 @@ struct AddServerForm: View {
     private var saveButton: some View {
         Button(action: {
             self.checkForMissingField()
-            if self.validationError {
+            if viewModel.validationError {
                 return
             }
             
-            self.validatingUrl = true
-            
-            var cancellable = Set<AnyCancellable>()
-            
-            NetDataAPI
-                .getInfo(baseUrl: self.url)
-                .sink(receiveCompletion: { completion in
-                    print(completion)
-                    switch completion {
-                    case .finished:
-                        break
-                    case .failure(let error):
-                        DispatchQueue.main.async {
-                            self.validatingUrl = false
-                            self.validationError = true
-                            self.validationErrorMessage = "Invalid server URL"
-                        }
-                        
-                        debugPrint(error)
-                    }
-                },
-                receiveValue: { info in
-                    let server = NDServer(name: self.name,
-                                          description: self.description,
-                                          url: self.url,
-                                          serverInfo: info)
-                    
-                    ServerService.shared.add(server: server)
-                    
-                    self.presentationMode.wrappedValue.dismiss()
-                })
-                .store(in: &cancellable)
+            viewModel.addServer { _ in
+                self.presentationMode.wrappedValue.dismiss()
+            }
         }) {
-            if (self.validatingUrl) {
+            if (viewModel.validatingUrl) {
                 ProgressView()
             } else {
                 Text("Add")

@@ -20,6 +20,39 @@ final class ServerListViewModel: ObservableObject {
     @Published var validationError = false
     @Published var validationErrorMessage = ""
     
+    func addServer(completion: @escaping (NDServer) -> ()) {
+        validatingUrl = true
+
+        NetDataAPI
+            .getInfo(baseUrl: url)
+            .sink(receiveCompletion: { completion in
+                print(completion)
+                switch completion {
+                case .finished:
+                    break
+                case .failure(let error):
+                    DispatchQueue.main.async {
+                        self.validatingUrl = false
+                        self.validationError = true
+                        self.validationErrorMessage = "Invalid server URL"
+                    }
+                    
+                    debugPrint(error)
+                }
+            },
+            receiveValue: { info in
+                let server = NDServer(name: self.name,
+                                      description: self.description,
+                                      url: self.url,
+                                      serverInfo: info)
+                
+                ServerService.shared.add(server: server)
+                
+                completion(server)
+            })
+            .store(in: &cancellable)
+    }
+    
     func updateServer(editingServer: NDServer, completion: @escaping (NDServer) -> ()) {
         validatingUrl = true
         
