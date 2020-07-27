@@ -20,6 +20,7 @@
 		558CABB124B99B42002D115B /* CloudService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 558CABB024B99B42002D115B /* CloudService.swift */; };
 		558CABB724B9A435002D115B /* AddServerForm.swift in Sources */ = {isa = PBXBuildFile; fileRef = 558CABB624B9A435002D115B /* AddServerForm.swift */; };
 		559843B224CEF7590034E92D /* ServerListRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 559843B124CEF7590034E92D /* ServerListRow.swift */; };
+		559843B424CEFAAC0034E92D /* ServerDetailViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 559843B324CEFAAC0034E92D /* ServerDetailViewModel.swift */; };
 		55BA431024C332C900599345 /* ServerInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55BA430F24C332C900599345 /* ServerInfo.swift */; };
 		55BA431224C3395400599345 /* ServerData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55BA431124C3395400599345 /* ServerData.swift */; };
 		55BFBA2524CC474A004461D3 /* NetDataAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55BFBA2424CC474A004461D3 /* NetDataAPI.swift */; };
@@ -97,6 +98,7 @@
 		558CABB024B99B42002D115B /* CloudService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudService.swift; sourceTree = "<group>"; };
 		558CABB624B9A435002D115B /* AddServerForm.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddServerForm.swift; sourceTree = "<group>"; };
 		559843B124CEF7590034E92D /* ServerListRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerListRow.swift; sourceTree = "<group>"; };
+		559843B324CEFAAC0034E92D /* ServerDetailViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerDetailViewModel.swift; sourceTree = "<group>"; };
 		55BA430F24C332C900599345 /* ServerInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerInfo.swift; sourceTree = "<group>"; };
 		55BA431124C3395400599345 /* ServerData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerData.swift; sourceTree = "<group>"; };
 		55BFBA2424CC474A004461D3 /* NetDataAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetDataAPI.swift; sourceTree = "<group>"; };
@@ -308,6 +310,7 @@
 			isa = PBXGroup;
 			children = (
 				55BFBA2824CC5875004461D3 /* ServerListViewModel.swift */,
+				559843B324CEFAAC0034E92D /* ServerDetailViewModel.swift */,
 			);
 			path = viewModels;
 			sourceTree = "<group>";
@@ -520,6 +523,7 @@
 				55BFBA2524CC474A004461D3 /* NetDataAPI.swift in Sources */,
 				55D1C50224B95E6D0087F8A2 /* netdataApp.swift in Sources */,
 				55D1C53424B9636E0087F8A2 /* NDServer.swift in Sources */,
+				559843B424CEFAAC0034E92D /* ServerDetailViewModel.swift in Sources */,
 				552E19D324CDB71500CDB97F /* EditServerForm.swift in Sources */,
 				55BFBA2724CC4EA1004461D3 /* Agent.swift in Sources */,
 				552862E524CD018B008E2B0E /* ErrorMessage.swift in Sources */,

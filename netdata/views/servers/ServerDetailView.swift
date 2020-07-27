@@ -11,7 +11,7 @@ import Combine
 struct ServerDetailView: View {
     var server: NDServer;
     
-    @StateObject var viewModel = ServerListViewModel()
+    @StateObject var viewModel = ServerDetailViewModel()
     
     var body: some View {
         List {

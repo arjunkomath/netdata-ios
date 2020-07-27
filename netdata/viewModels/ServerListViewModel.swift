@@ -6,99 +6,54 @@
 //
 
 import Foundation
-import SwiftUI
 import Combine
 
 final class ServerListViewModel: ObservableObject {
-    @Published var loading = true
     
-    // MARK:- Charts
-    @Published var cpuUsage: ServerData = ServerData(labels: [], data: [])
-    @Published var cpuUsageGauge: CGFloat = 0
-    
-    @Published  var ramUsage: ServerData = ServerData(labels: [], data: [])
-    @Published  var ramUsageGauge : CGFloat = 0
-    
-    @Published var load: ServerData = ServerData(labels: [], data: [])
-    @Published var diskIO: ServerData = ServerData(labels: [], data: [])
-    @Published var network: ServerData = ServerData(labels: [], data: [])
-    
-    private var baseUrl = ""
-    private var timer = Timer()
     private var cancellable = Set<AnyCancellable>()
     
-    func fetch(baseUrl: String) {
-        self.loading = true
-        self.baseUrl = baseUrl
+    @Published var name = ""
+    @Published var description = ""
+    @Published var url = ""
+    
+    @Published var validatingUrl = false
+    @Published var validationError = false
+    @Published var validationErrorMessage = ""
+    
+    func updateServer(editingServer: NDServer, completion: @escaping (NDServer) -> ()) {
+        validatingUrl = true
         
-        self.timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { timer in
-            self.fetchCpu()
-            self.fetchLoad()
-            self.fetchRam()
-            self.fetchDiskIo()
-            self.fetchNetwork()
-        }
-    }
-    
-    func destroy() {
-        self.timer.invalidate()
-    }
-    
-    func fetchCpu() {
         NetDataAPI
-            .getChartData(baseUrl: self.baseUrl, chart: "system.cpu")
-            .sink(receiveCompletion: { _ in
-            }) { data in
-                self.cpuUsage = data
-                
-                withAnimation(.linear(duration: 0.5)) {
-                    self.cpuUsageGauge = CGFloat(Array(self.cpuUsage.data.first![1..<self.cpuUsage.data.first!.count]).reduce(0, +) / 100)
+            .getInfo(baseUrl: url)
+            .sink(receiveCompletion: { completion in
+                print(completion)
+                switch completion {
+                case .finished:
+                    break
+                case .failure(let error):
+                    DispatchQueue.main.async {
+                        self.validatingUrl = false
+                        self.validationError = true
+                        self.validationErrorMessage = "Invalid server URL"
+                    }
+
+                    debugPrint(error)
                 }
-            }
-            .store(in: &self.cancellable)
-    }
-    
-    func fetchLoad() {
-        NetDataAPI
-            .getChartData(baseUrl: self.baseUrl, chart: "system.load")
-            .sink(receiveCompletion: { _ in
-            }) { data in
-                self.load = data
-            }
-            .store(in: &self.cancellable)
-    }
-    
-    func fetchRam() {
-        NetDataAPI
-            .getChartData(baseUrl: self.baseUrl, chart: "system.ram")
-            .sink(receiveCompletion: { _ in
-            }) { data in
-                self.ramUsage = data
-                
-                withAnimation(.linear(duration: 0.5)) {
-                    self.ramUsageGauge = CGFloat(self.ramUsage.data.first![1] / (self.ramUsage.data.first![1] + self.ramUsage.data.first![2]))
+            },
+            receiveValue: { info in
+                var server = NDServer(name: self.name,
+                                      description: self.description,
+                                      url: self.url,
+                                      serverInfo: info)
+
+                if let record = editingServer.record {
+                    server.record = record
+
+                    ServerService.shared.edit(server: server)
+                    
+                    completion(server)
                 }
-            }
-            .store(in: &self.cancellable)
-    }
-    
-    func fetchDiskIo() {
-        NetDataAPI
-            .getChartData(baseUrl: self.baseUrl, chart: "system.io")
-            .sink(receiveCompletion: { _ in
-            }) { data in
-                self.diskIO = data
-            }
-            .store(in: &self.cancellable)
-    }
-    
-    func fetchNetwork() {
-        NetDataAPI
-            .getChartData(baseUrl: self.baseUrl, chart: "system.net")
-            .sink(receiveCompletion: { _ in
-            }) { data in
-                self.network = data
-            }
+            })
             .store(in: &self.cancellable)
     }
 }
