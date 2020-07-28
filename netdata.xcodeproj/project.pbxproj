@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		5508041624D05ABF002FFAA5 /* ServerAlarms.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5508041524D05ABF002FFAA5 /* ServerAlarms.swift */; };
 		551420A924C3D6D200A22E9A /* Meter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 551420A824C3D6D200A22E9A /* Meter.swift */; };
 		552862E524CD018B008E2B0E /* ErrorMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 552862E424CD018B008E2B0E /* ErrorMessage.swift */; };
 		552B4E7824CD16C0008B9DA6 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 552B4E7724CD16C0008B9DA6 /* WidgetKit.framework */; };
@@ -84,6 +85,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		5508041524D05ABF002FFAA5 /* ServerAlarms.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerAlarms.swift; sourceTree = "<group>"; };
 		551420A824C3D6D200A22E9A /* Meter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Meter.swift; sourceTree = "<group>"; };
 		552862E424CD018B008E2B0E /* ErrorMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorMessage.swift; sourceTree = "<group>"; };
 		552B4E7624CD16C0008B9DA6 /* StatsExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = StatsExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -353,6 +355,7 @@
 				55D1C53324B9636E0087F8A2 /* NDServer.swift */,
 				55BA430F24C332C900599345 /* ServerInfo.swift */,
 				55BA431124C3395400599345 /* ServerData.swift */,
+				5508041524D05ABF002FFAA5 /* ServerAlarms.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -547,6 +550,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5508041624D05ABF002FFAA5 /* ServerAlarms.swift in Sources */,
 				55FC8F6B24BAD8F100CA8751 /* ServerDetailView.swift in Sources */,
 				55BFBA2924CC5875004461D3 /* ServerListViewModel.swift in Sources */,
 				55D1C50424B95E6D0087F8A2 /* TabberView.swift in Sources */,

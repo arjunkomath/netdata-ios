@@ -10,35 +10,56 @@ import SwiftUI
 struct ServerListRow: View {
     @EnvironmentObject private var serverService: ServerService
     @ObservedObject var userSettings = UserSettings()
-    
-    @State private var showEditServerSheet = false
+    @StateObject var viewModel = ServerListViewModel()
     
     var server: NDServer
     
+    @State private var showEditServerSheet = false
+    @State private var serverAlarms = ServerAlarms(status: false, alarms: [:])
+    
     var body: some View {
         NavigationLink(destination: ServerDetailView(server: server)) {
-            VStack(alignment: .leading, spacing: 5) {
-                HStack {
-                    if userSettings.favouriteServerId == server.id {
-                        Image(systemName: "star.fill")
-                            .foregroundColor(.accentColor)
+            HStack {
+                if serverAlarms.alarms.count == 0 {
+                    Circle()
+                        .fill(Color.green)
+                        .frame(width: 10, height: 10, alignment: .leading)
+                        .padding(.trailing, 4)
+                } else {
+                    Circle()
+                        .fill(Color.orange)
+                        .frame(width: 10, height: 10, alignment: .leading)
+                        .padding(.trailing, 4)
+                }
+                
+                VStack(alignment: .leading, spacing: 5) {
+                    HStack {
+                        if userSettings.favouriteServerId == server.id {
+                            Image(systemName: "star.fill")
+                                .foregroundColor(.accentColor)
+                        }
+                        
+                        Text(server.name)
+                            .font(.headline)
                     }
                     
-                    Text(server.name)
-                        .font(.headline)
-                }
-                
-                Text(server.description)
-                    .font(.caption)
-                    .foregroundColor(.gray)
-                
-                if server.serverInfo != nil {
-                    HStack {
-                        Text("\(server.serverInfo!.os_name) \(server.serverInfo!.os_version), \(server.serverInfo!.kernel_name) \(server.serverInfo!.architecture)")
-                            .font(.caption)
-                            .foregroundColor(.gray)
+                    Text(server.description)
+                        .font(.caption)
+                        .foregroundColor(.gray)
+                    
+                    if server.serverInfo != nil {
+                        HStack {
+                            Text("\(server.serverInfo!.os_name) \(server.serverInfo!.os_version), \(server.serverInfo!.kernel_name) \(server.serverInfo!.architecture)")
+                                .font(.caption)
+                                .foregroundColor(.gray)
+                        }
                     }
                 }
+            }
+        }
+        .onAppear {
+            viewModel.fetchAlarms(server: server) { alarms in
+                self.serverAlarms = alarms
             }
         }
         .sheet(isPresented: $showEditServerSheet, content: {

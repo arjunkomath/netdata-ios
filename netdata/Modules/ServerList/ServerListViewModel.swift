@@ -20,9 +20,33 @@ final class ServerListViewModel: ObservableObject {
     @Published var validationError = false
     @Published var validationErrorMessage = ""
     
+    func fetchAlarms(server: NDServer, completion: @escaping (ServerAlarms) -> ()) {
+        NetDataAPI
+            .getAlarms(baseUrl: server.url)
+            .sink(receiveCompletion: { completion in
+                print(completion)
+                switch completion {
+                case .finished:
+                    break
+                case .failure(let error):
+                    DispatchQueue.main.async {
+                        self.validatingUrl = false
+                        self.validationError = true
+                        self.validationErrorMessage = "Invalid server URL"
+                    }
+                    
+                    debugPrint(error)
+                }
+            },
+            receiveValue: { alarms in
+                completion(alarms)
+            })
+            .store(in: &cancellable)
+    }
+    
     func addServer(completion: @escaping (NDServer) -> ()) {
         validatingUrl = true
-
+        
         NetDataAPI
             .getInfo(baseUrl: url)
             .sink(receiveCompletion: { completion in
@@ -69,7 +93,7 @@ final class ServerListViewModel: ObservableObject {
                         self.validationError = true
                         self.validationErrorMessage = "Invalid server URL"
                     }
-
+                    
                     debugPrint(error)
                 }
             },
@@ -78,10 +102,10 @@ final class ServerListViewModel: ObservableObject {
                                       description: self.description,
                                       url: self.url,
                                       serverInfo: info)
-
+                
                 if let record = editingServer.record {
                     server.record = record
-
+                    
                     ServerService.shared.edit(server: server)
                     
                     completion(server)
