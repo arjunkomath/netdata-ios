@@ -34,11 +34,7 @@ struct ServerListRow: View {
                 
                 if server.serverInfo != nil {
                     HStack {
-                        Text("\(server.serverInfo!.os_name) \(server.serverInfo!.os_version)")
-                            .font(.caption)
-                            .foregroundColor(.gray)
-                        Spacer()
-                        Text("\(server.serverInfo!.kernel_name) \(server.serverInfo!.architecture)")
+                        Text("\(server.serverInfo!.os_name) \(server.serverInfo!.os_version), \(server.serverInfo!.kernel_name) \(server.serverInfo!.architecture)")
                             .font(.caption)
                             .foregroundColor(.gray)
                     }

@@ -57,10 +57,7 @@ public struct NDServer: CloudModel, Equatable, Identifiable {
         
         self.record = record
         self.serverInfo = !self.serverInfoJson.isEmpty ?
-            try! JSONDecoder().decode(ServerInfo.self, from: self.serverInfoJson.data(using: .utf8)!) :
-            ServerInfo(uid: "", os_name: "", os_version: "", kernel_name: "", architecture: "")
-        
-//        self.serverInfo = ServerInfo(uid: "", os_name: "", os_version: "", kernel_name: "", architecture: "")
+            try! JSONDecoder().decode(ServerInfo.self, from: self.serverInfoJson.data(using: .utf8)!) : nil
     }
     
     public func toRecord(owner: CKRecord?) -> CKRecord {

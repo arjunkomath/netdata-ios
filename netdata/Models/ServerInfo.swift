@@ -13,4 +13,6 @@ public struct ServerInfo: Encodable, Decodable {
     var os_version: String;
     var kernel_name: String;
     var architecture: String;
+    var cores_total: String;
+    var ram_total: String;
 }

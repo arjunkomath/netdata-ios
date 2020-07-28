@@ -12,17 +12,18 @@ struct PercentageUsageData: View {
     var title: String
     
     var body: some View {
-        VStack(spacing: 5){
-            Text(title)
+        VStack(alignment: .leading, spacing: 5){
+            Text(title.uppercased())
                 .font(.caption)
                 .foregroundColor(.gray)
                 .padding(0)
                 .frame(alignment: .leading)
+            
             Text("\(Int(self.usage))%")
                 .font(.headline)
                 .padding(0)
         }
-        .frame(width: 85, height: 50)
+        .frame(height: 50)
     }
 }
 

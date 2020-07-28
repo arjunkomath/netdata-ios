@@ -8,14 +8,15 @@
 import SwiftUI
 
 struct AbsoluteUsageData: View {
-    var usage: CGFloat
+    var usage: CGFloat?
+    var stringValue: String?
     var title: String
     var showArrows: Bool
     
     var body: some View {
         HStack(spacing: 10) {
-            if showArrows {
-                if usage >= 0 {
+            if showArrows && usage != nil {
+                if usage! >= 0 {
                     Image(systemName: "arrow.up.circle.fill")
                         .foregroundColor(.green)
                         .imageScale(.large)
@@ -29,19 +30,24 @@ struct AbsoluteUsageData: View {
             }
             
             VStack(alignment: .leading, spacing: 5){
-                Text(title)
+                Text(title.uppercased())
                     .font(.caption)
                     .foregroundColor(.gray)
                     .padding(0)
                     .frame(alignment: .leading)
                 
-                Text(String(format: "%.2f", self.usage))
-                    .font(.headline)
-                    .padding(0)
-                
+                if stringValue != nil && !stringValue!.isEmpty {
+                    Text(stringValue!)
+                        .font(.headline)
+                        .padding(0)
+                } else {
+                    Text(String(format: "%.2f", self.usage!))
+                        .font(.headline)
+                        .padding(0)
+                }
             }
         }
-        .frame(width: 120, height: 50)
+        .frame(height: 50)
     }
 }
 

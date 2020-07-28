@@ -31,6 +31,7 @@ struct Meter : View {
             }
             .frame(height: 72)
         }
+        .frame(width: 102, height: 102)
     }
     
     func getColor() -> Color {

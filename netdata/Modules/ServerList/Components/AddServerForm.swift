@@ -100,6 +100,8 @@ struct AddServerForm: View {
                 ProgressView()
             } else {
                 Text("Add")
+                    .font(.subheadline)
+                    .bold()
                     .foregroundColor(.green)
             }
         }

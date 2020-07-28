@@ -90,6 +90,8 @@ struct EditServerForm: View {
                 ProgressView()
             } else {
                 Text("Save")
+                    .font(.subheadline)
+                    .bold()
                     .foregroundColor(.green)
             }
         }

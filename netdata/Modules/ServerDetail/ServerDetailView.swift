@@ -15,77 +15,59 @@ struct ServerDetailView: View {
     
     var body: some View {
         List {
-            Section(header: Text("CPU Usage")) {
-                VStack {
-                    Spacer()
-                    HStack {
+            Section(header: Text("CPU")) {
+                HStack {
+                    VStack {
                         Meter(progress: viewModel.cpuUsageGauge)
-                            .frame(width: 110)
                             .redacted(reason: self.viewModel.cpuUsage.labels.count < 1 ? .placeholder : .init())
                         
-                        DataGrid(labels: viewModel.cpuUsage.labels,
-                                 data: viewModel.cpuUsage.data,
-                                 dataType: .percentage,
-                                 showArrows: false)
+                        if (server.serverInfo != nil && viewModel.cpuUsage.labels.count > 0) {
+                            Spacer()
+                            
+                            AbsoluteUsageData(stringValue: server.serverInfo?.cores_total,
+                                              title: "cores",
+                                              showArrows: false)
+                        }
                     }
-                    Spacer()
+                    
+                    DataGrid(labels: viewModel.cpuUsage.labels,
+                             data: viewModel.cpuUsage.data,
+                             dataType: .percentage,
+                             showArrows: false)
                 }
             }
             
             Section(header: Text("Load")) {
-                VStack {
-                    Spacer()
-                    HStack {
-                        DataGrid(labels: viewModel.load.labels,
-                                 data: viewModel.load.data,
-                                 dataType: .absolute,
-                                 showArrows: false)
-                    }
-                    Spacer()
-                }
+                DataGrid(labels: viewModel.load.labels,
+                         data: viewModel.load.data,
+                         dataType: .absolute,
+                         showArrows: false)
             }
             
-            Section(header: Text("Memory Usage")) {
-                VStack {
-                    Spacer()
-                    HStack {
-                        Meter(progress: viewModel.ramUsageGauge)
-                            .frame(width: 110)
-                            .redacted(reason: viewModel.ramUsage.labels.count < 1 ? .placeholder : .init())
-                        
-                        DataGrid(labels: viewModel.ramUsage.labels,
-                                 data: viewModel.ramUsage.data,
-                                 dataType: .absolute,
-                                 showArrows: false)
-                    }
-                    Spacer()
+            Section(header: Text("Memory")) {
+                HStack {
+                    Meter(progress: viewModel.ramUsageGauge)
+                        .redacted(reason: viewModel.ramUsage.labels.count < 1 ? .placeholder : .init())
+                    
+                    DataGrid(labels: viewModel.ramUsage.labels,
+                             data: viewModel.ramUsage.data,
+                             dataType: .absolute,
+                             showArrows: false)
                 }
             }
             
             Section(header: Text("Disk I/O")) {
-                VStack {
-                    Spacer()
-                    HStack {
-                        DataGrid(labels: viewModel.diskIO.labels,
-                                 data: viewModel.diskIO.data,
-                                 dataType: .absolute,
-                                 showArrows: true)
-                    }
-                    Spacer()
-                }
+                DataGrid(labels: viewModel.diskIO.labels,
+                         data: viewModel.diskIO.data,
+                         dataType: .absolute,
+                         showArrows: true)
             }
             
             Section(header: Text("Network")) {
-                VStack {
-                    Spacer()
-                    HStack {
-                        DataGrid(labels: viewModel.network.labels,
-                                 data: viewModel.network.data,
-                                 dataType: .absolute,
-                                 showArrows: true)
-                    }
-                    Spacer()
-                }
+                DataGrid(labels: viewModel.network.labels,
+                         data: viewModel.network.data,
+                         dataType: .absolute,
+                         showArrows: true)
             }
         }
         .readableGuidePadding()

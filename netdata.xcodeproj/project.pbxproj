@@ -168,6 +168,7 @@
 		5508041024D049B8002FFAA5 /* Core */ = {
 			isa = PBXGroup;
 			children = (
+				5508041424D04B3C002FFAA5 /* Network */,
 				558CABAA24B99923002D115B /* Protocols */,
 				558CABAD24B999E7002D115B /* Data */,
 			);
@@ -201,6 +202,15 @@
 				552E19D224CDB71500CDB97F /* EditServerForm.swift */,
 			);
 			path = Components;
+			sourceTree = "<group>";
+		};
+		5508041424D04B3C002FFAA5 /* Network */ = {
+			isa = PBXGroup;
+			children = (
+				55BFBA2624CC4EA1004461D3 /* Agent.swift */,
+				55BFBA2424CC474A004461D3 /* NetDataAPI.swift */,
+			);
+			path = Network;
 			sourceTree = "<group>";
 		};
 		552862E324CD0168008E2B0E /* Charts */ = {
@@ -237,8 +247,6 @@
 			isa = PBXGroup;
 			children = (
 				558CABAE24B999F7002D115B /* ServerService.swift */,
-				55BFBA2424CC474A004461D3 /* NetDataAPI.swift */,
-				55BFBA2624CC4EA1004461D3 /* Agent.swift */,
 				55EE682924CD962100546B1A /* UserSettings.swift */,
 			);
 			path = Data;
