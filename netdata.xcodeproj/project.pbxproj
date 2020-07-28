@@ -165,6 +165,44 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		5508041024D049B8002FFAA5 /* Core */ = {
+			isa = PBXGroup;
+			children = (
+				558CABAA24B99923002D115B /* Protocols */,
+				558CABAD24B999E7002D115B /* Data */,
+			);
+			path = Core;
+			sourceTree = "<group>";
+		};
+		5508041124D04A54002FFAA5 /* ServerDetail */ = {
+			isa = PBXGroup;
+			children = (
+				559843B324CEFAAC0034E92D /* ServerDetailViewModel.swift */,
+				55FC8F6A24BAD8F100CA8751 /* ServerDetailView.swift */,
+			);
+			path = ServerDetail;
+			sourceTree = "<group>";
+		};
+		5508041224D04A79002FFAA5 /* UI */ = {
+			isa = PBXGroup;
+			children = (
+				55C638FE24CC1A4D00395B23 /* BorderedBarButtonStyle.swift */,
+				55C6390024CC300500395B23 /* ReadableGuidePadding.swift */,
+				552862E424CD018B008E2B0E /* ErrorMessage.swift */,
+			);
+			path = UI;
+			sourceTree = "<group>";
+		};
+		5508041324D04AA2002FFAA5 /* Components */ = {
+			isa = PBXGroup;
+			children = (
+				559843B124CEF7590034E92D /* ServerListRow.swift */,
+				558CABB624B9A435002D115B /* AddServerForm.swift */,
+				552E19D224CDB71500CDB97F /* EditServerForm.swift */,
+			);
+			path = Components;
+			sourceTree = "<group>";
+		};
 		552862E324CD0168008E2B0E /* Charts */ = {
 			isa = PBXGroup;
 			children = (
@@ -186,16 +224,16 @@
 			path = Stats;
 			sourceTree = "<group>";
 		};
-		558CABAA24B99923002D115B /* protocols */ = {
+		558CABAA24B99923002D115B /* Protocols */ = {
 			isa = PBXGroup;
 			children = (
 				558CABAB24B99931002D115B /* CloudModel.swift */,
 				558CABB024B99B42002D115B /* CloudService.swift */,
 			);
-			path = protocols;
+			path = Protocols;
 			sourceTree = "<group>";
 		};
-		558CABAD24B999E7002D115B /* services */ = {
+		558CABAD24B999E7002D115B /* Data */ = {
 			isa = PBXGroup;
 			children = (
 				558CABAE24B999F7002D115B /* ServerService.swift */,
@@ -203,30 +241,26 @@
 				55BFBA2624CC4EA1004461D3 /* Agent.swift */,
 				55EE682924CD962100546B1A /* UserSettings.swift */,
 			);
-			path = services;
+			path = Data;
 			sourceTree = "<group>";
 		};
-		558CABB224B9A041002D115B /* shared */ = {
+		558CABB224B9A041002D115B /* Shared */ = {
 			isa = PBXGroup;
 			children = (
+				5508041224D04A79002FFAA5 /* UI */,
 				552862E324CD0168008E2B0E /* Charts */,
-				55C638FE24CC1A4D00395B23 /* BorderedBarButtonStyle.swift */,
-				55C6390024CC300500395B23 /* ReadableGuidePadding.swift */,
-				552862E424CD018B008E2B0E /* ErrorMessage.swift */,
-				559843B124CEF7590034E92D /* ServerListRow.swift */,
 			);
-			path = shared;
+			path = Shared;
 			sourceTree = "<group>";
 		};
-		558CABB524B9A420002D115B /* servers */ = {
+		558CABB524B9A420002D115B /* ServerList */ = {
 			isa = PBXGroup;
 			children = (
+				5508041324D04AA2002FFAA5 /* Components */,
+				55BFBA2824CC5875004461D3 /* ServerListViewModel.swift */,
 				55D1C52D24B95F580087F8A2 /* ServerListView.swift */,
-				558CABB624B9A435002D115B /* AddServerForm.swift */,
-				55FC8F6A24BAD8F100CA8751 /* ServerDetailView.swift */,
-				552E19D224CDB71500CDB97F /* EditServerForm.swift */,
 			);
-			path = servers;
+			path = ServerList;
 			sourceTree = "<group>";
 		};
 		55D1C4F524B95E6D0087F8A2 = {
@@ -255,12 +289,10 @@
 		55D1C50024B95E6D0087F8A2 /* netdata */ = {
 			isa = PBXGroup;
 			children = (
-				558CABAD24B999E7002D115B /* services */,
-				558CABAA24B99923002D115B /* protocols */,
+				5508041024D049B8002FFAA5 /* Core */,
 				55D1C53524B969A50087F8A2 /* netdata.entitlements */,
-				55D1C53224B9635D0087F8A2 /* models */,
-				55D1C52F24B962F50087F8A2 /* viewModels */,
-				55D1C52C24B95F030087F8A2 /* views */,
+				55D1C53224B9635D0087F8A2 /* Models */,
+				55D1C52C24B95F030087F8A2 /* Modules */,
 				55D1C50124B95E6D0087F8A2 /* netdataApp.swift */,
 				55D1C50524B95E6F0087F8A2 /* Assets.xcassets */,
 				55D1C50A24B95E6F0087F8A2 /* Info.plist */,
@@ -295,34 +327,26 @@
 			path = netdataUITests;
 			sourceTree = "<group>";
 		};
-		55D1C52C24B95F030087F8A2 /* views */ = {
+		55D1C52C24B95F030087F8A2 /* Modules */ = {
 			isa = PBXGroup;
 			children = (
-				55FC8F6C24BADA4B00CA8751 /* settings */,
-				558CABB524B9A420002D115B /* servers */,
-				558CABB224B9A041002D115B /* shared */,
+				5508041124D04A54002FFAA5 /* ServerDetail */,
+				55FC8F6C24BADA4B00CA8751 /* Settings */,
+				558CABB524B9A420002D115B /* ServerList */,
+				558CABB224B9A041002D115B /* Shared */,
 				55D1C50324B95E6D0087F8A2 /* TabberView.swift */,
 			);
-			path = views;
+			path = Modules;
 			sourceTree = "<group>";
 		};
-		55D1C52F24B962F50087F8A2 /* viewModels */ = {
-			isa = PBXGroup;
-			children = (
-				55BFBA2824CC5875004461D3 /* ServerListViewModel.swift */,
-				559843B324CEFAAC0034E92D /* ServerDetailViewModel.swift */,
-			);
-			path = viewModels;
-			sourceTree = "<group>";
-		};
-		55D1C53224B9635D0087F8A2 /* models */ = {
+		55D1C53224B9635D0087F8A2 /* Models */ = {
 			isa = PBXGroup;
 			children = (
 				55D1C53324B9636E0087F8A2 /* NDServer.swift */,
 				55BA430F24C332C900599345 /* ServerInfo.swift */,
 				55BA431124C3395400599345 /* ServerData.swift */,
 			);
-			path = models;
+			path = Models;
 			sourceTree = "<group>";
 		};
 		55D1C53624B969AC0087F8A2 /* Frameworks */ = {
@@ -335,12 +359,12 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		55FC8F6C24BADA4B00CA8751 /* settings */ = {
+		55FC8F6C24BADA4B00CA8751 /* Settings */ = {
 			isa = PBXGroup;
 			children = (
 				55FC8F6D24BADA5B00CA8751 /* SettingsView.swift */,
 			);
-			path = settings;
+			path = Settings;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
