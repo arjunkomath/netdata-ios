@@ -12,14 +12,21 @@ struct AlarmsListView: View {
     
     var body: some View {
         NavigationView {
-            List {
-                ForEach(serverAlarms.alarms.keys.sorted(), id: \.self) { key in
-                    if serverAlarms.alarms[key] != nil {
-                        AlarmListRow(alarm: serverAlarms.alarms[key]![0])
+            Group {
+                if serverAlarms.alarms.isEmpty {
+                    Text("No alarms raised! Everything looks good.")
+                        .font(.headline)
+                }
+                
+                List {
+                    ForEach(serverAlarms.alarms.keys.sorted(), id: \.self) { key in
+                        if serverAlarms.alarms[key] != nil {
+                            AlarmListRow(alarm: serverAlarms.alarms[key]![0])
+                        }
                     }
                 }
             }
-            .navigationBarTitle(Text("Alarms"), displayMode: .inline)
+            .navigationBarTitle(Text("Active Alarms"), displayMode: .inline)
         }
     }
 }
@@ -33,5 +40,7 @@ struct AlarmsListView_Previews: PreviewProvider {
                                                           info: "minimum entries in the random numbers pool in the last 10 minutes",
                                                           last_status_change: 1595892502)]
         ]))
+        
+        AlarmsListView(serverAlarms: ServerAlarms(status: true, alarms: [:]))
     }
 }
