@@ -78,6 +78,7 @@ struct ServerListRow: View {
                     self.userSettings.favouriteServerId = ""
                     self.userSettings.favouriteServerUrl = ""
                     
+                    FeedbackGenerator.shared.triggerNotification(type: .success)
                     serverService.refresh()
                 }) {
                     Text("Unfavourite")
@@ -91,6 +92,7 @@ struct ServerListRow: View {
                     self.userSettings.favouriteServerId = server.id
                     self.userSettings.favouriteServerUrl = server.url
                     
+                    FeedbackGenerator.shared.triggerNotification(type: .success)
                     serverService.refresh()
                 }) {
                     Text("Favourite")

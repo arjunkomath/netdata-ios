@@ -61,6 +61,7 @@ final class ServerListViewModel: ObservableObject {
                         self.validationErrorMessage = "Invalid server URL"
                     }
                     
+                    FeedbackGenerator.shared.triggerNotification(type: .error)
                     debugPrint(error)
                 }
             },
@@ -94,6 +95,7 @@ final class ServerListViewModel: ObservableObject {
                         self.validationErrorMessage = "Invalid server URL"
                     }
                     
+                    FeedbackGenerator.shared.triggerNotification(type: .error)
                     debugPrint(error)
                 }
             },

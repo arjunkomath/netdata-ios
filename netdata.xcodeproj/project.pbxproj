@@ -41,6 +41,7 @@
 		55D1C52E24B95F580087F8A2 /* ServerListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55D1C52D24B95F580087F8A2 /* ServerListView.swift */; };
 		55D1C53424B9636E0087F8A2 /* NDServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55D1C53324B9636E0087F8A2 /* NDServer.swift */; };
 		55D1C53824B969AC0087F8A2 /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 55D1C53724B969AC0087F8A2 /* CloudKit.framework */; };
+		55D3076C24D1825700CF076B /* FeedbackGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55D3076B24D1825700CF076B /* FeedbackGenerator.swift */; };
 		55EE682A24CD962100546B1A /* UserSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55EE682924CD962100546B1A /* UserSettings.swift */; };
 		55FC8F6B24BAD8F100CA8751 /* ServerDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55FC8F6A24BAD8F100CA8751 /* ServerDetailView.swift */; };
 		55FC8F6E24BADA5B00CA8751 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55FC8F6D24BADA5B00CA8751 /* SettingsView.swift */; };
@@ -127,6 +128,7 @@
 		55D1C53324B9636E0087F8A2 /* NDServer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NDServer.swift; sourceTree = "<group>"; };
 		55D1C53524B969A50087F8A2 /* netdata.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = netdata.entitlements; sourceTree = "<group>"; };
 		55D1C53724B969AC0087F8A2 /* CloudKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudKit.framework; path = System/Library/Frameworks/CloudKit.framework; sourceTree = SDKROOT; };
+		55D3076B24D1825700CF076B /* FeedbackGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedbackGenerator.swift; sourceTree = "<group>"; };
 		55EE682924CD962100546B1A /* UserSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserSettings.swift; sourceTree = "<group>"; };
 		55FC8F6A24BAD8F100CA8751 /* ServerDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerDetailView.swift; sourceTree = "<group>"; };
 		55FC8F6D24BADA5B00CA8751 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
@@ -170,6 +172,7 @@
 		5508041024D049B8002FFAA5 /* Core */ = {
 			isa = PBXGroup;
 			children = (
+				55D3076A24D1823500CF076B /* UX */,
 				5508041424D04B3C002FFAA5 /* Network */,
 				558CABAA24B99923002D115B /* Protocols */,
 				558CABAD24B999E7002D115B /* Data */,
@@ -368,6 +371,14 @@
 				552B4E7924CD16C0008B9DA6 /* SwiftUI.framework */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		55D3076A24D1823500CF076B /* UX */ = {
+			isa = PBXGroup;
+			children = (
+				55D3076B24D1825700CF076B /* FeedbackGenerator.swift */,
+			);
+			path = UX;
 			sourceTree = "<group>";
 		};
 		55FC8F6C24BADA4B00CA8751 /* Settings */ = {
@@ -572,6 +583,7 @@
 				558CABB124B99B42002D115B /* CloudService.swift in Sources */,
 				55D1C52E24B95F580087F8A2 /* ServerListView.swift in Sources */,
 				55C638FB24CBEFCA00395B23 /* AbsoluteUsageData.swift in Sources */,
+				55D3076C24D1825700CF076B /* FeedbackGenerator.swift in Sources */,
 				559843B224CEF7590034E92D /* ServerListRow.swift in Sources */,
 				551420A924C3D6D200A22E9A /* Meter.swift in Sources */,
 				55C638FF24CC1A4D00395B23 /* BorderedBarButtonStyle.swift in Sources */,

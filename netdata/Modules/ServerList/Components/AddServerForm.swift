@@ -89,6 +89,7 @@ struct AddServerForm: View {
         Button(action: {
             self.checkForMissingField()
             if viewModel.validationError {
+                FeedbackGenerator.shared.triggerNotification(type: .error)
                 return
             }
             
