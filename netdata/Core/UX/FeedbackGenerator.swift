@@ -15,6 +15,10 @@ class FeedbackGenerator {
     private let notificationGenerator = UINotificationFeedbackGenerator()
     
     func triggerNotification(type: UINotificationFeedbackGenerator.FeedbackType) {
+        if UserDefaults.standard.object(forKey: "hapticFeedback") as? Bool == false {
+            return
+        }
+        
         notificationGenerator.prepare()
         notificationGenerator.notificationOccurred(type)
     }
