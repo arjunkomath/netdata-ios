@@ -13,6 +13,8 @@ struct ServerDetailView: View {
     
     @StateObject var viewModel = ServerDetailViewModel()
     
+    @State private var showAlarmsSheet = false
+    
     var body: some View {
         List {
             Section(header: Text("CPU")) {
@@ -80,8 +82,20 @@ struct ServerDetailView: View {
         .onDisappear {
             self.viewModel.destroy()
         }
+        .sheet(isPresented: $showAlarmsSheet, content: {
+            AlarmsListView(serverAlarms: viewModel.serverAlarms)
+        })
         .listStyle(InsetGroupedListStyle())
         .navigationTitle(server.name)
+        .navigationBarItems(trailing:
+                                Button(action: {
+                                    self.showAlarmsSheet = true
+                                }) {
+                                    Image(systemName: "bell")
+                                        .imageScale(.medium)
+                                }
+                                .buttonStyle(BorderedBarButtonStyle())
+        )
         .navigationViewStyle(DoubleColumnNavigationViewStyle())
     }
 }

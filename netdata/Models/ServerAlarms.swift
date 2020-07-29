@@ -8,8 +8,11 @@
 import Foundation
 
 public struct ServerAlarm: Encodable, Decodable {
-    var name: String;
+    var id: Int;
     var status: String;
+    var name: String;
+    var info: String;
+    var last_status_change: Double;
 }
 
 public struct ServerAlarms: Encodable, Decodable {

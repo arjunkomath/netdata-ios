@@ -61,8 +61,7 @@ struct EditServerForm: View {
                 .imageScale(.medium)
         }
         .buttonStyle(BorderedBarButtonStyle())
-        .foregroundColor(.red)
-        .accentColor(Color.red.opacity(0.2))
+        .accentColor(Color.red)
     }
     
     private var saveButton: some View {
@@ -93,12 +92,10 @@ struct EditServerForm: View {
                 Text("Save")
                     .font(.subheadline)
                     .bold()
-                    .foregroundColor(.green)
+                    .foregroundColor(.accentColor)
             }
         }
         .buttonStyle(BorderedBarButtonStyle())
-        .foregroundColor(.green)
-        .accentColor(Color.green.opacity(0.2))
     }
 }
 

@@ -24,6 +24,9 @@ final class ServerDetailViewModel: ObservableObject {
     @Published var diskIO: ServerData = ServerData(labels: [], data: [])
     @Published var network: ServerData = ServerData(labels: [], data: [])
     
+    // MARK:- Alarms
+    @Published var serverAlarms: ServerAlarms = ServerAlarms(status: false, alarms: [:])
+    
     private var baseUrl = ""
     private var timer = Timer()
     private var cancellable = Set<AnyCancellable>()
@@ -31,6 +34,8 @@ final class ServerDetailViewModel: ObservableObject {
     func fetch(baseUrl: String) {
         self.loading = true
         self.baseUrl = baseUrl
+        
+        self.fetchAlarms()
         
         self.timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { timer in
             self.fetchCpu()
@@ -99,6 +104,16 @@ final class ServerDetailViewModel: ObservableObject {
             .sink(receiveCompletion: { _ in
             }) { data in
                 self.network = data
+            }
+            .store(in: &self.cancellable)
+    }
+    
+    func fetchAlarms() {
+        NetDataAPI
+            .getAlarms(baseUrl: self.baseUrl)
+            .sink(receiveCompletion: { _ in
+            }) { data in
+                self.serverAlarms = data
             }
             .store(in: &self.cancellable)
     }

@@ -91,8 +91,7 @@ struct ServerListView: View {
                 .imageScale(.medium)
         }
         .buttonStyle(BorderedBarButtonStyle())
-        .foregroundColor(.green)
-        .accentColor(Color.green.opacity(0.2))
+        .accentColor(Color.green)
     }
     
     private var refreshButton: some View {
@@ -107,7 +106,5 @@ struct ServerListView: View {
             }
         }
         .buttonStyle(BorderedBarButtonStyle())
-        .foregroundColor(.blue)
-        .accentColor(Color.blue.opacity(0.2))
     }
 }

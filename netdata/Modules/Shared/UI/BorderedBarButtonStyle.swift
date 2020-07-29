@@ -17,12 +17,14 @@ public struct BorderedBarButtonStyle: ButtonStyle {
         configuration
             .label
             .padding(6)
-            .background(RoundedRectangle(cornerRadius: 14, style: .continuous).foregroundColor(Color.accentColor))
+            .foregroundColor(.accentColor)
+            .background(RoundedRectangle(cornerRadius: 14, style: .continuous).foregroundColor(Color.accentColor.opacity(0.2)))
         #else
         configuration
             .label
             .padding(10)
-            .background(RoundedRectangle(cornerRadius: 14, style: .continuous).foregroundColor(Color.accentColor))
+            .foregroundColor(.accentColor)
+            .background(RoundedRectangle(cornerRadius: 14, style: .continuous).foregroundColor(Color.accentColor.opacity(0.2)))
         #endif
     }
 }
