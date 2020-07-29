@@ -46,13 +46,25 @@ struct ServerDetailView: View {
                          showArrows: false)
             }
             
-            Section(header: Text("Memory")) {
+            Section(header: Text("Memory (MB)")) {
                 HStack {
                     Meter(progress: viewModel.ramUsageGauge)
                         .redacted(reason: viewModel.ramUsage.labels.count < 1 ? .placeholder : .init())
                     
                     DataGrid(labels: viewModel.ramUsage.labels,
                              data: viewModel.ramUsage.data,
+                             dataType: .absolute,
+                             showArrows: false)
+                }
+            }
+            
+            Section(header: Text("Disk Space (GB)")) {
+                HStack {
+                    Meter(progress: viewModel.diskSpaceUsageGauge)
+                        .redacted(reason: viewModel.diskSpaceUsage.labels.count < 1 ? .placeholder : .init())
+                    
+                    DataGrid(labels: viewModel.diskSpaceUsage.labels,
+                             data: viewModel.diskSpaceUsage.data,
                              dataType: .absolute,
                              showArrows: false)
                 }

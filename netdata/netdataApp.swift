@@ -31,6 +31,17 @@ struct netdataApp: App {
     }
     
     private func setupAppearance() {
+        // app tint color
         self.window?.tintColor = UIColor(userSettings.appTintColor)
+        
+        // rounded title font
+        let descriptor = UIFontDescriptor
+            .preferredFontDescriptor(withTextStyle: .largeTitle)
+            .withSymbolicTraits(.traitBold)?
+            .withDesign(UIFontDescriptor.SystemDesign.rounded)
+        
+        UINavigationBar.appearance().largeTitleTextAttributes = [
+            NSAttributedString.Key.font:UIFont.init(descriptor: descriptor!, size: 34)
+        ]
     }
 }

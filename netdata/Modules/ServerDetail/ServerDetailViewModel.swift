@@ -20,6 +20,9 @@ final class ServerDetailViewModel: ObservableObject {
     @Published  var ramUsage: ServerData = ServerData(labels: [], data: [])
     @Published  var ramUsageGauge : CGFloat = 0
     
+    @Published  var diskSpaceUsage: ServerData = ServerData(labels: [], data: [])
+    @Published  var diskSpaceUsageGauge : CGFloat = 0
+    
     @Published var load: ServerData = ServerData(labels: [], data: [])
     @Published var diskIO: ServerData = ServerData(labels: [], data: [])
     @Published var network: ServerData = ServerData(labels: [], data: [])
@@ -43,6 +46,7 @@ final class ServerDetailViewModel: ObservableObject {
             self.fetchRam()
             self.fetchDiskIo()
             self.fetchNetwork()
+            self.fetchDiskSpace()
         }
     }
     
@@ -104,6 +108,20 @@ final class ServerDetailViewModel: ObservableObject {
             .sink(receiveCompletion: { _ in
             }) { data in
                 self.network = data
+            }
+            .store(in: &self.cancellable)
+    }
+    
+    func fetchDiskSpace() {
+        NetDataAPI
+            .getChartData(baseUrl: self.baseUrl, chart: "disk_space._")
+            .sink(receiveCompletion: { _ in
+            }) { data in
+                self.diskSpaceUsage = data
+                
+                withAnimation(.linear(duration: 0.5)) {
+                    self.diskSpaceUsageGauge = CGFloat(self.diskSpaceUsage.data.first![2] / (self.diskSpaceUsage.data.first![1] + self.diskSpaceUsage.data.first![2]))
+                }
             }
             .store(in: &self.cancellable)
     }
