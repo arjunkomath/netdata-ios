@@ -1,6 +1,8 @@
 # Unofficial NETDATA client for iOS - WIP
 Warning! I'm learning Swift and SwiftUI, so the code is probably terrible.
 
+![Xcode build](https://github.com/arjunkomath/netdata-ios/workflows/Xcode%20build/badge.svg)
+
 ![screenshot-1](https://github.com/arjunkomath/netdata-ios/blob/main/screenshots/mockup.png?raw=true)
 
 ## Netdata
