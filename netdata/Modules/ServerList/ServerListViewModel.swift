@@ -69,7 +69,8 @@ final class ServerListViewModel: ObservableObject {
                 let server = NDServer(name: self.name,
                                       description: self.description,
                                       url: self.url,
-                                      serverInfo: info)
+                                      serverInfo: info,
+                                      isFavourite: 0)
                 
                 ServerService.shared.add(server: server)
                 
@@ -103,7 +104,8 @@ final class ServerListViewModel: ObservableObject {
                 var server = NDServer(name: self.name,
                                       description: self.description,
                                       url: self.url,
-                                      serverInfo: info)
+                                      serverInfo: info,
+                                      isFavourite: 0)
                 
                 if let record = editingServer.record {
                     server.record = record

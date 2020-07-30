@@ -15,7 +15,8 @@ public class ServerService: ObservableObject, PublicCloudService {
     public static let shared = ServerService()
     public static var userCloudKitId: CKRecord.ID?
     
-    @Published public var servers: [NDServer] = []
+    @Published public var favouriteServers: [NDServer] = []
+    @Published public var defaultServers: [NDServer] = []
     @Published public var mostRecentError: Error?
     @Published public var isSynching = true
     @Published public var isCloudEnabled = true
@@ -53,7 +54,7 @@ public class ServerService: ObservableObject, PublicCloudService {
             DispatchQueue.main.async {
                 if let record = record {
                     server.record = record
-                    self.servers.insert(server, at: 0)
+                    self.defaultServers.insert(server, at: 0)
                 }
                 
                 self.isSynching = false
@@ -70,7 +71,9 @@ public class ServerService: ObservableObject, PublicCloudService {
     }
     
     public func delete(server: NDServer) {
-        servers.removeAll(where: { server.id == $0.id })
+        defaultServers.removeAll(where: { server.id == $0.id })
+        favouriteServers.removeAll(where: { server.id == $0.id })
+        
         if let record = server.record {
             let operation = CKModifyRecordsOperation(recordsToSave: nil,
                                                      recordIDsToDelete: [record.recordID])
@@ -103,10 +106,12 @@ public class ServerService: ObservableObject, PublicCloudService {
                     nativeRecords.append(NDServer(withRecord: record))
                 }
                 DispatchQueue.main.async {
-                    self.servers = nativeRecords
+                    self.favouriteServers = nativeRecords.filter { $0.isFavourite == 1 }
+                    self.defaultServers = nativeRecords.filter { $0.isFavourite != 1 }
                 }
             } else {
-                self.servers = []
+                self.favouriteServers = []
+                self.defaultServers = []
             }
             DispatchQueue.main.async {
                 self.isSynching = false

@@ -16,6 +16,7 @@ public struct NDServer: CloudModel, Equatable, Identifiable {
     public let description: String
     public let url: String
     public let serverInfoJson: String
+    public let isFavourite: Int
     
     public var record: CKRecord?
     public let serverInfo: ServerInfo?
@@ -25,19 +26,20 @@ public struct NDServer: CloudModel, Equatable, Identifiable {
     }
     
     enum RecordKeys: String {
-        case id, name, description, url, serverInfoJson
+        case id, name, description, url, serverInfoJson, isFavourite
     }
     
     public static func == (lhs: NDServer, rhs: NDServer) -> Bool {
         lhs.id == rhs.id
     }
     
-    public init(name: String, description: String, url: String, serverInfo: ServerInfo?) {
+    public init(name: String, description: String, url: String, serverInfo: ServerInfo?, isFavourite: Int?) {
         self.id = UUID().uuidString
         self.name = name
         self.description = description
         self.url = url
         self.serverInfo = serverInfo
+        self.isFavourite = isFavourite == nil ? 0 : isFavourite!
         
         if (serverInfo != nil) {
             let jsonEncoder = JSONEncoder()
@@ -54,6 +56,7 @@ public struct NDServer: CloudModel, Equatable, Identifiable {
         self.description = record[RecordKeys.description.rawValue] as? String ?? ""
         self.url = record[RecordKeys.url.rawValue] as? String ?? ""
         self.serverInfoJson = record[RecordKeys.serverInfoJson.rawValue] as? String ?? ""
+        self.isFavourite = record[RecordKeys.isFavourite.rawValue] as? Int ?? 0
         
         self.record = record
         self.serverInfo = !self.serverInfoJson.isEmpty ?
@@ -67,6 +70,7 @@ public struct NDServer: CloudModel, Equatable, Identifiable {
         record[RecordKeys.description.rawValue] = description
         record[RecordKeys.url.rawValue] = url
         record[RecordKeys.serverInfoJson.rawValue] = serverInfoJson
+        record[RecordKeys.isFavourite.rawValue] = isFavourite
         return record
     }
 }

@@ -23,7 +23,7 @@ struct ServerListView: View {
                     ErrorMessage(message: "iCloud not enabled, you need an iCloud account to add servers")
                 }
                 
-                if serverService.isSynching && serverService.servers.isEmpty {
+                if serverService.isSynching && serverService.defaultServers.isEmpty && serverService.favouriteServers.isEmpty {
                     ForEach((1...4), id: \.self) { _ in
                         Group {
                             VStack(alignment: .leading, spacing: 5) {
@@ -38,10 +38,21 @@ struct ServerListView: View {
                         .padding(5)
                     }
                 } else {
-                    ForEach(serverService.servers) { server in
-                        ServerListRow(server: server)
+                    if !serverService.favouriteServers.isEmpty {
+                        Section(header: Text("Favourites")) {
+                            ForEach(serverService.favouriteServers) { server in
+                                ServerListRow(server: server)
+                            }
+                            .onDelete(perform: self.deleteFavouriteServer)
+                        }
                     }
-                    .onDelete(perform: self.deleteServer)
+                    
+                    Section(header: Text("Servers")) {
+                        ForEach(serverService.defaultServers) { server in
+                            ServerListRow(server: server)
+                        }
+                        .onDelete(perform: self.deleteServer)
+                    }
                 }
             }
             .sheet(isPresented: $showAddServerSheet, content: {
@@ -57,7 +68,7 @@ struct ServerListView: View {
                                     }
             )
             .listStyle(InsetGroupedListStyle())
-            .navigationTitle("Servers")
+            .navigationTitle("My Servers")
             .onAppear(perform: {
                 serverService.refresh()
             })
@@ -80,7 +91,11 @@ struct ServerListView: View {
     }
     
     func deleteServer(at offsets: IndexSet) {
-        self.serverService.delete(server: serverService.servers[offsets.first!])
+        self.serverService.delete(server: serverService.defaultServers[offsets.first!])
+    }
+    
+    func deleteFavouriteServer(at offsets: IndexSet) {
+        self.serverService.delete(server: serverService.favouriteServers[offsets.first!])
     }
     
     private var addButton: some View {

@@ -71,18 +71,8 @@ struct EditServerForm: View {
                 FeedbackGenerator.shared.triggerNotification(type: .error)
                 return
             }
-            
-            var updateFavourite = false
-            if userSettings.favouriteServerId == self.editingServer?.id {
-                updateFavourite = true
-            }
-            
+
             viewModel.updateServer(editingServer: editingServer!) { server in
-                if updateFavourite {
-                    userSettings.favouriteServerId = server.id
-                    userSettings.favouriteServerUrl = server.url
-                }
-                
                 self.presentationMode.wrappedValue.dismiss()
             }
         }) {

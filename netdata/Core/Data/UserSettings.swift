@@ -19,18 +19,6 @@ class UserSettings: ObservableObject {
         return window
     }
     
-    @Published var favouriteServerId: String {
-        didSet {
-            UserDefaults.standard.set(favouriteServerId, forKey: "favouriteServerId")
-        }
-    }
-    
-    @Published var favouriteServerUrl: String {
-        didSet {
-            UserDefaults.standard.set(favouriteServerUrl, forKey: "favouriteServerUrl")
-        }
-    }
-    
     // MARK: - UI/UX
     
     @Published var appTintColor: Color {
@@ -47,10 +35,6 @@ class UserSettings: ObservableObject {
     }
     
     init() {
-        // Favourite Server
-        self.favouriteServerId = UserDefaults.standard.object(forKey: "favouriteServerId") as? String ?? ""
-        self.favouriteServerUrl = UserDefaults.standard.object(forKey: "favouriteServerUrl") as? String ?? ""
-        
         // Appearance
         self.appTintColor = UserDefaults.standard.colorForKey(key: "appTintColor") != nil ?
             Color(UserDefaults.standard.colorForKey(key: "appTintColor")!) : Color.blue

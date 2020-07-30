@@ -17,7 +17,7 @@ struct ServerDetailView: View {
     
     var body: some View {
         List {
-            Section(header: Text("CPU")) {
+            Section(header: makeSectionHeader(text: "CPU")) {
                 HStack {
                     VStack {
                         Meter(progress: viewModel.cpuUsageGauge)
@@ -39,14 +39,14 @@ struct ServerDetailView: View {
                 }
             }
             
-            Section(header: Text("Load")) {
+            Section(header: makeSectionHeader(text: "Load")) {
                 DataGrid(labels: viewModel.load.labels,
                          data: viewModel.load.data,
                          dataType: .absolute,
                          showArrows: false)
             }
             
-            Section(header: Text("Memory (MB)")) {
+            Section(header: makeSectionHeader(text: "Memory (MB)")) {
                 HStack {
                     Meter(progress: viewModel.ramUsageGauge)
                         .redacted(reason: viewModel.ramUsage.labels.count < 1 ? .placeholder : .init())
@@ -58,7 +58,7 @@ struct ServerDetailView: View {
                 }
             }
             
-            Section(header: Text("Disk Space (GB)")) {
+            Section(header: makeSectionHeader(text: "Disk Space (GB)")) {
                 HStack {
                     Meter(progress: viewModel.diskSpaceUsageGauge)
                         .redacted(reason: viewModel.diskSpaceUsage.labels.count < 1 ? .placeholder : .init())
@@ -70,14 +70,14 @@ struct ServerDetailView: View {
                 }
             }
             
-            Section(header: Text("Disk I/O")) {
+            Section(header: makeSectionHeader(text: "Disk I/O")) {
                 DataGrid(labels: viewModel.diskIO.labels,
                          data: viewModel.diskIO.data,
                          dataType: .absolute,
                          showArrows: true)
             }
             
-            Section(header: Text("Network")) {
+            Section(header: makeSectionHeader(text: "Network")) {
                 DataGrid(labels: viewModel.network.labels,
                          data: viewModel.network.data,
                          dataType: .absolute,
@@ -98,17 +98,25 @@ struct ServerDetailView: View {
             AlarmsListView(serverAlarms: viewModel.serverAlarms)
         })
         .listStyle(InsetGroupedListStyle())
-        .navigationTitle(server.name)
+        .navigationBarTitle(Text(server.name))
         .navigationBarItems(trailing:
                                 Button(action: {
                                     self.showAlarmsSheet = true
                                 }) {
                                     Image(systemName: "bell")
                                         .imageScale(.medium)
+                                        .foregroundColor(.accentColor)
                                 }
                                 .buttonStyle(BorderedBarButtonStyle())
         )
         .navigationViewStyle(DoubleColumnNavigationViewStyle())
+    }
+    
+    func makeSectionHeader(text: String) -> some View {
+        Text(text)
+            .font(.subheadline)
+            .bold()
+            .foregroundColor(.gray)
     }
 }
 

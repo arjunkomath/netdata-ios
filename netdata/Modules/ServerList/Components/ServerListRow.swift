@@ -9,7 +9,6 @@ import SwiftUI
 
 struct ServerListRow: View {
     @EnvironmentObject private var serverService: ServerService
-    @ObservedObject var userSettings = UserSettings()
     @StateObject var viewModel = ServerListViewModel()
     
     var server: NDServer
@@ -34,11 +33,6 @@ struct ServerListRow: View {
                 
                 VStack(alignment: .leading, spacing: 5) {
                     HStack {
-                        if userSettings.favouriteServerId == server.id {
-                            Image(systemName: "star.fill")
-                                .foregroundColor(.accentColor)
-                        }
-                        
                         Text(server.name)
                             .font(.headline)
                     }
@@ -73,27 +67,42 @@ struct ServerListRow: View {
                 Image(systemName: "pencil")
             }
             
-            if userSettings.favouriteServerId == server.id {
+            if server.isFavourite == 1 {
                 Button(action: {
-                    self.userSettings.favouriteServerId = ""
-                    self.userSettings.favouriteServerUrl = ""
+                    var updatedServer = NDServer(name: server.name,
+                                          description: server.description,
+                                          url: server.url,
+                                          serverInfo: server.serverInfo,
+                                          isFavourite: 0)
                     
-                    FeedbackGenerator.shared.triggerNotification(type: .success)
-                    serverService.refresh()
+                    if let record = server.record {
+                        updatedServer.record = record
+                        
+                        ServerService.shared.edit(server: updatedServer)
+                        
+                        FeedbackGenerator.shared.triggerNotification(type: .success)
+                        serverService.refresh()
+                    }
                 }) {
                     Text("Unfavourite")
                     Image(systemName: "star")
                 }
             } else {
                 Button(action: {
-                    self.userSettings.favouriteServerId = ""
-                    self.userSettings.favouriteServerUrl = ""
+                    var updatedServer = NDServer(name: server.name,
+                                          description: server.description,
+                                          url: server.url,
+                                          serverInfo: server.serverInfo,
+                                          isFavourite: 1)
                     
-                    self.userSettings.favouriteServerId = server.id
-                    self.userSettings.favouriteServerUrl = server.url
-                    
-                    FeedbackGenerator.shared.triggerNotification(type: .success)
-                    serverService.refresh()
+                    if let record = server.record {
+                        updatedServer.record = record
+                        
+                        ServerService.shared.edit(server: updatedServer)
+                        
+                        FeedbackGenerator.shared.triggerNotification(type: .success)
+                        serverService.refresh()
+                    }
                 }) {
                     Text("Favourite")
                     Image(systemName: "star.fill")
@@ -108,6 +117,7 @@ struct ServerListRow_Previews: PreviewProvider {
         ServerListRow(server: NDServer(name: "Techulus",
                                        description: "gc us server",
                                        url: "techulus.com",
-                                       serverInfo: nil))
+                                       serverInfo: nil,
+                                       isFavourite: 0))
     }
 }
