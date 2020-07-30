@@ -100,7 +100,6 @@ struct SettingsView: View {
                                   detail: "\(versionNumber) (\(buildNumber))")
                 }
             }
-            .readableGuidePadding()
             .listStyle(InsetGroupedListStyle())
             .navigationTitle("Settings")
         }

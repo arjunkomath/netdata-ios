@@ -84,7 +84,6 @@ struct ServerDetailView: View {
                          showArrows: true)
             }
         }
-        .readableGuidePadding()
         .onAppear {
             self.viewModel.fetch(baseUrl: server.url)
             

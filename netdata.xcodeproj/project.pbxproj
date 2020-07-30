@@ -31,7 +31,6 @@
 		55C638FB24CBEFCA00395B23 /* AbsoluteUsageData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55C638FA24CBEFCA00395B23 /* AbsoluteUsageData.swift */; };
 		55C638FD24CBFBA400395B23 /* DataGrid.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55C638FC24CBFBA400395B23 /* DataGrid.swift */; };
 		55C638FF24CC1A4D00395B23 /* BorderedBarButtonStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55C638FE24CC1A4D00395B23 /* BorderedBarButtonStyle.swift */; };
-		55C6390124CC300500395B23 /* ReadableGuidePadding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55C6390024CC300500395B23 /* ReadableGuidePadding.swift */; };
 		55D1C50224B95E6D0087F8A2 /* netdataApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55D1C50124B95E6D0087F8A2 /* netdataApp.swift */; };
 		55D1C50424B95E6D0087F8A2 /* TabberView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55D1C50324B95E6D0087F8A2 /* TabberView.swift */; };
 		55D1C50624B95E6F0087F8A2 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55D1C50524B95E6F0087F8A2 /* Assets.xcassets */; };
@@ -114,7 +113,6 @@
 		55C638FA24CBEFCA00395B23 /* AbsoluteUsageData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AbsoluteUsageData.swift; sourceTree = "<group>"; };
 		55C638FC24CBFBA400395B23 /* DataGrid.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataGrid.swift; sourceTree = "<group>"; };
 		55C638FE24CC1A4D00395B23 /* BorderedBarButtonStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BorderedBarButtonStyle.swift; sourceTree = "<group>"; };
-		55C6390024CC300500395B23 /* ReadableGuidePadding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReadableGuidePadding.swift; sourceTree = "<group>"; };
 		55D1C4FE24B95E6D0087F8A2 /* netdata.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = netdata.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		55D1C50124B95E6D0087F8A2 /* netdataApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = netdataApp.swift; sourceTree = "<group>"; };
 		55D1C50324B95E6D0087F8A2 /* TabberView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabberView.swift; sourceTree = "<group>"; };
@@ -201,7 +199,6 @@
 			isa = PBXGroup;
 			children = (
 				55C638FE24CC1A4D00395B23 /* BorderedBarButtonStyle.swift */,
-				55C6390024CC300500395B23 /* ReadableGuidePadding.swift */,
 				552862E424CD018B008E2B0E /* ErrorMessage.swift */,
 			);
 			path = UI;
@@ -603,7 +600,6 @@
 				552862E524CD018B008E2B0E /* ErrorMessage.swift in Sources */,
 				55BA431224C3395400599345 /* ServerData.swift in Sources */,
 				55C638F924CBE6B800395B23 /* PercentageUsageData.swift in Sources */,
-				55C6390124CC300500395B23 /* ReadableGuidePadding.swift in Sources */,
 				55BA431024C332C900599345 /* ServerInfo.swift in Sources */,
 				55C638FD24CBFBA400395B23 /* DataGrid.swift in Sources */,
 				55EE682A24CD962100546B1A /* UserSettings.swift in Sources */,
