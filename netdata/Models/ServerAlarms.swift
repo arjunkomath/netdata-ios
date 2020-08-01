@@ -17,5 +17,5 @@ public struct ServerAlarm: Encodable, Decodable {
 
 public struct ServerAlarms: Encodable, Decodable {
     var status: Bool;
-    var alarms: [String: [ServerAlarm]];
+    var alarms: [String: ServerAlarm];
 }

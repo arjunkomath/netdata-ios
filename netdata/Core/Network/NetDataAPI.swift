@@ -11,6 +11,7 @@ import Combine
 
 enum NetDataEndpoint: String {
     case info = "/api/v1/info"
+    case charts = "/api/v1/charts"
     case data = "/api/v1/data?chart="
     case alarms = "/api/v1/alarms"
 }
@@ -24,6 +25,12 @@ extension NetDataAPI {
         let base = URL(string: baseUrl)!
         
         return run(URLRequest(url: base.appendingPathComponent(NetDataEndpoint.info.rawValue)))
+    }
+    
+    static func getCharts(baseUrl: String) -> AnyPublisher<ServerCharts, Error> {
+        let base = URL(string: baseUrl)!
+        
+        return run(URLRequest(url: base.appendingPathComponent(NetDataEndpoint.charts.rawValue)))
     }
     
     static func getChartData(baseUrl: String, chart: String) -> AnyPublisher<ServerData, Error> {

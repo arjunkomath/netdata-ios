@@ -10,6 +10,8 @@ import Combine
 
 struct ServerDetailView: View {
     var server: NDServer;
+    var serverAlarms: ServerAlarms;
+    var alarmStatusColor: Color;
     
     @StateObject var viewModel = ServerDetailViewModel()
     
@@ -93,9 +95,6 @@ struct ServerDetailView: View {
         .onDisappear {
             self.viewModel.destroy()
         }
-        .sheet(isPresented: $showAlarmsSheet, content: {
-            AlarmsListView(serverAlarms: viewModel.serverAlarms)
-        })
         .listStyle(InsetGroupedListStyle())
         .navigationBarTitle(Text(server.name))
         .navigationBarItems(trailing:
@@ -104,9 +103,12 @@ struct ServerDetailView: View {
                                 }) {
                                     Image(systemName: "bell")
                                         .imageScale(.medium)
-                                        .foregroundColor(.accentColor)
+                                        .foregroundColor(self.alarmStatusColor)
                                 }
                                 .buttonStyle(BorderedBarButtonStyle())
+                                .sheet(isPresented: $showAlarmsSheet, content: {
+                                    AlarmsListView(serverAlarms: self.serverAlarms)
+                                })
         )
         .navigationViewStyle(DoubleColumnNavigationViewStyle())
     }

@@ -24,18 +24,11 @@ final class ServerListViewModel: ObservableObject {
         NetDataAPI
             .getAlarms(baseUrl: server.url)
             .sink(receiveCompletion: { completion in
-                print(completion)
                 switch completion {
                 case .finished:
                     break
                 case .failure(let error):
-                    DispatchQueue.main.async {
-                        self.validatingUrl = false
-                        self.validationError = true
-                        self.validationErrorMessage = "Invalid server URL"
-                    }
-                    
-                    debugPrint(error)
+                    debugPrint("getAlarms", server.name, error)
                 }
             },
             receiveValue: { alarms in

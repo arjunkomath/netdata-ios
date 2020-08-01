@@ -21,7 +21,7 @@ struct AlarmsListView: View {
                 List {
                     ForEach(serverAlarms.alarms.keys.sorted(), id: \.self) { key in
                         if serverAlarms.alarms[key] != nil {
-                            AlarmListRow(alarm: serverAlarms.alarms[key]![0])
+                            AlarmListRow(alarm: serverAlarms.alarms[key]!)
                         }
                     }
                 }
@@ -34,11 +34,11 @@ struct AlarmsListView: View {
 struct AlarmsListView_Previews: PreviewProvider {
     static var previews: some View {
         AlarmsListView(serverAlarms: ServerAlarms(status: true, alarms: [
-            "system.entropy.lowest_entropy": [ServerAlarm(id: 1,
+            "system.entropy.lowest_entropy": ServerAlarm(id: 1,
                                                           status: "WARNING",
                                                           name: "lowest_entropy",
                                                           info: "minimum entries in the random numbers pool in the last 10 minutes",
-                                                          last_status_change: 1595892502)]
+                                                          last_status_change: 1595892502)
         ]))
         
         AlarmsListView(serverAlarms: ServerAlarms(status: true, alarms: [:]))

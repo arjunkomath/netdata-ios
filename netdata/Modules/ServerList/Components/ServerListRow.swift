@@ -17,19 +17,14 @@ struct ServerListRow: View {
     @State private var serverAlarms = ServerAlarms(status: false, alarms: [:])
     
     var body: some View {
-        NavigationLink(destination: ServerDetailView(server: server)) {
+        NavigationLink(destination: ServerDetailView(server: server,
+                                                     serverAlarms: self.serverAlarms,
+                                                     alarmStatusColor: self.getAlarmStatusColor())) {
             HStack {
-                if serverAlarms.alarms.count == 0 {
-                    Circle()
-                        .fill(Color.green)
-                        .frame(width: 10, height: 10, alignment: .leading)
-                        .padding(.trailing, 4)
-                } else {
-                    Circle()
-                        .fill(Color.orange)
-                        .frame(width: 10, height: 10, alignment: .leading)
-                        .padding(.trailing, 4)
-                }
+                Circle()
+                    .fill(self.getAlarmStatusColor())
+                    .frame(width: 10, height: 10, alignment: .leading)
+                    .padding(.trailing, 4)
                 
                 VStack(alignment: .leading, spacing: 5) {
                     HStack {
@@ -70,10 +65,10 @@ struct ServerListRow: View {
             if server.isFavourite == 1 {
                 Button(action: {
                     var updatedServer = NDServer(name: server.name,
-                                          description: server.description,
-                                          url: server.url,
-                                          serverInfo: server.serverInfo,
-                                          isFavourite: 0)
+                                                 description: server.description,
+                                                 url: server.url,
+                                                 serverInfo: server.serverInfo,
+                                                 isFavourite: 0)
                     
                     if let record = server.record {
                         updatedServer.record = record
@@ -90,10 +85,10 @@ struct ServerListRow: View {
             } else {
                 Button(action: {
                     var updatedServer = NDServer(name: server.name,
-                                          description: server.description,
-                                          url: server.url,
-                                          serverInfo: server.serverInfo,
-                                          isFavourite: 1)
+                                                 description: server.description,
+                                                 url: server.url,
+                                                 serverInfo: server.serverInfo,
+                                                 isFavourite: 1)
                     
                     if let record = server.record {
                         updatedServer.record = record
@@ -109,6 +104,29 @@ struct ServerListRow: View {
                 }
             }
         }
+    }
+    
+    func getAlarmStatusColor() -> Color {
+        if serverAlarms.alarms.isEmpty {
+            return Color.green
+        }
+        
+        if self.hasCriticalAlarm() {
+            return Color.red
+        }
+        
+        return Color.orange
+    }
+    
+    func hasCriticalAlarm() -> Bool {
+        for (_, alarm) in serverAlarms.alarms {
+            // use enum instead if I can find all possible values
+            if alarm.status == "CRITICAL" {
+                return true
+            }
+        }
+        
+        return false
     }
 }
 
