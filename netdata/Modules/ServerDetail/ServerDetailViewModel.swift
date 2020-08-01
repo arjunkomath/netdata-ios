@@ -128,7 +128,13 @@ final class ServerDetailViewModel: ObservableObject {
     func fetchCharts() {
         NetDataAPI
             .getCharts(baseUrl: self.baseUrl)
-            .sink(receiveCompletion: { _ in
+            .sink(receiveCompletion: { completion in
+                switch completion {
+                case .finished:
+                    break
+                case .failure(let error):
+                    debugPrint("fetchCharts", error)
+                }
             }) { data in
                 self.serverCharts = data
             }

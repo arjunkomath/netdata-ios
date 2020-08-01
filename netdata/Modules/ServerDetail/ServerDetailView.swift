@@ -16,6 +16,7 @@ struct ServerDetailView: View {
     @StateObject var viewModel = ServerDetailViewModel()
     
     @State private var showAlarmsSheet = false
+    @State private var showChartsSheet = false
     
     var body: some View {
         List {
@@ -98,17 +99,32 @@ struct ServerDetailView: View {
         .listStyle(InsetGroupedListStyle())
         .navigationBarTitle(Text(server.name))
         .navigationBarItems(trailing:
-                                Button(action: {
-                                    self.showAlarmsSheet = true
-                                }) {
-                                    Image(systemName: "bell")
-                                        .imageScale(.medium)
-                                        .foregroundColor(self.alarmStatusColor)
+                                HStack(spacing: 16) {
+                                    Button(action: {
+                                        self.showChartsSheet = true
+                                    }) {
+                                        Image(systemName: "chart.pie")
+                                            .imageScale(.medium)
+                                            .foregroundColor(.accentColor)
+                                    }
+                                    .buttonStyle(BorderedBarButtonStyle())
+                                    .sheet(isPresented: $showChartsSheet, content: {
+                                        ChartsListView(serverCharts: viewModel.serverCharts)
+                                    })
+                                    
+                                    Button(action: {
+                                        self.showAlarmsSheet = true
+                                    }) {
+                                        Image(systemName: "bell")
+                                            .imageScale(.medium)
+                                            .foregroundColor(self.alarmStatusColor)
+                                    }
+                                    .buttonStyle(BorderedBarButtonStyle())
+                                    .accentColor(self.alarmStatusColor)
+                                    .sheet(isPresented: $showAlarmsSheet, content: {
+                                        AlarmsListView(serverAlarms: self.serverAlarms)
+                                    })
                                 }
-                                .buttonStyle(BorderedBarButtonStyle())
-                                .sheet(isPresented: $showAlarmsSheet, content: {
-                                    AlarmsListView(serverAlarms: self.serverAlarms)
-                                })
         )
         .navigationViewStyle(DoubleColumnNavigationViewStyle())
     }

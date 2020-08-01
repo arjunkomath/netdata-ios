@@ -21,6 +21,8 @@
 		558CABB124B99B42002D115B /* CloudService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 558CABB024B99B42002D115B /* CloudService.swift */; };
 		558CABB724B9A435002D115B /* AddServerForm.swift in Sources */ = {isa = PBXBuildFile; fileRef = 558CABB624B9A435002D115B /* AddServerForm.swift */; };
 		559300E524D550A6006C6DB4 /* ServerCharts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 559300E424D550A6006C6DB4 /* ServerCharts.swift */; };
+		559300E724D58656006C6DB4 /* ChartsListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 559300E624D58656006C6DB4 /* ChartsListView.swift */; };
+		559300E924D587C0006C6DB4 /* ChartListRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 559300E824D587C0006C6DB4 /* ChartListRow.swift */; };
 		559843B224CEF7590034E92D /* ServerListRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 559843B124CEF7590034E92D /* ServerListRow.swift */; };
 		559843B424CEFAAC0034E92D /* ServerDetailViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 559843B324CEFAAC0034E92D /* ServerDetailViewModel.swift */; };
 		55BA431024C332C900599345 /* ServerInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55BA430F24C332C900599345 /* ServerInfo.swift */; };
@@ -103,6 +105,8 @@
 		558CABB024B99B42002D115B /* CloudService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudService.swift; sourceTree = "<group>"; };
 		558CABB624B9A435002D115B /* AddServerForm.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddServerForm.swift; sourceTree = "<group>"; };
 		559300E424D550A6006C6DB4 /* ServerCharts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerCharts.swift; sourceTree = "<group>"; };
+		559300E624D58656006C6DB4 /* ChartsListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChartsListView.swift; sourceTree = "<group>"; };
+		559300E824D587C0006C6DB4 /* ChartListRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChartListRow.swift; sourceTree = "<group>"; };
 		559843B124CEF7590034E92D /* ServerListRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerListRow.swift; sourceTree = "<group>"; };
 		559843B324CEFAAC0034E92D /* ServerDetailViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerDetailViewModel.swift; sourceTree = "<group>"; };
 		55BA430F24C332C900599345 /* ServerInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerInfo.swift; sourceTree = "<group>"; };
@@ -399,6 +403,8 @@
 			children = (
 				55D3077124D197A600CF076B /* AlarmsListView.swift */,
 				55D3077324D19D1E00CF076B /* AlarmListRow.swift */,
+				559300E624D58656006C6DB4 /* ChartsListView.swift */,
+				559300E824D587C0006C6DB4 /* ChartListRow.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -593,6 +599,7 @@
 				55BFBA2524CC474A004461D3 /* NetDataAPI.swift in Sources */,
 				55D1C50224B95E6D0087F8A2 /* netdataApp.swift in Sources */,
 				55D1C53424B9636E0087F8A2 /* NDServer.swift in Sources */,
+				559300E724D58656006C6DB4 /* ChartsListView.swift in Sources */,
 				559843B424CEFAAC0034E92D /* ServerDetailViewModel.swift in Sources */,
 				552E19D324CDB71500CDB97F /* EditServerForm.swift in Sources */,
 				55BFBA2724CC4EA1004461D3 /* Agent.swift in Sources */,
@@ -601,6 +608,7 @@
 				55C638F924CBE6B800395B23 /* PercentageUsageData.swift in Sources */,
 				55BA431024C332C900599345 /* ServerInfo.swift in Sources */,
 				55C638FD24CBFBA400395B23 /* DataGrid.swift in Sources */,
+				559300E924D587C0006C6DB4 /* ChartListRow.swift in Sources */,
 				55EE682A24CD962100546B1A /* UserSettings.swift in Sources */,
 				558CABB124B99B42002D115B /* CloudService.swift in Sources */,
 				55D1C52E24B95F580087F8A2 /* ServerListView.swift in Sources */,

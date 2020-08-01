@@ -8,7 +8,7 @@
 import Foundation
 
 public struct ServerChart: Encodable, Decodable {
-    var id: Int;
+    var id: String;
     var name: String;
     var type: String;
     var family: String;
