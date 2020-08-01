@@ -14,8 +14,14 @@ struct AlarmsListView: View {
         NavigationView {
             Group {
                 if serverAlarms.alarms.isEmpty {
-                    Text("No alarms raised! Everything looks good.")
-                        .font(.headline)
+                    VStack(spacing: 16) {
+                        Image(systemName: "hand.thumbsup.fill")
+                            .imageScale(.large)
+                            .foregroundColor(.green)
+                        
+                        Text("No alarms raised! Everything looks good.")
+                            .font(.headline)
+                    }
                 }
                 
                 List {
