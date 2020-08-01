@@ -20,6 +20,7 @@
 		558CABAF24B999F7002D115B /* ServerService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 558CABAE24B999F7002D115B /* ServerService.swift */; };
 		558CABB124B99B42002D115B /* CloudService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 558CABB024B99B42002D115B /* CloudService.swift */; };
 		558CABB724B9A435002D115B /* AddServerForm.swift in Sources */ = {isa = PBXBuildFile; fileRef = 558CABB624B9A435002D115B /* AddServerForm.swift */; };
+		559300E524D550A6006C6DB4 /* ServerCharts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 559300E424D550A6006C6DB4 /* ServerCharts.swift */; };
 		559843B224CEF7590034E92D /* ServerListRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 559843B124CEF7590034E92D /* ServerListRow.swift */; };
 		559843B424CEFAAC0034E92D /* ServerDetailViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 559843B324CEFAAC0034E92D /* ServerDetailViewModel.swift */; };
 		55BA431024C332C900599345 /* ServerInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55BA430F24C332C900599345 /* ServerInfo.swift */; };
@@ -32,7 +33,6 @@
 		55C638FD24CBFBA400395B23 /* DataGrid.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55C638FC24CBFBA400395B23 /* DataGrid.swift */; };
 		55C638FF24CC1A4D00395B23 /* BorderedBarButtonStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55C638FE24CC1A4D00395B23 /* BorderedBarButtonStyle.swift */; };
 		55D1C50224B95E6D0087F8A2 /* netdataApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55D1C50124B95E6D0087F8A2 /* netdataApp.swift */; };
-		55D1C50424B95E6D0087F8A2 /* TabberView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55D1C50324B95E6D0087F8A2 /* TabberView.swift */; };
 		55D1C50624B95E6F0087F8A2 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55D1C50524B95E6F0087F8A2 /* Assets.xcassets */; };
 		55D1C50924B95E6F0087F8A2 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55D1C50824B95E6F0087F8A2 /* Preview Assets.xcassets */; };
 		55D1C51424B95E6F0087F8A2 /* netdataTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55D1C51324B95E6F0087F8A2 /* netdataTests.swift */; };
@@ -102,6 +102,7 @@
 		558CABAE24B999F7002D115B /* ServerService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerService.swift; sourceTree = "<group>"; };
 		558CABB024B99B42002D115B /* CloudService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudService.swift; sourceTree = "<group>"; };
 		558CABB624B9A435002D115B /* AddServerForm.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddServerForm.swift; sourceTree = "<group>"; };
+		559300E424D550A6006C6DB4 /* ServerCharts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerCharts.swift; sourceTree = "<group>"; };
 		559843B124CEF7590034E92D /* ServerListRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerListRow.swift; sourceTree = "<group>"; };
 		559843B324CEFAAC0034E92D /* ServerDetailViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerDetailViewModel.swift; sourceTree = "<group>"; };
 		55BA430F24C332C900599345 /* ServerInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerInfo.swift; sourceTree = "<group>"; };
@@ -115,7 +116,6 @@
 		55C638FE24CC1A4D00395B23 /* BorderedBarButtonStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BorderedBarButtonStyle.swift; sourceTree = "<group>"; };
 		55D1C4FE24B95E6D0087F8A2 /* netdata.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = netdata.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		55D1C50124B95E6D0087F8A2 /* netdataApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = netdataApp.swift; sourceTree = "<group>"; };
-		55D1C50324B95E6D0087F8A2 /* TabberView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabberView.swift; sourceTree = "<group>"; };
 		55D1C50524B95E6F0087F8A2 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		55D1C50824B95E6F0087F8A2 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		55D1C50A24B95E6F0087F8A2 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -352,7 +352,6 @@
 				55FC8F6C24BADA4B00CA8751 /* Settings */,
 				558CABB524B9A420002D115B /* ServerList */,
 				558CABB224B9A041002D115B /* Shared */,
-				55D1C50324B95E6D0087F8A2 /* TabberView.swift */,
 			);
 			path = Modules;
 			sourceTree = "<group>";
@@ -364,6 +363,7 @@
 				55BA430F24C332C900599345 /* ServerInfo.swift */,
 				55BA431124C3395400599345 /* ServerData.swift */,
 				5508041524D05ABF002FFAA5 /* ServerAlarms.swift */,
+				559300E424D550A6006C6DB4 /* ServerCharts.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -586,7 +586,6 @@
 				5508041624D05ABF002FFAA5 /* ServerAlarms.swift in Sources */,
 				55FC8F6B24BAD8F100CA8751 /* ServerDetailView.swift in Sources */,
 				55BFBA2924CC5875004461D3 /* ServerListViewModel.swift in Sources */,
-				55D1C50424B95E6D0087F8A2 /* TabberView.swift in Sources */,
 				55D3077424D19D1E00CF076B /* AlarmListRow.swift in Sources */,
 				558CABAC24B99931002D115B /* CloudModel.swift in Sources */,
 				55D3076F24D18F9600CF076B /* UserDefaults+Color.swift in Sources */,
@@ -605,6 +604,7 @@
 				55EE682A24CD962100546B1A /* UserSettings.swift in Sources */,
 				558CABB124B99B42002D115B /* CloudService.swift in Sources */,
 				55D1C52E24B95F580087F8A2 /* ServerListView.swift in Sources */,
+				559300E524D550A6006C6DB4 /* ServerCharts.swift in Sources */,
 				55D3077224D197A600CF076B /* AlarmsListView.swift in Sources */,
 				55C638FB24CBEFCA00395B23 /* AbsoluteUsageData.swift in Sources */,
 				55D3076C24D1825700CF076B /* FeedbackGenerator.swift in Sources */,

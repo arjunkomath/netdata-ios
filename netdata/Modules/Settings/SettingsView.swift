@@ -79,9 +79,12 @@ struct SettingsView: View {
                     makeContentRow(image: "paintbrush",
                                    content: AnyView(ColorPicker("App Tint", selection: $userSettings.appTintColor, supportsOpacity: false)))
                     makeContentRow(image: "waveform.path",
-                                   content: AnyView(Toggle(isOn: $userSettings.hapticFeedback) {
-                                    Text("Haptic feedback")
-                                }))
+                                   content: AnyView(
+                                    Toggle(isOn: $userSettings.hapticFeedback) {
+                                        Text("Haptic feedback")
+                                    }
+                                    .toggleStyle(SwitchToggleStyle(tint: .accentColor))
+                                   ))
                 }
                 
                 Section(header: Text("Data")) {

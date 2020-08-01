@@ -22,7 +22,7 @@ struct netdataApp: App {
     
     var body: some Scene {
         WindowGroup {
-            TabberView()
+            ServerListView()
                 .environmentObject(ServerService.shared)
                 .onAppear {
                     self.setupAppearance()

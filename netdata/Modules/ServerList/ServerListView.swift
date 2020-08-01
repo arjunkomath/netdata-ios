@@ -11,6 +11,7 @@ struct ServerListView: View {
     @EnvironmentObject private var serverService: ServerService
     
     @State private var showAddServerSheet = false
+    @State private var showSettingsSheet = false
     
     var body: some View {
         NavigationView {
@@ -58,14 +59,16 @@ struct ServerListView: View {
             .sheet(isPresented: $showAddServerSheet, content: {
                 AddServerForm()
             })
-            .navigationBarItems(trailing:
-                                    HStack(spacing: 16) {
-                                        refreshButton
-                                        
-                                        if self.serverService.isCloudEnabled && self.serverService.mostRecentError == nil {
-                                            addButton
-                                        }
-                                    }
+            .navigationBarItems(
+                leading: settingsButton,
+                trailing:
+                    HStack(spacing: 16) {
+                        refreshButton
+                        
+                        if self.serverService.isCloudEnabled && self.serverService.mostRecentError == nil {
+                            addButton
+                        }
+                    }
             )
             .listStyle(InsetGroupedListStyle())
             .navigationTitle("My Servers")
@@ -106,7 +109,6 @@ struct ServerListView: View {
                 .imageScale(.medium)
         }
         .buttonStyle(BorderedBarButtonStyle())
-        .accentColor(Color.green)
     }
     
     private var refreshButton: some View {
@@ -121,5 +123,19 @@ struct ServerListView: View {
             }
         }
         .buttonStyle(BorderedBarButtonStyle())
+    }
+    
+    private var settingsButton: some View {
+        Button(action: {
+            self.showSettingsSheet = true
+        }) {
+            Image(systemName: "gear")
+                .imageScale(.small)
+        }
+        .buttonStyle(BorderedBarButtonStyle())
+        .sheet(isPresented: $showSettingsSheet, content: {
+            SettingsView()
+                .environmentObject(serverService)
+        })
     }
 }
