@@ -18,10 +18,10 @@ struct CustomChartDetailView: View {
             Text(serverChart.title)
                 .font(.headline)
             
-            Section(header: makeSectionHeader(text: serverChart.name)) {
+            Section(header: makeSectionHeader(text: "\(serverChart.name) (\(serverChart.units))")) {
                 DataGrid(labels: viewModel.customChartData.labels,
                          data: viewModel.customChartData.data,
-                         dataType: .absolute,
+                         dataType: self.getDataType(),
                          showArrows: false)
             }
         }
@@ -32,6 +32,14 @@ struct CustomChartDetailView: View {
         .onDisappear {
             viewModel.destroyCustomChartData()
         }
+    }
+    
+    func getDataType() -> GridDataType {
+        if serverChart.units == "percentage" {
+            return .percentage
+        }
+        
+        return .absolute
     }
     
     func makeSectionHeader(text: String) -> some View {

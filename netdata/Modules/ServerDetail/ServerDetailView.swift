@@ -20,7 +20,7 @@ struct ServerDetailView: View {
     
     var body: some View {
         List {
-            Section(header: makeSectionHeader(text: "CPU")) {
+            Section(header: makeSectionHeader(text: "CPU (%)")) {
                 HStack {
                     VStack {
                         Meter(progress: viewModel.cpuUsageGauge)
@@ -49,7 +49,7 @@ struct ServerDetailView: View {
                          showArrows: false)
             }
             
-            Section(header: makeSectionHeader(text: "Memory (MB)")) {
+            Section(header: makeSectionHeader(text: "Memory (MiB)")) {
                 HStack {
                     Meter(progress: viewModel.ramUsageGauge)
                         .redacted(reason: viewModel.ramUsage.labels.count < 1 ? .placeholder : .init())
@@ -61,7 +61,7 @@ struct ServerDetailView: View {
                 }
             }
             
-            Section(header: makeSectionHeader(text: "Disk Space (GB)")) {
+            Section(header: makeSectionHeader(text: "Disk Space (GiB)")) {
                 HStack {
                     Meter(progress: viewModel.diskSpaceUsageGauge)
                         .redacted(reason: viewModel.diskSpaceUsage.labels.count < 1 ? .placeholder : .init())
@@ -73,14 +73,14 @@ struct ServerDetailView: View {
                 }
             }
             
-            Section(header: makeSectionHeader(text: "Disk I/O")) {
+            Section(header: makeSectionHeader(text: "Disk I/O (KiB/s)")) {
                 DataGrid(labels: viewModel.diskIO.labels,
                          data: viewModel.diskIO.data,
                          dataType: .absolute,
                          showArrows: true)
             }
             
-            Section(header: makeSectionHeader(text: "Network")) {
+            Section(header: makeSectionHeader(text: "Network (kilobits/s)")) {
                 DataGrid(labels: viewModel.network.labels,
                          data: viewModel.network.data,
                          dataType: .absolute,

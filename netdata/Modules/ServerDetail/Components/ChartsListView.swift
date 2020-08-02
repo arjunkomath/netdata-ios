@@ -11,10 +11,14 @@ struct ChartsListView: View {
     var serverCharts: ServerCharts
     var serverUrl: String
     
+    @State private var searchText = ""
+    
     var body: some View {
         NavigationView {
             List {
-                ForEach(serverCharts.charts.keys.sorted(), id: \.self) { key in
+                SearchBar(text: $searchText)
+                
+                ForEach(serverCharts.charts.keys.sorted().filter({ searchText.isEmpty ? true : $0.contains(searchText) }), id: \.self) { key in
                     if serverCharts.charts[key] != nil && serverCharts.charts[key]!.enabled == true {
                         NavigationLink(destination: CustomChartDetailView(serverChart: serverCharts.charts[key]!,
                                                                           serverUrl: serverUrl)) {

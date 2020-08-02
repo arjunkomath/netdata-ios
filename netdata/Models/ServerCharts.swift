@@ -15,6 +15,7 @@ public struct ServerChart: Encodable, Decodable {
     var context: String;
     var title: String;
     var enabled: Bool;
+    var units: String;
 }
 
 public struct ServerCharts: Encodable, Decodable {
