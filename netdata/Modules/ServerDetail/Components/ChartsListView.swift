@@ -15,7 +15,7 @@ struct ChartsListView: View {
             Group {
                 List {
                     ForEach(serverCharts.charts.keys.sorted(), id: \.self) { key in
-                        if serverCharts.charts[key] != nil {
+                        if serverCharts.charts[key] != nil && serverCharts.charts[key]!.enabled == true {
                             ChartListRow(chart: serverCharts.charts[key]!)
                         }
                     }
