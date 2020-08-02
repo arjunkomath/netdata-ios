@@ -19,7 +19,8 @@ enum MyError: Error {
 
 struct ServerDataLoader {
     static func fetch(completion: @escaping (Result<ServerData, Error>) -> Void) {
-        let baseUrl = UserDefaults.standard.object(forKey: "favouriteServerUrl") as? String ?? ""
+        // TODO: figure out how to handle this
+        let baseUrl = "https://london.my-netdata.io"
         let branchContentsURL = URL(string: "\(baseUrl)/api/v1/data?chart=system.cpu")!
         
         let task = URLSession.shared.dataTask(with: branchContentsURL) { (data, response, error) in
@@ -140,11 +141,21 @@ struct StatsEntryView : View {
     
     var body: some View {
         if entry.error.isEmpty {
-            HStack {
-                Meter(progress: entry.progress, title: "CPU Usage", date: entry.date)
+            VStack {
+                HStack {
+                    Meter(progress: entry.progress, title: "CPU", date: entry.date)
+                    
+                    if widgetFamily != .systemSmall {
+                        Meter(progress: entry.progress, title: "Memory", date: entry.date)
+                    }
+                }
                 
-                if widgetFamily == .systemMedium {
-                    Meter(progress: entry.progress, title: "Memory Usage", date: entry.date)
+                if widgetFamily == .systemLarge {
+                    HStack {
+                        Meter(progress: entry.progress, title: "Disk", date: entry.date)
+                        
+                        Meter(progress: entry.progress, title: "Network I/O", date: entry.date)
+                    }
                 }
             }
         } else {
@@ -166,6 +177,9 @@ struct Stats_Previews: PreviewProvider {
         
         StatsEntryView(entry: SimpleEntry(date: Date(), progress: 0.2, error: ""))
             .previewContext(WidgetPreviewContext(family: .systemMedium))
+        
+        StatsEntryView(entry: SimpleEntry(date: Date(), progress: 0.2, error: ""))
+            .previewContext(WidgetPreviewContext(family: .systemLarge))
     }
 }
 
@@ -194,7 +208,7 @@ struct Stats: Widget {
                             placeholder: StatsEntryPlaceholderView()) { entry in
             StatsEntryView(entry: entry)
         }
-        .configurationDisplayName("CPU Usage")
-        .description("This is an example widget.")
+        .configurationDisplayName("Server monitoring")
+        .description("Widgets for monitoring server.")
     }
 }
