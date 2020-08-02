@@ -9,5 +9,5 @@ import Foundation
 
 public struct ServerData: Decodable {
     var labels: [String]
-    var data: [[Double]]
+    var data: [[Double?]]
 }

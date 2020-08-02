@@ -29,8 +29,12 @@ final class ServerDetailViewModel: ObservableObject {
     @Published var diskIO: ServerData = ServerData(labels: [], data: [])
     @Published var network: ServerData = ServerData(labels: [], data: [])
     
+    // MARK:- Custom Charts
+    @Published var customChartData: ServerData = ServerData(labels: [], data: [])
+    
     private var baseUrl = ""
     private var timer = Timer()
+    private var customChartTimer = Timer()
     private var cancellable = Set<AnyCancellable>()
     
     func fetch(baseUrl: String) {
@@ -61,7 +65,7 @@ final class ServerDetailViewModel: ObservableObject {
                 self.cpuUsage = data
                 
                 withAnimation(.linear(duration: 0.5)) {
-                    self.cpuUsageGauge = CGFloat(Array(self.cpuUsage.data.first![1..<self.cpuUsage.data.first!.count]).reduce(0, +) / 100)
+                    self.cpuUsageGauge = CGFloat(Array(self.cpuUsage.data.first![1..<self.cpuUsage.data.first!.count]).reduce(0, { acc, val in acc + (val ?? 0) }) / 100)
                 }
             }
             .store(in: &self.cancellable)
@@ -85,7 +89,7 @@ final class ServerDetailViewModel: ObservableObject {
                 self.ramUsage = data
                 
                 withAnimation(.linear(duration: 0.5)) {
-                    self.ramUsageGauge = CGFloat(self.ramUsage.data.first![2] / (self.ramUsage.data.first![1] + self.ramUsage.data.first![2]))
+                    self.ramUsageGauge = CGFloat(self.ramUsage.data.first![2]! / (self.ramUsage.data.first![1]! + self.ramUsage.data.first![2]!))
                 }
             }
             .store(in: &self.cancellable)
@@ -119,7 +123,7 @@ final class ServerDetailViewModel: ObservableObject {
                 self.diskSpaceUsage = data
                 
                 withAnimation(.linear(duration: 0.5)) {
-                    self.diskSpaceUsageGauge = CGFloat(self.diskSpaceUsage.data.first![2] / (self.diskSpaceUsage.data.first![1] + self.diskSpaceUsage.data.first![2]))
+                    self.diskSpaceUsageGauge = CGFloat(self.diskSpaceUsage.data.first![2]! / (self.diskSpaceUsage.data.first![1]! + self.diskSpaceUsage.data.first![2]!))
                 }
             }
             .store(in: &self.cancellable)
@@ -139,5 +143,29 @@ final class ServerDetailViewModel: ObservableObject {
                 self.serverCharts = data
             }
             .store(in: &self.cancellable)
+    }
+    
+    func fetchCustomChartData(baseUrl: String, chart: String) {
+        self.customChartTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { timer in
+            NetDataAPI
+                .getChartData(baseUrl: baseUrl, chart: chart)
+                .sink(receiveCompletion: { completion in
+                    switch completion {
+                    case .finished:
+                        break
+                    case .failure(let error):
+                        debugPrint("fetchCustomChartData", error)
+                    }
+                }) { data in
+                    self.customChartData = data
+                }
+                .store(in: &self.cancellable)
+        }
+    }
+    
+    func destroyCustomChartData() {
+        customChartData = ServerData(labels: [], data: [])
+        
+        self.customChartTimer.invalidate()
     }
 }

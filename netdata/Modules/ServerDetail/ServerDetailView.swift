@@ -109,7 +109,7 @@ struct ServerDetailView: View {
                                     }
                                     .buttonStyle(BorderedBarButtonStyle())
                                     .sheet(isPresented: $showChartsSheet, content: {
-                                        ChartsListView(serverCharts: viewModel.serverCharts)
+                                        ChartsListView(serverCharts: viewModel.serverCharts, serverUrl: server.url)
                                     })
                                     
                                     Button(action: {

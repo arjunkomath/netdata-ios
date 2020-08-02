@@ -14,7 +14,7 @@ enum GridDataType {
 
 struct DataGrid: View {
     var labels: [String]
-    var data: [[Double]]
+    var data: [[Double?]]
     var dataType: GridDataType
     var showArrows: Bool
     
@@ -23,11 +23,11 @@ struct DataGrid: View {
             LazyVGrid(columns: [GridItem(.adaptive(minimum: self.dataType == GridDataType.percentage ? 65 : 80))], alignment: .leading, spacing: 8) {
                 ForEach(1..<self.labels.count) { i in
                     if self.dataType == .percentage {
-                        PercentageUsageData(usage: CGFloat(self.data.first![i]),
+                        PercentageUsageData(usage: CGFloat(self.data.first![i] ?? 0),
                                             title: self.labels[i])
                     }
                     if self.dataType == .absolute {
-                        AbsoluteUsageData(usage: CGFloat(self.data.first![i]),
+                        AbsoluteUsageData(usage: CGFloat(self.data.first![i] ?? 0),
                                           title: self.labels[i],
                                           showArrows: self.showArrows)
                     }
