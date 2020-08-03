@@ -58,7 +58,7 @@ struct EditServerForm: View {
             self.presentationMode.wrappedValue.dismiss()
         }) {
             Image(systemName: "xmark")
-                .imageScale(.medium)
+                .imageScale(.small)
         }
         .buttonStyle(BorderedBarButtonStyle())
         .accentColor(Color.red)

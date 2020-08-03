@@ -109,7 +109,7 @@ struct ServerListView: View {
             self.addServer()
         }) {
             Image(systemName: "plus")
-                .imageScale(.medium)
+                .imageScale(.small)
         }
         .buttonStyle(BorderedBarButtonStyle())
     }
@@ -121,7 +121,7 @@ struct ServerListView: View {
             if serverService.isSynching {
                 ProgressView()
             } else {
-                Image(systemName: "arrow.counterclockwise")
+                Image(systemName: "arrow.clockwise")
                     .imageScale(.small)
             }
         }

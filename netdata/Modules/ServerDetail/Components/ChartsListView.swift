@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct ChartsListView: View {
+    @Environment(\.presentationMode) private var presentationMode
     var serverCharts: ServerCharts
     var serverUrl: String
     
@@ -28,9 +29,21 @@ struct ChartsListView: View {
                         }
                     }
                 }
+                .navigationBarItems(leading: dismissButton)
                 .navigationBarTitle(Text("Available Charts"), displayMode: .inline)
             }
         }
+    }
+    
+    private var dismissButton: some View {
+        Button(action: {
+            self.presentationMode.wrappedValue.dismiss()
+        }) {
+            Image(systemName: "xmark")
+                .imageScale(.small)
+        }
+        .buttonStyle(BorderedBarButtonStyle())
+        .accentColor(Color.red)
     }
 }
 

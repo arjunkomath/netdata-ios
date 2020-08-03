@@ -104,7 +104,7 @@ struct ServerDetailView: View {
                                         self.showChartsSheet = true
                                     }) {
                                         Image(systemName: "chart.pie")
-                                            .imageScale(.medium)
+                                            .imageScale(.small)
                                             .foregroundColor(.accentColor)
                                     }
                                     .buttonStyle(BorderedBarButtonStyle())
@@ -116,7 +116,7 @@ struct ServerDetailView: View {
                                         self.showAlarmsSheet = true
                                     }) {
                                         Image(systemName: "bell")
-                                            .imageScale(.medium)
+                                            .imageScale(.small)
                                             .foregroundColor(self.alarmStatusColor)
                                     }
                                     .buttonStyle(BorderedBarButtonStyle())

@@ -9,6 +9,7 @@ import SwiftUI
 
 struct SettingsView: View {
     @EnvironmentObject private var serverService: ServerService
+    @Environment(\.presentationMode) private var presentationMode
     @ObservedObject var userSettings = UserSettings()
     
     private var versionNumber: String {
@@ -104,9 +105,21 @@ struct SettingsView: View {
                 }
             }
             .listStyle(InsetGroupedListStyle())
+            .navigationBarItems(leading: dismissButton)
             .navigationBarTitle(Text("Settings"), displayMode: .inline)
         }
         .navigationViewStyle(StackNavigationViewStyle())
+    }
+    
+    private var dismissButton: some View {
+        Button(action: {
+            self.presentationMode.wrappedValue.dismiss()
+        }) {
+            Image(systemName: "xmark")
+                .imageScale(.small)
+        }
+        .buttonStyle(BorderedBarButtonStyle())
+        .accentColor(Color.red)
     }
 }
 

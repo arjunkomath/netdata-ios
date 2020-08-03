@@ -8,16 +8,19 @@
 import SwiftUI
 
 struct AlarmsListView: View {
+    @Environment(\.presentationMode) private var presentationMode
+    
     var serverAlarms: ServerAlarms;
     
     var body: some View {
         NavigationView {
-            Group {
+            VStack {
                 if serverAlarms.alarms.isEmpty {
                     VStack(spacing: 16) {
                         Image(systemName: "hand.thumbsup.fill")
                             .imageScale(.large)
                             .foregroundColor(.green)
+                            .padding()
                         
                         Text("No alarms raised! Everything looks good.")
                             .font(.headline)
@@ -32,8 +35,20 @@ struct AlarmsListView: View {
                     }
                 }
             }
+            .navigationBarItems(leading: dismissButton)
             .navigationBarTitle(Text("Active Alarms"), displayMode: .inline)
         }
+    }
+    
+    private var dismissButton: some View {
+        Button(action: {
+            self.presentationMode.wrappedValue.dismiss()
+        }) {
+            Image(systemName: "xmark")
+                .imageScale(.small)
+        }
+        .buttonStyle(BorderedBarButtonStyle())
+        .accentColor(Color.red)
     }
 }
 

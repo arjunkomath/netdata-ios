@@ -46,7 +46,7 @@ struct AddServerForm: View {
                          color: Color? = .primary) -> some View {
         HStack {
             Image(systemName: image)
-                .imageScale(.medium)
+                .imageScale(.small)
                 .foregroundColor(color)
                 .frame(width: 24)
             Group {
@@ -78,7 +78,7 @@ struct AddServerForm: View {
             self.presentationMode.wrappedValue.dismiss()
         }) {
             Image(systemName: "xmark")
-                .imageScale(.medium)
+                .imageScale(.small)
         }
         .buttonStyle(BorderedBarButtonStyle())
         .accentColor(Color.red)
