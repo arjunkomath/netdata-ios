@@ -131,9 +131,7 @@ struct ServerDetailView: View {
     
     func makeSectionHeader(text: String) -> some View {
         Text(text)
-            .font(.subheadline)
-            .bold()
-            .foregroundColor(.gray)
+            .modifier(SectionHeaderTextStyle())
     }
 }
 

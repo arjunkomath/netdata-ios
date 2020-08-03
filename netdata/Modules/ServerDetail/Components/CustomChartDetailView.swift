@@ -18,7 +18,7 @@ struct CustomChartDetailView: View {
             Text(serverChart.title)
                 .font(.headline)
             
-            Section(header: makeSectionHeader(text: "\(serverChart.name) (\(serverChart.units))")) {
+            Section(header: Text("\(serverChart.name) (\(serverChart.units))").modifier(SectionHeaderTextStyle())) {
                 DataGrid(labels: viewModel.customChartData.labels,
                          data: viewModel.customChartData.data,
                          dataType: self.getDataType(),
@@ -40,12 +40,5 @@ struct CustomChartDetailView: View {
         }
         
         return .absolute
-    }
-    
-    func makeSectionHeader(text: String) -> some View {
-        Text(text)
-            .font(.subheadline)
-            .bold()
-            .foregroundColor(.gray)
     }
 }

@@ -109,7 +109,7 @@ struct ServerListView: View {
             self.addServer()
         }) {
             Image(systemName: "plus")
-                .imageScale(.small)
+                .imageScale(.medium)
         }
         .buttonStyle(BorderedBarButtonStyle())
     }
