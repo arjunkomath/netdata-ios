@@ -15,19 +15,21 @@ struct ChartsListView: View {
     
     var body: some View {
         NavigationView {
-            List {
+            VStack {
                 SearchBar(text: $searchText)
                 
-                ForEach(serverCharts.charts.keys.sorted().filter({ searchText.isEmpty ? true : $0.contains(searchText) }), id: \.self) { key in
-                    if serverCharts.charts[key] != nil && serverCharts.charts[key]!.enabled == true {
-                        NavigationLink(destination: CustomChartDetailView(serverChart: serverCharts.charts[key]!,
-                                                                          serverUrl: serverUrl)) {
-                            ChartListRow(chart: serverCharts.charts[key]!)
+                List {
+                    ForEach(serverCharts.charts.keys.sorted().filter({ searchText.isEmpty ? true : $0.contains(searchText) }), id: \.self) { key in
+                        if serverCharts.charts[key] != nil && serverCharts.charts[key]!.enabled == true {
+                            NavigationLink(destination: CustomChartDetailView(serverChart: serverCharts.charts[key]!,
+                                                                              serverUrl: serverUrl)) {
+                                ChartListRow(chart: serverCharts.charts[key]!)
+                            }
                         }
                     }
                 }
+                .navigationBarTitle(Text("Available Charts"), displayMode: .inline)
             }
-            .navigationBarTitle(Text("Available Charts"), displayMode: .inline)
         }
     }
 }

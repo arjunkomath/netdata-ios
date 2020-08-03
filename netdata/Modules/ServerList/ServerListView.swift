@@ -74,6 +74,9 @@ struct ServerListView: View {
             .navigationTitle("My Servers")
             .onAppear(perform: {
                 serverService.refresh()
+                
+                // hide scroll indicators
+                UITableView.appearance().showsVerticalScrollIndicator = false
             })
             
             VStack {

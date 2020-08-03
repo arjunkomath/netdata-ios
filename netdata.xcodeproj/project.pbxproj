@@ -103,6 +103,7 @@
 		552B4E8024CD16C2008B9DA6 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		552C2C2524D6B9BB00D3DFBE /* CustomChartDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomChartDetailView.swift; sourceTree = "<group>"; };
 		552C2C2724D6C84300D3DFBE /* SearchBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchBar.swift; sourceTree = "<group>"; };
+		552C2C2924D6CE1C00D3DFBE /* StatsExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = StatsExtension.entitlements; sourceTree = "<group>"; };
 		552E19D224CDB71500CDB97F /* EditServerForm.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditServerForm.swift; sourceTree = "<group>"; };
 		558CABAB24B99931002D115B /* CloudModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudModel.swift; sourceTree = "<group>"; };
 		558CABAE24B999F7002D115B /* ServerService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerService.swift; sourceTree = "<group>"; };
@@ -293,6 +294,7 @@
 		55D1C4F524B95E6D0087F8A2 = {
 			isa = PBXGroup;
 			children = (
+				552C2C2924D6CE1C00D3DFBE /* StatsExtension.entitlements */,
 				55D1C50024B95E6D0087F8A2 /* netdata */,
 				55D1C51224B95E6F0087F8A2 /* netdataTests */,
 				55D1C51D24B95E6F0087F8A2 /* netdataUITests */,
@@ -674,6 +676,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_ENTITLEMENTS = StatsExtension.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = H78GYE72WQ;
 				INFOPLIST_FILE = Stats/Info.plist;
@@ -685,6 +688,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.techulus.netdata.Stats;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
+				SUPPORTS_MACCATALYST = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -695,6 +699,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_ENTITLEMENTS = StatsExtension.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = H78GYE72WQ;
 				INFOPLIST_FILE = Stats/Info.plist;
@@ -706,6 +711,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.techulus.netdata.Stats;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
+				SUPPORTS_MACCATALYST = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -846,8 +852,10 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.techulus.netdata;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTS_MACCATALYST = YES;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = "1,2,6";
 			};
 			name = Debug;
 		};
@@ -870,8 +878,10 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.techulus.netdata;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTS_MACCATALYST = YES;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = "1,2,6";
 			};
 			name = Release;
 		};
