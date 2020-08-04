@@ -19,7 +19,7 @@ struct DataGrid: View {
     var showArrows: Bool
     
     var body: some View {
-        if labels.count > 1 {
+        if labels.count > 1 && self.data.count > 0 {
             LazyVGrid(columns: [GridItem(.adaptive(minimum: self.dataType == GridDataType.percentage ? 65 : 80))], alignment: .leading, spacing: 8) {
                 ForEach(1..<self.labels.count) { i in
                     if self.dataType == .percentage {

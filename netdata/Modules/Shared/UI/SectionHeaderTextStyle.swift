@@ -10,7 +10,13 @@ import SwiftUI
 struct SectionHeaderTextStyle: ViewModifier {
     func body(content: Content) -> some View {
         content
-            .font(.callout)
+            .font(.system(size: 14, weight: .heavy, design: .rounded))
             .foregroundColor(.gray)
+    }
+}
+
+extension View {
+    func sectionHeaderStyle() -> some View {
+        self.modifier(SectionHeaderTextStyle())
     }
 }

@@ -15,10 +15,12 @@ struct CustomChartDetailView: View {
     
     var body: some View {
         List {
-            Text(serverChart.title)
-                .font(.headline)
+            Section(header: Text("Info").sectionHeaderStyle()) {
+                Text(serverChart.title)
+                    .font(.headline)
+            }
             
-            Section(header: Text("\(serverChart.name) (\(serverChart.units))").modifier(SectionHeaderTextStyle())) {
+            Section(header: Text("\(serverChart.name) (\(serverChart.units))").sectionHeaderStyle()) {
                 DataGrid(labels: viewModel.customChartData.labels,
                          data: viewModel.customChartData.data,
                          dataType: self.getDataType(),

@@ -131,7 +131,7 @@ struct ServerDetailView: View {
     
     func makeSectionHeader(text: String) -> some View {
         Text(text)
-            .modifier(SectionHeaderTextStyle())
+            .sectionHeaderStyle()
     }
 }
 

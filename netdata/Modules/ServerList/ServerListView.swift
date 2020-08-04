@@ -40,7 +40,7 @@ struct ServerListView: View {
                     }
                 } else {
                     if !serverService.favouriteServers.isEmpty {
-                        Section(header: Text("Favourites")) {
+                        Section(header: Text("Favourites").sectionHeaderStyle()) {
                             ForEach(serverService.favouriteServers) { server in
                                 ServerListRow(server: server)
                             }
@@ -48,7 +48,7 @@ struct ServerListView: View {
                         }
                     }
                     
-                    Section(header: Text("Servers")) {
+                    Section(header: Text("Servers").sectionHeaderStyle()) {
                         ForEach(serverService.defaultServers) { server in
                             ServerListRow(server: server)
                         }
@@ -70,7 +70,7 @@ struct ServerListView: View {
                         }
                     }
             )
-            .listStyle(InsetGroupedListStyle())
+            .listStyle(GroupedListStyle())
             .navigationTitle("My Servers")
             .onAppear(perform: {
                 serverService.refresh()
