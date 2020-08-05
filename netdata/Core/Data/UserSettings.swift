@@ -19,6 +19,14 @@ class UserSettings: ObservableObject {
         return window
     }
     
+    // MARK:- First launch
+    
+    @Published var HasLaunchedOnce: Bool {
+        didSet {
+            UserDefaults.standard.set(HasLaunchedOnce, forKey: "HasLaunchedOnce")
+        }
+    }
+    
     // MARK: - UI/UX
     
     @Published var appTintColor: Color {
@@ -35,6 +43,9 @@ class UserSettings: ObservableObject {
     }
     
     init() {
+        // First launch
+        self.HasLaunchedOnce = UserDefaults.standard.object(forKey: "HasLaunchedOnce") as? Bool ?? false
+        
         // Appearance
         self.appTintColor = UserDefaults.standard.colorForKey(key: "appTintColor") != nil ?
             Color(UserDefaults.standard.colorForKey(key: "appTintColor")!) : Color.blue

@@ -9,9 +9,11 @@ import SwiftUI
 
 struct ServerListView: View {
     @EnvironmentObject private var serverService: ServerService
+    @ObservedObject var userSettings = UserSettings()
     
     @State private var showAddServerSheet = false
     @State private var showSettingsSheet = false
+    @State private var showWelcomeSheet = false
     
     var body: some View {
         NavigationView {
@@ -56,8 +58,8 @@ struct ServerListView: View {
                     }
                 }
             }
-            .sheet(isPresented: $showAddServerSheet, content: {
-                AddServerForm()
+            .sheet(isPresented: $showWelcomeSheet, content: {
+                WelcomeScreen()
             })
             .navigationBarItems(
                 leading: settingsButton,
@@ -67,6 +69,9 @@ struct ServerListView: View {
                         
                         if self.serverService.isCloudEnabled && self.serverService.mostRecentError == nil {
                             addButton
+                                .sheet(isPresented: $showAddServerSheet, content: {
+                                    AddServerForm()
+                                })
                         }
                     }
             )
@@ -77,6 +82,12 @@ struct ServerListView: View {
                 
                 // hide scroll indicators
                 UITableView.appearance().showsVerticalScrollIndicator = false
+                
+                // show welcome screen
+                if !userSettings.HasLaunchedOnce {
+                    self.showWelcomeSheet = true
+                    userSettings.HasLaunchedOnce = true
+                }
             })
             
             VStack {

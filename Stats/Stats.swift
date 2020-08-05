@@ -66,10 +66,10 @@ struct StatsTimeline: TimelineProvider {
         }
     }
     
-    //    func placeholder(with: Context) -> SimpleEntry {
-    //        let entry = SimpleEntry(date: Date(), progress: 0.2, error: "")
-    //        return entry
-    //    }
+    func placeholder(with: Context) -> SimpleEntry {
+        let entry = SimpleEntry(date: Date(), progress: 0.2, error: "")
+        return entry
+    }
 }
 
 struct SimpleEntry: TimelineEntry {
@@ -203,9 +203,7 @@ struct Stats: Widget {
     private let kind: String = "Netdata Stats"
     
     public var body: some WidgetConfiguration {
-        StaticConfiguration(kind: kind,
-                            provider: StatsTimeline(),
-                            placeholder: StatsEntryPlaceholderView()) { entry in
+        StaticConfiguration(kind: kind, provider: StatsTimeline()) { entry in
             StatsEntryView(entry: entry)
         }
         .configurationDisplayName("Server monitoring")
