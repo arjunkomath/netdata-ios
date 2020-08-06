@@ -10,6 +10,7 @@ import SwiftUI
 struct ServerListRow: View {
     @EnvironmentObject private var serverService: ServerService
     @StateObject var viewModel = ServerListViewModel()
+    @ObservedObject var userSettings = UserSettings()
     
     var server: NDServer
     
@@ -66,6 +67,13 @@ struct ServerListRow: View {
                 Image(systemName: "pencil")
             }
             
+            Button(action: {
+                userSettings.widgetServerBaseUrl = server.url
+            }) {
+                Text("Set as widget server")
+                Image(systemName: "rectangle.stack.fill")
+            }
+            
             if server.isFavourite == 1 {
                 Button(action: {
                     var updatedServer = NDServer(name: server.name,
@@ -84,7 +92,7 @@ struct ServerListRow: View {
                     }
                 }) {
                     Text("Unfavourite")
-                    Image(systemName: "star")
+                    Image(systemName: "star.slash")
                 }
             } else {
                 Button(action: {

@@ -19,8 +19,7 @@ enum MyError: Error {
 
 struct ServerDataLoader {
     static func fetch(completion: @escaping (Result<ServerData, Error>) -> Void) {
-        // TODO: figure out how to handle this
-        let baseUrl = "https://london.my-netdata.io"
+        let baseUrl = UserDefaults.standard.object(forKey: "widgetServerBaseUrl") as? String ?? ""
         let branchContentsURL = URL(string: "\(baseUrl)/api/v1/data?chart=system.cpu")!
         
         let task = URLSession.shared.dataTask(with: branchContentsURL) { (data, response, error) in
@@ -55,7 +54,7 @@ struct StatsTimeline: TimelineProvider {
                 serverData = fetchedServerData
             } else {
                 serverData = ServerData(labels: [], data: [])
-                error = "Please favourite a server"
+                error = "Please set a server for widget"
             }
             
             let entry = SimpleEntry(date: currentDate,
@@ -141,27 +140,11 @@ struct StatsEntryView : View {
     
     var body: some View {
         if entry.error.isEmpty {
-            VStack {
-                HStack {
-                    Meter(progress: entry.progress, title: "CPU", date: entry.date)
-                    
-                    if widgetFamily != .systemSmall {
-                        Meter(progress: entry.progress, title: "Memory", date: entry.date)
-                    }
-                }
-                
-                if widgetFamily == .systemLarge {
-                    HStack {
-                        Meter(progress: entry.progress, title: "Disk", date: entry.date)
-                        
-                        Meter(progress: entry.progress, title: "Network I/O", date: entry.date)
-                    }
-                }
-            }
+            Meter(progress: entry.progress, title: "CPU", date: entry.date)
         } else {
             Text(entry.error)
                 .foregroundColor(.red)
-                .font(.headline)
+                .padding()
         }
     }
 }
@@ -171,15 +154,8 @@ struct Stats_Previews: PreviewProvider {
         StatsEntryView(entry: SimpleEntry(date: Date(), progress: 0.2, error: ""))
             .previewContext(WidgetPreviewContext(family: .systemSmall))
         
-        StatsEntryView(entry: SimpleEntry(date: Date(), progress: 0.2, error: ""))
+        StatsEntryView(entry: SimpleEntry(date: Date(), progress: 0.2, error: "Please set a server for widget"))
             .previewContext(WidgetPreviewContext(family: .systemSmall))
-            .environment(\.colorScheme, .dark)
-        
-        StatsEntryView(entry: SimpleEntry(date: Date(), progress: 0.2, error: ""))
-            .previewContext(WidgetPreviewContext(family: .systemMedium))
-        
-        StatsEntryView(entry: SimpleEntry(date: Date(), progress: 0.2, error: ""))
-            .previewContext(WidgetPreviewContext(family: .systemLarge))
     }
 }
 
@@ -208,5 +184,6 @@ struct Stats: Widget {
         }
         .configurationDisplayName("Server monitoring")
         .description("Widgets for monitoring server.")
+        .supportedFamilies([.systemSmall])
     }
 }
