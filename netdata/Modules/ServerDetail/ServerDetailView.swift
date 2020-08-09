@@ -126,7 +126,6 @@ struct ServerDetailView: View {
                                     })
                                 }
         )
-        .navigationViewStyle(DoubleColumnNavigationViewStyle())
     }
     
     func makeSectionHeader(text: String) -> some View {

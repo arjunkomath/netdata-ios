@@ -19,7 +19,12 @@ enum MyError: Error {
 
 struct ServerDataLoader {
     static func fetch(completion: @escaping (Result<ServerData, Error>) -> Void) {
-        let baseUrl = UserDefaults.standard.object(forKey: "widgetServerBaseUrl") as? String ?? ""
+        var baseUrl = UserDefaults.standard.object(forKey: "widgetServerBaseUrl") as? String ?? ""
+        
+        #if DEBUG
+            baseUrl = "https://cdn77.my-netdata.io"
+        #endif
+        
         let branchContentsURL = URL(string: "\(baseUrl)/api/v1/data?chart=system.cpu")!
         
         let task = URLSession.shared.dataTask(with: branchContentsURL) { (data, response, error) in
@@ -49,16 +54,18 @@ struct StatsTimeline: TimelineProvider {
         ServerDataLoader.fetch { result in
             let serverData: ServerData
             var error: String = ""
+            var progress: CGFloat = 0
             
             if case .success(let fetchedServerData) = result {
                 serverData = fetchedServerData
+                progress = CGFloat(Array(serverData.data.first![1..<serverData.data.first!.count]).reduce(0, +) / 100)
             } else {
                 serverData = ServerData(labels: [], data: [])
                 error = "Please set a server for widget"
             }
             
             let entry = SimpleEntry(date: currentDate,
-                                    progress: CGFloat(Array(serverData.data.first![1..<serverData.data.first!.count]).reduce(0, +) / 100),
+                                    progress: progress,
                                     error: error)
             let timeline = Timeline(entries: [entry], policy: .after(refreshDate))
             completion(timeline)

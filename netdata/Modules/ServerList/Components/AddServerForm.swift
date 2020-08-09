@@ -37,7 +37,6 @@ struct AddServerForm: View {
             .navigationBarTitle("Setup Server")
             .navigationBarItems(leading: dismissButton, trailing: saveButton)
         }
-        .navigationViewStyle(StackNavigationViewStyle())
     }
     
     private func makeRow(image: String,

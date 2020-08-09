@@ -75,7 +75,7 @@ struct ServerListView: View {
                         }
                     }
             )
-            .listStyle(GroupedListStyle())
+            .listStyle(InsetGroupedListStyle())
             .navigationTitle("My Servers")
             .onAppear(perform: {
                 serverService.refresh()
