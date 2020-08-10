@@ -11,7 +11,7 @@ private struct ReadableGuidePadding: ViewModifier {
     @Environment(\.horizontalSizeClass) var horizontal
 
     func body(content: Content) -> some View {
-       content.padding(.horizontal, horizontal == .regular ? 84: 16)
+       content.padding(.horizontal, horizontal == .regular ? 84: 0)
     }
 }
 
