@@ -20,7 +20,7 @@ struct DataGrid: View {
     
     var body: some View {
         if labels.count > 1 && self.data.count > 0 {
-            LazyVGrid(columns: [GridItem(.adaptive(minimum: self.dataType == GridDataType.percentage ? 65 : 80))], alignment: .leading, spacing: 8) {
+            LazyVGrid(columns: self.getGridColumns(), alignment: .leading, spacing: 8) {
                 ForEach(1..<self.labels.count) { i in
                     if self.dataType == .percentage {
                         PercentageUsageData(usage: CGFloat(self.data.first![i] ?? 0),
@@ -34,7 +34,7 @@ struct DataGrid: View {
                 }
             }
         } else {
-            LazyVGrid(columns: [GridItem(.adaptive(minimum: 65))], spacing: 8) {
+            LazyVGrid(columns: self.getGridColumns(), spacing: 8) {
                 ForEach((1...4), id: \.self) { _ in
                     AbsoluteUsageData(usage: 0.1,
                                       title: "loading",
@@ -43,6 +43,20 @@ struct DataGrid: View {
                 }
             }
         }
+    }
+    
+    func getGridColumns() -> [GridItem] {
+        #if targetEnvironment(macCatalyst)
+        return [GridItem(.adaptive(minimum: 120))]
+        #else
+        var columnWidth: CGFloat = self.dataType == GridDataType.percentage ? 65 : 80
+        
+        if UIDevice.current.userInterfaceIdiom == .pad {
+            columnWidth = 120
+        }
+        
+        return [GridItem(.adaptive(minimum: columnWidth))]
+        #endif
     }
 }
 

@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		5508041624D05ABF002FFAA5 /* ServerAlarms.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5508041524D05ABF002FFAA5 /* ServerAlarms.swift */; };
 		551420A924C3D6D200A22E9A /* Meter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 551420A824C3D6D200A22E9A /* Meter.swift */; };
+		55193D2A24E14D9500FE1D55 /* ReadableGuidePadding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55193D2924E14D9500FE1D55 /* ReadableGuidePadding.swift */; };
 		552862E524CD018B008E2B0E /* ErrorMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 552862E424CD018B008E2B0E /* ErrorMessage.swift */; };
 		552B4E7824CD16C0008B9DA6 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 552B4E7724CD16C0008B9DA6 /* WidgetKit.framework */; };
 		552B4E7A24CD16C0008B9DA6 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 552B4E7924CD16C0008B9DA6 /* SwiftUI.framework */; };
@@ -96,6 +97,7 @@
 /* Begin PBXFileReference section */
 		5508041524D05ABF002FFAA5 /* ServerAlarms.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerAlarms.swift; sourceTree = "<group>"; };
 		551420A824C3D6D200A22E9A /* Meter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Meter.swift; sourceTree = "<group>"; };
+		55193D2924E14D9500FE1D55 /* ReadableGuidePadding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReadableGuidePadding.swift; sourceTree = "<group>"; };
 		552862E424CD018B008E2B0E /* ErrorMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorMessage.swift; sourceTree = "<group>"; };
 		552B4E7624CD16C0008B9DA6 /* StatsExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = StatsExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		552B4E7724CD16C0008B9DA6 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
@@ -215,6 +217,7 @@
 				555401A224D850D100B1B727 /* CustomTextStyle.swift */,
 				552862E424CD018B008E2B0E /* ErrorMessage.swift */,
 				552C2C2724D6C84300D3DFBE /* SearchBar.swift */,
+				55193D2924E14D9500FE1D55 /* ReadableGuidePadding.swift */,
 			);
 			path = UI;
 			sourceTree = "<group>";
@@ -633,6 +636,7 @@
 				555401A324D850D100B1B727 /* CustomTextStyle.swift in Sources */,
 				55C638FD24CBFBA400395B23 /* DataGrid.swift in Sources */,
 				559300E924D587C0006C6DB4 /* ChartListRow.swift in Sources */,
+				55193D2A24E14D9500FE1D55 /* ReadableGuidePadding.swift in Sources */,
 				55EE682A24CD962100546B1A /* UserSettings.swift in Sources */,
 				558CABB124B99B42002D115B /* CloudService.swift in Sources */,
 				55D1C52E24B95F580087F8A2 /* ServerListView.swift in Sources */,
