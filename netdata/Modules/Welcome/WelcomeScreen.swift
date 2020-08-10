@@ -11,37 +11,45 @@ struct WelcomeScreen: View {
     @Environment(\.presentationMode) private var presentationMode
     
     var body: some View {
-            VStack(alignment: .center) {
-                Spacer()
+        VStack(alignment: .center) {
+            Spacer()
+            
+            TitleView()
+            
+            Spacer()
+            
+            VStack(alignment: .leading) {
+                InformationDetailView(title: "Real-time monitoring on the go",
+                                      subTitle: "Monitor everything in real time on your mobile device",
+                                      imageName: "paperplane")
                 
-                TitleView()
+                InformationDetailView(title: "Seamless connection",
+                                      subTitle: "Works out-of-the-box with any Netdata instance",
+                                      imageName: "wifi")
                 
-                Spacer()
-                                
-                VStack(alignment: .leading) {
-                    InformationDetailView(title: "Open source client", subTitle: "Unofficial open source client for Netdata", imageName: "slider.horizontal.below.rectangle")
-                    
-                    InformationDetailView(title: "Real-time monitoring", subTitle: "Monitor everything in real time for free with Netdata", imageName: "minus.slash.plus")
-                }
-                .padding(.horizontal)
-                
-                Spacer(minLength: 30)
-                
-                Button(action: {
-                    FeedbackGenerator.shared.triggerNotification(type: .success)
-                    self.presentationMode.wrappedValue.dismiss()
-                }) {
-                    Text("Continue")
-                        .foregroundColor(.white)
-                        .font(.headline)
-                        .padding()
-                        .frame(minWidth: 0, maxWidth: .infinity, alignment: .center)
-                        .background(RoundedRectangle(cornerRadius: 15, style: .continuous)
-                                        .fill(Color.accentColor))
-                        .padding(.bottom)
-                }
-                .padding(.horizontal)
+                InformationDetailView(title: "Free & Open-source",
+                                      subTitle: "Open-source iOS, iPadOS and macOS client",
+                                      imageName: "globe")
             }
+            .padding(.horizontal)
+            
+            Spacer(minLength: 30)
+            
+            Button(action: {
+                FeedbackGenerator.shared.triggerNotification(type: .success)
+                self.presentationMode.wrappedValue.dismiss()
+            }) {
+                Text("Continue")
+                    .foregroundColor(.white)
+                    .font(.headline)
+                    .padding()
+                    .frame(minWidth: 0, maxWidth: .infinity, alignment: .center)
+                    .background(RoundedRectangle(cornerRadius: 15, style: .continuous)
+                                    .fill(Color.accentColor))
+                    .padding(.bottom)
+            }
+            .padding(.horizontal)
+        }
     }
 }
 
