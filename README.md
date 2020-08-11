@@ -1,4 +1,4 @@
-# Unofficial Netdata client for iOS
+# Netdata client for iOS, iPadOS & macOS
 Warning! I'm learning Swift and SwiftUI, so the code is probably terrible.
 
 ![Xcode build](https://github.com/arjunkomath/netdata-ios/workflows/Xcode%20build/badge.svg)
