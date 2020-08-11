@@ -85,8 +85,8 @@ struct ServerListView: View {
                 
                 // show welcome screen
                 if !userSettings.HasLaunchedOnce {
-                    self.showWelcomeSheet = true
                     userSettings.HasLaunchedOnce = true
+                    self.showWelcomeSheet = true
                 }
             })
             
