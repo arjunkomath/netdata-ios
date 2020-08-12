@@ -55,6 +55,10 @@ struct DataGrid: View {
             columnWidth = 120
         }
         
+        if self.showArrows {
+            columnWidth = 120
+        }
+        
         return [GridItem(.adaptive(minimum: columnWidth))]
         #endif
     }

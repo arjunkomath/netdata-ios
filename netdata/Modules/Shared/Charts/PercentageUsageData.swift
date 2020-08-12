@@ -20,7 +20,7 @@ struct PercentageUsageData: View {
                 .frame(alignment: .leading)
             
             Text("\(Int(self.usage))%")
-                .font(.headline)
+                .font(.system(size: 16, weight: .heavy, design: .rounded))
                 .padding(0)
         }
         .frame(height: 50)

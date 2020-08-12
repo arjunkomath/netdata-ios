@@ -42,7 +42,7 @@ struct AbsoluteUsageData: View {
                         .padding(0)
                 } else {
                     Text(String(format: "%.2f", self.usage!))
-                        .font(.headline)
+                        .font(.system(size: 16, weight: .heavy, design: .rounded))
                         .padding(0)
                 }
             }
