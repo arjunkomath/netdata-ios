@@ -20,5 +20,4 @@ Works out-of-the-box with any Netdata instance
 Open-source iOS, iPadOS and macOS client
 
 ## Netdata
-
 [Netdata](https://github.com/netdata/netdata) is distributed, real-time performance and health monitoring for systems and applications. It is a highly-optimized monitoring agent you install on all your systems and containers.
