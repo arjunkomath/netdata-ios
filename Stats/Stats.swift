@@ -42,12 +42,12 @@ struct ServerDataLoader {
 struct StatsTimeline: TimelineProvider {
     public typealias Entry = SimpleEntry
     
-    public func snapshot(with context: Context, completion: @escaping (SimpleEntry) -> ()) {
+    func getSnapshot(in context: Context, completion: @escaping (SimpleEntry) -> Void) {
         let entry = SimpleEntry(date: Date(), progress: 0, error: "")
         completion(entry)
     }
     
-    public func timeline(with context: Context, completion: @escaping (Timeline<Entry>) -> ()) {
+    func getTimeline(in context: Context, completion: @escaping (Timeline<SimpleEntry>) -> Void) {
         let currentDate = Date()
         let refreshDate = Calendar.current.date(byAdding: .second, value: 10, to: currentDate)!
         
@@ -71,8 +71,8 @@ struct StatsTimeline: TimelineProvider {
             completion(timeline)
         }
     }
-    
-    func placeholder(with: Context) -> SimpleEntry {
+
+    func placeholder(in with: Context) -> SimpleEntry {
         let entry = SimpleEntry(date: Date(), progress: 0.2, error: "")
         return entry
     }
