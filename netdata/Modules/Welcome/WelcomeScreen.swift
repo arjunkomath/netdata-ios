@@ -20,7 +20,7 @@ struct WelcomeScreen: View {
             
             VStack(alignment: .leading) {
                 InformationDetailView(title: "Real-time monitoring on the go",
-                                      subTitle: "Monitor everything in real time on your mobile device",
+                                      subTitle: "Monitor everything in real time on your device",
                                       imageName: "paperplane")
                 
                 InformationDetailView(title: "Seamless connection",

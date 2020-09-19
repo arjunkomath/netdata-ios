@@ -91,10 +91,26 @@ struct ServerListView: View {
             })
             
             VStack {
-                Image(systemName: "tray")
-                    .imageScale(.large)
-                    .frame(width: 48, height: 48)
-                Text("Select a server")
+                if serverService.defaultServers.isEmpty && serverService.favouriteServers.isEmpty {
+                    Image(systemName: "tray")
+                        .imageScale(.large)
+                        .frame(width: 48, height: 48)
+                    
+                    Button(action: {
+                        self.addServer()
+                    }) {
+                        Text("Add Netdata server")
+                    }
+                    .buttonStyle(BorderedBarButtonStyle())
+                    .sheet(isPresented: $showAddServerSheet, content: {
+                        AddServerForm()
+                    })
+                } else {
+                    Image(systemName: "tray")
+                        .imageScale(.large)
+                        .frame(width: 48, height: 48)
+                    Text("Select a server")
+                }
             }
         }
     }
