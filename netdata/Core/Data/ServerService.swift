@@ -28,7 +28,9 @@ public class ServerService: ObservableObject, PublicCloudService {
         }
         
         container.fetchUserRecordID { (id, error) in
-            Self.userCloudKitId = id
+            if (id != nil) {
+                Self.userCloudKitId = id
+            }
         }
     }
     

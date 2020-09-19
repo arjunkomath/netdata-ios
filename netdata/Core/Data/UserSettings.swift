@@ -42,14 +42,6 @@ class UserSettings: ObservableObject {
         }
     }
     
-    // MARK:- Widget
-    
-    @Published var widgetServerBaseUrl: String {
-        didSet {
-            UserDefaults.standard.set(widgetServerBaseUrl, forKey: "widgetServerBaseUrl")
-        }
-    }
-    
     init() {
         // First launch
         self.HasLaunchedOnce = UserDefaults.standard.object(forKey: "HasLaunchedOnce") as? Bool ?? false
@@ -58,8 +50,5 @@ class UserSettings: ObservableObject {
         self.appTintColor = UserDefaults.standard.colorForKey(key: "appTintColor") != nil ?
             Color(UserDefaults.standard.colorForKey(key: "appTintColor")!) : Color.blue
         self.hapticFeedback = UserDefaults.standard.object(forKey: "hapticFeedback") as? Bool ?? true
-        
-        // Widget
-        self.widgetServerBaseUrl = UserDefaults.standard.object(forKey: "widgetServerBaseUrl") as? String ?? ""
     }
 }

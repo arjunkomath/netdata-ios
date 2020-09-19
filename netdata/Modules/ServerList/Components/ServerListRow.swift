@@ -67,13 +67,6 @@ struct ServerListRow: View {
                 Image(systemName: "pencil")
             }
             
-            Button(action: {
-                userSettings.widgetServerBaseUrl = server.url
-            }) {
-                Text("Set as widget server")
-                Image(systemName: "rectangle.stack.fill")
-            }
-            
             if server.isFavourite == 1 {
                 Button(action: {
                     var updatedServer = NDServer(name: server.name,
