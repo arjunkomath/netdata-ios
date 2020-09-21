@@ -60,6 +60,11 @@ struct ServerListRow: View {
             EditServerForm(editingServer: server)
         })
         .contextMenu {
+            Link(destination: URL(string: server.url)!, label: {
+                Text("View in browser")
+                Image(systemName: "safari")
+            })
+            
             Button(action: {
                 self.showEditServerSheet = true
             }) {
