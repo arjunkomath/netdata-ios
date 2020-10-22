@@ -13,6 +13,8 @@ struct EditServerForm: View {
     @ObservedObject var userSettings = UserSettings()
     @StateObject var viewModel = ServerListViewModel()
     
+    @State private var invalidUrlAlert = false
+    
     let editingServer: NDServer?
     
     var body: some View {
@@ -27,6 +29,8 @@ struct EditServerForm: View {
                     TextField("Name", text: $viewModel.name)
                     TextField("Description", text: $viewModel.description)
                     TextField("NetData Server URL", text: $viewModel.url)
+                        .autocapitalization(UITextAutocapitalizationType.none)
+                        .disableAutocorrection(true)
                 }
             }
             .navigationBarTitle("Edit Server")
@@ -45,6 +49,11 @@ struct EditServerForm: View {
         if (viewModel.name.isEmpty || viewModel.description.isEmpty || viewModel.url.isEmpty) {
             viewModel.validationError = true
             viewModel.validationErrorMessage = "Please fill all the fields"
+            return
+        }
+        
+        if (!viewModel.validateUrl(urlString: viewModel.url)) {
+            self.invalidUrlAlert = true
             return
         }
         
@@ -85,6 +94,9 @@ struct EditServerForm: View {
             }
         }
         .buttonStyle(BorderedBarButtonStyle())
+        .alert(isPresented: $invalidUrlAlert) {
+            Alert(title: Text("Oops!"), message: Text("You've entered an invalid URL"), dismissButton: .default(Text("OK")))
+        }
     }
 }
 

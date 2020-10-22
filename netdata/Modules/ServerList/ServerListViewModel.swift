@@ -7,6 +7,7 @@
 
 import Foundation
 import Combine
+import SwiftUI
 
 final class ServerListViewModel: ObservableObject {
     
@@ -109,5 +110,14 @@ final class ServerListViewModel: ObservableObject {
                 }
             })
             .store(in: &self.cancellable)
+    }
+    
+    func validateUrl(urlString: String?) -> Bool {
+        if let urlString = urlString {
+            if let url = NSURL(string: urlString) {
+                return UIApplication.shared.canOpenURL(url as URL)
+            }
+        }
+        return false
     }
 }
