@@ -14,6 +14,9 @@ jobs:
 
     - name: Xcode version
       run: /usr/bin/xcodebuild -version
+      
+    - name: Install pods
+      run: pod install
 
     - name: Xcode build iOS App
       run: |
