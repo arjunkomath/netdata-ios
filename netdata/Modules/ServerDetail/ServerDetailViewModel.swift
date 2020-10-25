@@ -168,4 +168,23 @@ final class ServerDetailViewModel: ObservableObject {
         
         self.customChartTimer.invalidate()
     }
+    
+    func validateServer(serverUrl: String, completion: @escaping (Bool) -> ()) {
+        NetDataAPI
+            .getInfo(baseUrl: serverUrl)
+            .sink(receiveCompletion: { _completion in
+                print(_completion)
+                switch _completion {
+                case .finished:
+                    break
+                case .failure(let error):
+                    debugPrint(error)
+                    completion(false)
+                }
+            },
+            receiveValue: { info in
+                completion(true)
+            })
+            .store(in: &cancellable)
+    }
 }

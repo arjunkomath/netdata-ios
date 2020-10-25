@@ -52,7 +52,7 @@ final class ServerListViewModel: ObservableObject {
                     DispatchQueue.main.async {
                         self.validatingUrl = false
                         self.validationError = true
-                        self.validationErrorMessage = "Invalid server URL"
+                        self.validationErrorMessage = "Invalid server URL! Please ensure Netdata has been installed on the server."
                     }
                     
                     FeedbackGenerator.shared.triggerNotification(type: .error)

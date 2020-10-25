@@ -1,22 +1,16 @@
 //
-//  ServerDetailView.swift
-//  netdata
+//  ServerDetailDemoView.swift
+//  NetdataClip
 //
-//  Created by Arjun Komath on 12/7/20.
+//  Created by Arjun Komath on 25/10/20.
 //
 
 import SwiftUI
-import Combine
 
-struct ServerDetailView: View {
-    var server: NDServer;
-    var serverAlarms: ServerAlarms;
-    var alarmStatusColor: Color;
+struct ServerDetailDemoView: View {
+    var serverUrl: String
     
     @StateObject var viewModel = ServerDetailViewModel()
-    
-    @State private var showAlarmsSheet = false
-    @State private var showChartsSheet = false
     
     var body: some View {
         List {
@@ -25,14 +19,6 @@ struct ServerDetailView: View {
                     VStack {
                         Meter(progress: viewModel.cpuUsageGauge)
                             .redacted(reason: self.viewModel.cpuUsage.labels.count < 1 ? .placeholder : .init())
-                        
-                        if (server.serverInfo != nil && viewModel.cpuUsage.labels.count > 0) {
-                            Spacer()
-                            
-                            AbsoluteUsageData(stringValue: server.serverInfo?.cores_total,
-                                              title: "cores",
-                                              showArrows: false)
-                        }
                     }
                     
                     self.getiPadSpacer()
@@ -100,7 +86,7 @@ struct ServerDetailView: View {
             .readableGuidePadding()
         }
         .onAppear {
-            self.viewModel.fetch(baseUrl: server.url)
+            self.viewModel.fetch(baseUrl: serverUrl)
             
             // hide scroll indicators
             UITableView.appearance().showsVerticalScrollIndicator = false
@@ -109,35 +95,6 @@ struct ServerDetailView: View {
             self.viewModel.destroy()
         }
         .listStyle(InsetGroupedListStyle())
-        .navigationBarTitle(Text(server.name))
-        .navigationBarItems(trailing:
-                                HStack(spacing: 16) {
-                                    Button(action: {
-                                        self.showChartsSheet = true
-                                    }) {
-                                        Image(systemName: "chart.pie")
-                                            .imageScale(.small)
-                                            .foregroundColor(.accentColor)
-                                    }
-                                    .buttonStyle(BorderedBarButtonStyle())
-                                    .sheet(isPresented: $showChartsSheet, content: {
-                                        ChartsListView(serverCharts: viewModel.serverCharts, serverUrl: server.url)
-                                    })
-                                    
-                                    Button(action: {
-                                        self.showAlarmsSheet = true
-                                    }) {
-                                        Image(systemName: "alarm")
-                                            .imageScale(.small)
-                                            .foregroundColor(self.alarmStatusColor)
-                                    }
-                                    .buttonStyle(BorderedBarButtonStyle())
-                                    .accentColor(self.alarmStatusColor)
-                                    .sheet(isPresented: $showAlarmsSheet, content: {
-                                        AlarmsListView(serverAlarms: self.serverAlarms)
-                                    })
-                                }
-        )
     }
     
     func makeSectionHeader(text: String) -> some View {
@@ -154,3 +111,8 @@ struct ServerDetailView: View {
     }
 }
 
+struct ServerDetailDemoView_Previews: PreviewProvider {
+    static var previews: some View {
+        ServerDetailDemoView(serverUrl: "https://cdn77.my-netdata.io")
+    }
+}
