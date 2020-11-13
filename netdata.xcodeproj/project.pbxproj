@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 51;
+	objectVersion = 52;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -22,7 +22,7 @@
 		55380380254510DF003A9BFE /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5538037F254510DF003A9BFE /* Preview Assets.xcassets */; };
 		5538038C254510DF003A9BFE /* NetdataClipTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5538038B254510DF003A9BFE /* NetdataClipTests.swift */; };
 		55380397254510DF003A9BFE /* NetdataClipUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55380396254510DF003A9BFE /* NetdataClipUITests.swift */; };
-		5538039B254510DF003A9BFE /* NetdataClip.app in Embed App Clips */ = {isa = PBXBuildFile; fileRef = 55380376254510DD003A9BFE /* NetdataClip.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		5538039B254510DF003A9BFE /* NetdataClip.app in Embed App Clips */ = {isa = PBXBuildFile; fileRef = 55380376254510DD003A9BFE /* NetdataClip.app */; platformFilter = ios; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		553803AC254512EB003A9BFE /* ErrorMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 552862E424CD018B008E2B0E /* ErrorMessage.swift */; };
 		553803E7254514A4003A9BFE /* ServerDetailViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 559843B324CEFAAC0034E92D /* ServerDetailViewModel.swift */; };
 		553803EE254514B1003A9BFE /* ServerCharts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 559300E424D550A6006C6DB4 /* ServerCharts.swift */; };
@@ -1042,6 +1042,7 @@
 		};
 		5538039A254510DF003A9BFE /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
+			platformFilter = ios;
 			target = 55380375254510DD003A9BFE /* NetdataClip */;
 			targetProxy = 55380399254510DF003A9BFE /* PBXContainerItemProxy */;
 		};
@@ -1325,6 +1326,7 @@
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = netdata/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				"IPHONEOS_DEPLOYMENT_TARGET[sdk=macosx*]" = 14.2;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -1332,10 +1334,10 @@
 				MARKETING_VERSION = 1.3;
 				PRODUCT_BUNDLE_IDENTIFIER = com.techulus.netdata;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MACCATALYST = YES;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = "1,2,6";
 			};
 			name = Debug;
 		};
@@ -1354,6 +1356,7 @@
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = netdata/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				"IPHONEOS_DEPLOYMENT_TARGET[sdk=macosx*]" = 14.2;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -1361,10 +1364,10 @@
 				MARKETING_VERSION = 1.3;
 				PRODUCT_BUNDLE_IDENTIFIER = com.techulus.netdata;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MACCATALYST = YES;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = "1,2,6";
 			};
 			name = Release;
 		};
