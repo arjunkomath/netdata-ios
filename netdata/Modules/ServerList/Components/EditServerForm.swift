@@ -28,7 +28,7 @@ struct EditServerForm: View {
                     
                     TextField("Name", text: $viewModel.name)
                     TextField("Description", text: $viewModel.description)
-                    TextField("NetData Server URL", text: $viewModel.url)
+                    TextField("NetData Server Full URL", text: $viewModel.url)
                         .autocapitalization(UITextAutocapitalizationType.none)
                         .disableAutocorrection(true)
                 }
