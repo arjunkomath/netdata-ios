@@ -109,35 +109,37 @@ struct ServerDetailView: View {
             self.viewModel.destroy()
         }
         .listStyle(InsetGroupedListStyle())
-        .navigationBarTitle(Text(server.name))
-        .navigationBarItems(trailing:
-                                HStack(spacing: 16) {
-                                    Button(action: {
-                                        self.showChartsSheet = true
-                                    }) {
-                                        Image(systemName: "chart.pie")
-                                            .imageScale(.small)
-                                            .foregroundColor(.accentColor)
-                                    }
-                                    .buttonStyle(BorderedBarButtonStyle())
-                                    .sheet(isPresented: $showChartsSheet, content: {
-                                        ChartsListView(serverCharts: viewModel.serverCharts, serverUrl: server.url)
-                                    })
-                                    
-                                    Button(action: {
-                                        self.showAlarmsSheet = true
-                                    }) {
-                                        Image(systemName: "alarm")
-                                            .imageScale(.small)
-                                            .foregroundColor(self.alarmStatusColor)
-                                    }
-                                    .buttonStyle(BorderedBarButtonStyle())
-                                    .accentColor(self.alarmStatusColor)
-                                    .sheet(isPresented: $showAlarmsSheet, content: {
-                                        AlarmsListView(serverAlarms: self.serverAlarms)
-                                    })
-                                }
-        )
+        .navigationTitle(Text(server.name))
+        .toolbar {
+            ToolbarItem(placement: .navigationBarTrailing) {
+                HStack(spacing: 16) {
+                    Button(action: {
+                        self.showChartsSheet = true
+                    }) {
+                        Image(systemName: "chart.pie")
+                            .imageScale(.small)
+                            .foregroundColor(.accentColor)
+                    }
+                    .buttonStyle(BorderedBarButtonStyle())
+                    .sheet(isPresented: $showChartsSheet, content: {
+                        ChartsListView(serverCharts: viewModel.serverCharts, serverUrl: server.url)
+                    })
+                    
+                    Button(action: {
+                        self.showAlarmsSheet = true
+                    }) {
+                        Image(systemName: "alarm")
+                            .imageScale(.small)
+                            .foregroundColor(self.alarmStatusColor)
+                    }
+                    .buttonStyle(BorderedBarButtonStyle())
+                    .accentColor(self.alarmStatusColor)
+                    .sheet(isPresented: $showAlarmsSheet, content: {
+                        AlarmsListView(serverAlarms: self.serverAlarms)
+                    })
+                }
+            }
+        }
     }
     
     func makeSectionHeader(text: String) -> some View {

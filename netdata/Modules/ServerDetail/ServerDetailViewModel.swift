@@ -89,7 +89,7 @@ final class ServerDetailViewModel: ObservableObject {
                 self.ramUsage = data
                 
                 withAnimation(.linear(duration: 0.5)) {
-                    self.ramUsageGauge = CGFloat(self.ramUsage.data.first![2]! / (self.ramUsage.data.first![1]! + self.ramUsage.data.first![2]!))
+                    self.ramUsageGauge = CGFloat(self.ramUsage.data.first![2]! / (self.ramUsage.data.first![1]! + self.ramUsage.data.first![2]! + self.ramUsage.data.first![3]!))
                 }
             }
             .store(in: &self.cancellable)
