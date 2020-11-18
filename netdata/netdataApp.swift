@@ -13,7 +13,7 @@ struct netdataApp: App {
     @ObservedObject var userSettings = UserSettings()
     
     init() {
-        //FirebaseApp.configure()
+        FirebaseApp.configure()
     }
     
     var window: UIWindow? {
