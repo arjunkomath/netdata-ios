@@ -23,11 +23,12 @@ struct Meter : View {
                     .stroke(style: StrokeStyle(lineWidth: 17.0, lineCap: .round, lineJoin: .round))
                     .foregroundColor(self.getColor())
                     .rotationEffect(Angle(degrees: 270.0))
-                    .animation(.linear)
+                    //.animation(.linear) //disabing animation here fixes the ui glitch that happens on view init
                 
                 Text(String(format: "%.0f %%", min(self.progress, 1.0)*100.0))
                     .font(.caption)
                     .bold()
+                    .animation(nil) //fixes text clipping that happens when switching from 1 digit to 2 digits
             }
             .frame(height: 72)
         }
