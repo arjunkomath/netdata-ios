@@ -62,9 +62,12 @@ struct ServerListView: View {
             .sheet(isPresented: $showWelcomeSheet, content: {
                 WelcomeScreen()
             })
-            .navigationBarItems(
-                leading: settingsButton,
-                trailing:
+            .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    settingsButton
+                }
+                
+                ToolbarItem(placement: .navigationBarTrailing) {
                     HStack(spacing: 16) {
                         refreshButton
                         
@@ -75,9 +78,10 @@ struct ServerListView: View {
                                 })
                         }
                     }
-            )
-            .listStyle(InsetGroupedListStyle())
+                }
+            }
             .navigationTitle("My Servers")
+            .listStyle(InsetGroupedListStyle())
             .onAppear(perform: {
                 serverService.refresh()
                 
@@ -147,9 +151,9 @@ struct ServerListView: View {
             self.serverService.refresh()
         }) {
             if serverService.isSynching {
-                ProgressView()
-            } else {
-                Image(systemName: "arrow.clockwise")
+                ProgressView().frame(maxWidth: 14.5, maxHeight: 16, alignment: .center) // attempt at fixing the progress circle view
+            } else {                                                                    // from popping and being bigger that the button frame; not pixel perfect
+                Image(systemName: "arrow.clockwise")                                    // which it drives me mad
                     .imageScale(.small)
             }
         }
