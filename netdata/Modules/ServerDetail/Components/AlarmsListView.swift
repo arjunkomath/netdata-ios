@@ -10,7 +10,7 @@ import SwiftUI
 struct AlarmsListView: View {
     @Environment(\.presentationMode) private var presentationMode
     
-    var serverAlarms: ServerAlarms;
+    var serverAlarms: ServerAlarms
     
     var body: some View {
         NavigationView {
@@ -35,8 +35,13 @@ struct AlarmsListView: View {
                     }
                 }
             }
+            .navigationTitle(Text("Active Alarms")).navigationBarTitleDisplayMode(.inline)
+            /*.toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    dismissButton
+                }
+            }*/
             .navigationBarItems(leading: dismissButton)
-            .navigationBarTitle(Text("Active Alarms"), displayMode: .inline)
         }
     }
     

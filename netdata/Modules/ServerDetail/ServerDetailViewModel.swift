@@ -15,6 +15,7 @@ final class ServerDetailViewModel: ObservableObject {
     
     // MARK:- Charts
     @Published var serverCharts: ServerCharts = ServerCharts(version: "", release_channel: "", charts: [:])
+    @Published var serverChartsToolbarButton = true
     
     @Published var cpuUsage: ServerData = ServerData(labels: [], data: [])
     @Published var cpuUsageGauge: CGFloat = 0
@@ -44,6 +45,11 @@ final class ServerDetailViewModel: ObservableObject {
         self.fetchCharts()
         
         self.timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { timer in
+            if !self.serverCharts.charts.isEmpty {
+                if (self.serverChartsToolbarButton) {
+                    self.serverChartsToolbarButton = false
+                }
+            }
             self.fetchCpu()
             self.fetchLoad()
             self.fetchRam()
@@ -187,4 +193,23 @@ final class ServerDetailViewModel: ObservableObject {
             })
             .store(in: &cancellable)
     }
+    
+    func clearModel() {
+        serverCharts = ServerCharts(version: "", release_channel: "", charts: [:])
+        serverChartsToolbarButton = true
+        
+        cpuUsage = ServerData(labels: [], data: [])
+        cpuUsageGauge = CGFloat(0)
+        
+        ramUsage = ServerData(labels: [], data: [])
+        ramUsageGauge = CGFloat(0)
+        
+        diskSpaceUsage = ServerData(labels: [], data: [])
+        diskSpaceUsageGauge = CGFloat (0)
+        
+        load = ServerData(labels: [], data: [])
+        diskIO = ServerData(labels: [], data: [])
+        network = ServerData(labels: [], data: [])
+    }
 }
+

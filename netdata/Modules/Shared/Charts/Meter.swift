@@ -23,7 +23,7 @@ struct Meter : View {
                     .stroke(style: StrokeStyle(lineWidth: 17.0, lineCap: .round, lineJoin: .round))
                     .foregroundColor(self.getColor())
                     .rotationEffect(Angle(degrees: 270.0))
-                    //.animation(.linear) //disabing animation here fixes the ui glitch that happens on view init
+                    //.animation(.linear) //disabing animation here fixes the ui glitch that happens on SererDetailView init
                 
                 Text(String(format: "%.0f %%", min(self.progress, 1.0)*100.0))
                     .font(.caption)
