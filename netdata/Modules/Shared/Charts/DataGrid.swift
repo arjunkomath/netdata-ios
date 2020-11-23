@@ -68,7 +68,7 @@ struct DataGrid: View {
             columnWidth = 120
         }
 
-        return [GridItem(.adaptive(minimum: columnWidth)]
+        return [GridItem(.adaptive(minimum: columnWidth))]
         #endif
     }
 }
