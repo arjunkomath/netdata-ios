@@ -124,7 +124,7 @@ struct ServerDetailView: View {
                     }
                     .disabled(self.viewModel.serverChartsToolbarButton)
                     .sheet(isPresented: $showChartsSheet, onDismiss: {
-                        self.viewModel.clearModel()
+                        self.viewModel.destroyModel()
                         self.viewModel.fetch(baseUrl: server.url)
                     }, content: {
                         ChartsListView(serverCharts: viewModel.serverCharts, serverUrl: server.url)
@@ -140,7 +140,7 @@ struct ServerDetailView: View {
                     }
                     .accentColor(self.alarmStatusColor)
                     .sheet(isPresented: $showAlarmsSheet, onDismiss: {
-                        self.viewModel.clearModel()
+                        self.viewModel.destroyModel()
                         self.viewModel.fetch(baseUrl: server.url)
                     }, content: {
                         AlarmsListView(serverAlarms: self.serverAlarms)

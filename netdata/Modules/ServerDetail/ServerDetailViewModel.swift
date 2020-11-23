@@ -163,6 +163,7 @@ final class ServerDetailViewModel: ObservableObject {
                         debugPrint("fetchCustomChartData", error)
                     }
                 }) { data in
+                    
                     self.customChartData = data
                 }
                 .store(in: &self.cancellable)
@@ -194,7 +195,7 @@ final class ServerDetailViewModel: ObservableObject {
             .store(in: &cancellable)
     }
     
-    func clearModel() {
+    func destroyModel() {
         serverCharts = ServerCharts(version: "", release_channel: "", charts: [:])
         serverChartsToolbarButton = true
         
