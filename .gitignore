@@ -94,7 +94,6 @@ GoogleService-Info.plist
 
 # Pods
 Pods
-Podfile.lock
 
 # MacOS Indexing file
 .DS_Store
