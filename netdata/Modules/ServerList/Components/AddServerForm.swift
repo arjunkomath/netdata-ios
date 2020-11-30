@@ -26,14 +26,15 @@ struct AddServerForm: View {
                 }
                 
                 Section(header: Text("Enter Server details"),
-                        footer: Text("HTTPS is required to connect")) {
+                        footer: Text("HTTPS is required for connections over the internet\nHTTP is allowed for LAN connections with IP or mDNS domains")) {
                     if viewModel.validationError {
                         ErrorMessage(message: viewModel.validationErrorMessage)
                     }
+
                     
                     TextField("Name", text: $viewModel.name)
                     TextField("Description", text: $viewModel.description)
-                    TextField("NetData Server URL", text: $viewModel.url)
+                    TextField("NetData Server Full URL", text: $viewModel.url)
                         .autocapitalization(UITextAutocapitalizationType.none)
                         .disableAutocorrection(true)
                 }

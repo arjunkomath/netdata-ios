@@ -20,7 +20,7 @@ struct CustomChartDetailView: View {
                     .font(.headline)
             }
             
-            Section(header: Text("\(serverChart.name) (\(serverChart.units))").sectionHeaderStyle()) {
+            Section(header: Text("\(serverChart.name) (\(units()))").sectionHeaderStyle()) {
                 DataGrid(labels: viewModel.customChartData.labels,
                          data: viewModel.customChartData.data,
                          dataType: self.getDataType(),
@@ -36,9 +36,21 @@ struct CustomChartDetailView: View {
         }
     }
     
+    func units() -> String {
+        if serverChart.units == "seconds" {
+            return "hours"
+        }
+        else {
+            return serverChart.units
+        }
+    }
+    
     func getDataType() -> GridDataType {
         if serverChart.units == "percentage" {
             return .percentage
+        }
+        else if serverChart.units == "seconds" {
+            return .secondsToHours
         }
         
         return .absolute

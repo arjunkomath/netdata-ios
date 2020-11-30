@@ -17,7 +17,7 @@ struct ServerDetailView: View {
     
     @State private var showAlarmsSheet = false
     @State private var showChartsSheet = false
-    
+
     var body: some View {
         List {
             Section(header: makeSectionHeader(text: "CPU (%)")) {
@@ -33,6 +33,8 @@ struct ServerDetailView: View {
                                               title: "cores",
                                               showArrows: false)
                         }
+                        
+                        
                     }
                     
                     self.getiPadSpacer()
@@ -56,7 +58,7 @@ struct ServerDetailView: View {
             Section(header: makeSectionHeader(text: "Memory (MiB)")) {
                 HStack {
                     Meter(progress: viewModel.ramUsageGauge)
-                        .redacted(reason: viewModel.ramUsage.labels.count < 1 ? .placeholder : .init())
+                        .redacted(reason: self.viewModel.ramUsage.labels.count < 1 ? .placeholder : .init())
                     
                     self.getiPadSpacer()
                     
@@ -101,7 +103,6 @@ struct ServerDetailView: View {
         }
         .onAppear {
             self.viewModel.fetch(baseUrl: server.url)
-            
             // hide scroll indicators
             UITableView.appearance().showsVerticalScrollIndicator = false
         }
@@ -109,35 +110,45 @@ struct ServerDetailView: View {
             self.viewModel.destroy()
         }
         .listStyle(InsetGroupedListStyle())
-        .navigationBarTitle(Text(server.name))
-        .navigationBarItems(trailing:
-                                HStack(spacing: 16) {
-                                    Button(action: {
-                                        self.showChartsSheet = true
-                                    }) {
-                                        Image(systemName: "chart.pie")
-                                            .imageScale(.small)
-                                            .foregroundColor(.accentColor)
-                                    }
-                                    .buttonStyle(BorderedBarButtonStyle())
-                                    .sheet(isPresented: $showChartsSheet, content: {
-                                        ChartsListView(serverCharts: viewModel.serverCharts, serverUrl: server.url)
-                                    })
-                                    
-                                    Button(action: {
-                                        self.showAlarmsSheet = true
-                                    }) {
-                                        Image(systemName: "alarm")
-                                            .imageScale(.small)
-                                            .foregroundColor(self.alarmStatusColor)
-                                    }
-                                    .buttonStyle(BorderedBarButtonStyle())
-                                    .accentColor(self.alarmStatusColor)
-                                    .sheet(isPresented: $showAlarmsSheet, content: {
-                                        AlarmsListView(serverAlarms: self.serverAlarms)
-                                    })
-                                }
-        )
+        .navigationTitle(Text(server.name))
+        .toolbar {
+            ToolbarItem(placement: .navigationBarTrailing) {
+                HStack(spacing: 16) {
+                    Button(action: {
+                        self.viewModel.destroy()
+                        self.showChartsSheet = true
+                    }) {
+                        Image(systemName: "chart.pie")
+                            .imageScale(.small)
+                            .foregroundColor(.accentColor)
+                    }
+                    .disabled(self.viewModel.serverChartsToolbarButton)
+                    .sheet(isPresented: $showChartsSheet, onDismiss: {
+                        self.viewModel.destroyModel()
+                        self.viewModel.fetch(baseUrl: server.url)
+                    }, content: {
+                        ChartsListView(serverCharts: viewModel.serverCharts, serverUrl: server.url)
+                    })
+                    
+                    Button(action: {
+                        self.viewModel.destroy()
+                        self.showAlarmsSheet = true
+                    }) {
+                        Image(systemName: "alarm")
+                            .imageScale(.small)
+                            .foregroundColor(self.alarmStatusColor)
+                    }
+                    .accentColor(self.alarmStatusColor)
+                    .sheet(isPresented: $showAlarmsSheet, onDismiss: {
+                        self.viewModel.destroyModel()
+                        self.viewModel.fetch(baseUrl: server.url)
+                    }, content: {
+                        AlarmsListView(serverAlarms: self.serverAlarms)
+                    })
+                }
+                .buttonStyle(BorderedBarButtonStyle())
+            }
+        }
     }
     
     func makeSectionHeader(text: String) -> some View {

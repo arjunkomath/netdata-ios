@@ -12,6 +12,7 @@ struct AbsoluteUsageData: View {
     var stringValue: String?
     var title: String
     var showArrows: Bool
+    var convertSecondsToHours: Bool?
     
     var body: some View {
         HStack(spacing: 10) {
@@ -40,7 +41,13 @@ struct AbsoluteUsageData: View {
                     Text(stringValue!)
                         .font(.headline)
                         .padding(0)
-                } else {
+                }
+                else if convertSecondsToHours ?? false {
+                        Text(String(format: "%.f", ((self.usage!/60)/60)))
+                            .font(.system(size: 16, weight: .heavy, design: .rounded))
+                            .padding(0)
+                }
+                else {
                     Text(String(format: "%.2f", self.usage!))
                         .font(.system(size: 16, weight: .heavy, design: .rounded))
                         .padding(0)
@@ -64,5 +71,9 @@ struct AbsoluteUsageData_Previews: PreviewProvider {
         AbsoluteUsageData(usage: 425.234235,
                           title: "system",
                           showArrows: false)
+        AbsoluteUsageData(usage: 72822.00323,
+                          title: "dhcp",
+                          showArrows: false,
+                          convertSecondsToHours: true)
     }
 }

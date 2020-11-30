@@ -94,3 +94,6 @@ GoogleService-Info.plist
 
 # Pods
 Pods
+
+# MacOS Indexing file
+.DS_Store
