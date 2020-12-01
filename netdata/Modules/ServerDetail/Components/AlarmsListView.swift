@@ -36,11 +36,6 @@ struct AlarmsListView: View {
                 }
             }
             .navigationTitle(Text("Active Alarms")).navigationBarTitleDisplayMode(.inline)
-            /*.toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    dismissButton
-                }
-            }*/
             .navigationBarItems(leading: dismissButton)
         }
     }

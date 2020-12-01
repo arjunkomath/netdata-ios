@@ -35,8 +35,6 @@ PODS:
   - nanopb (2.30906.0):
     - nanopb/decode (= 2.30906.0)
     - nanopb/encode (= 2.30906.0)
-  - nanopb/decode (2.30906.0)
-  - nanopb/encode (2.30906.0)
   - PromisesObjC (1.2.11)
 
 DEPENDENCIES:
@@ -65,6 +63,6 @@ SPEC CHECKSUMS:
   nanopb: 1bf24dd71191072e120b83dd02d08f3da0d65e53
   PromisesObjC: 8c196f5a328c2cba3e74624585467a557dcb482f
 
-PODFILE CHECKSUM: bcb7c0b1e2fff1a49698ab15e97ed3939afa7a92
+PODFILE CHECKSUM: dac6f5dff27d5118dfd4d99e5e3cf3417c1406d6
 
 COCOAPODS: 1.10.0

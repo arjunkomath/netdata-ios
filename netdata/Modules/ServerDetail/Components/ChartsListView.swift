@@ -30,11 +30,6 @@ struct ChartsListView: View {
                     }
                 }
                 .navigationTitle(Text("Available Charts")).navigationBarTitleDisplayMode(.inline)
-                /*.toolbar {
-                    ToolbarItem(placement: .navigationBarLeading) {
-                        dismissButton
-                    }
-                }*/
                 .navigationBarItems(leading: dismissButton)
             }
         }
