@@ -1,6 +1,5 @@
 //
 //  Network.swift
-//  fiftybest
 //
 //  Created by thomas on 7/1/20.
 //  Copyright © 2020 thomas. All rights reserved.
@@ -21,31 +20,37 @@ enum NetDataAPI {
 }
 
 extension NetDataAPI {
-    static func getInfo(baseUrl: String) -> AnyPublisher<ServerInfo, Error> {
-        let base = URL(string: baseUrl)!
+    static func getInfo(baseUrl: String, basicAuthBase64: String = "") -> AnyPublisher<ServerInfo, Error> {
+        let requestUrl = URL(string: baseUrl)!.appendingPathComponent(NetDataEndpoint.info.rawValue)
         
-        return run(URLRequest(url: base.appendingPathComponent(NetDataEndpoint.info.rawValue)))
+        return run(requestUrl: requestUrl, basicAuthBase64: basicAuthBase64)
     }
     
-    static func getCharts(baseUrl: String) -> AnyPublisher<ServerCharts, Error> {
-        let base = URL(string: baseUrl)!
+    static func getCharts(baseUrl: String, basicAuthBase64: String = "") -> AnyPublisher<ServerCharts, Error> {
+        let requestUrl = URL(string: baseUrl)!.appendingPathComponent(NetDataEndpoint.charts.rawValue)
         
-        return run(URLRequest(url: base.appendingPathComponent(NetDataEndpoint.charts.rawValue)))
+        return run(requestUrl: requestUrl, basicAuthBase64: basicAuthBase64)
     }
     
-    static func getChartData(baseUrl: String, chart: String) -> AnyPublisher<ServerData, Error> {
-        let base = URL(string: baseUrl)!
+    static func getChartData(baseUrl: String, chart: String, basicAuthBase64: String = "") -> AnyPublisher<ServerData, Error> {
+        let requestUrl = URL(string: baseUrl)!.appendingPathComponent(NetDataEndpoint.data.rawValue + chart)
         
-        return run(URLRequest(url: base.appendingPathComponent(NetDataEndpoint.data.rawValue + chart)))
+        return run(requestUrl: requestUrl, basicAuthBase64: basicAuthBase64)
     }
     
-    static func getAlarms(baseUrl: String) -> AnyPublisher<ServerAlarms, Error> {
-        let base = URL(string: baseUrl)!
+    static func getAlarms(baseUrl: String, basicAuthBase64: String = "") -> AnyPublisher<ServerAlarms, Error> {
+        let requestUrl = URL(string: baseUrl)!.appendingPathComponent(NetDataEndpoint.alarms.rawValue)
         
-        return run(URLRequest(url: base.appendingPathComponent(NetDataEndpoint.alarms.rawValue)))
+        return run(requestUrl: requestUrl, basicAuthBase64: basicAuthBase64)
     }
     
-    static func run<T: Decodable>(_ request: URLRequest) -> AnyPublisher<T, Error> {
+    static func run<T: Decodable>(requestUrl: URL, basicAuthBase64: String) -> AnyPublisher<T, Error> {
+        var request = URLRequest(url: requestUrl)
+        
+        if !basicAuthBase64.isEmpty {
+            request.setValue("Basic \(basicAuthBase64)", forHTTPHeaderField: "Authorization")
+        }
+        
         return agent.run(request)
             .map(\.value)
             .eraseToAnyPublisher()

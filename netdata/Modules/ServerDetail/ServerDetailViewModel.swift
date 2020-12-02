@@ -34,13 +34,15 @@ final class ServerDetailViewModel: ObservableObject {
     @Published var customChartData: ServerData = ServerData(labels: [], data: [])
     
     private var baseUrl = ""
+    private var basicAuthBase64 = ""
     private var timer = Timer()
     private var customChartTimer = Timer()
     private var cancellable = Set<AnyCancellable>()
     
-    func fetch(baseUrl: String) {
+    func fetch(baseUrl: String, basicAuthBase64: String) {
         self.loading = true
         self.baseUrl = baseUrl
+        self.basicAuthBase64 = basicAuthBase64
         
         self.fetchCharts()
         
@@ -65,7 +67,7 @@ final class ServerDetailViewModel: ObservableObject {
     
     func fetchCpu() {
         NetDataAPI
-            .getChartData(baseUrl: self.baseUrl, chart: "system.cpu")
+            .getChartData(baseUrl: self.baseUrl, chart: "system.cpu", basicAuthBase64: self.basicAuthBase64)
             .sink(receiveCompletion: { _ in
             }) { data in
                 self.cpuUsage = data
@@ -79,7 +81,7 @@ final class ServerDetailViewModel: ObservableObject {
     
     func fetchLoad() {
         NetDataAPI
-            .getChartData(baseUrl: self.baseUrl, chart: "system.load")
+            .getChartData(baseUrl: self.baseUrl, chart: "system.load", basicAuthBase64: self.basicAuthBase64)
             .sink(receiveCompletion: { _ in
             }) { data in
                 self.load = data
@@ -89,7 +91,7 @@ final class ServerDetailViewModel: ObservableObject {
     
     func fetchRam() {
         NetDataAPI
-            .getChartData(baseUrl: self.baseUrl, chart: "system.ram")
+            .getChartData(baseUrl: self.baseUrl, chart: "system.ram", basicAuthBase64: self.basicAuthBase64)
             .sink(receiveCompletion: { _ in
             }) { data in
                 self.ramUsage = data
@@ -103,7 +105,7 @@ final class ServerDetailViewModel: ObservableObject {
     
     func fetchDiskIo() {
         NetDataAPI
-            .getChartData(baseUrl: self.baseUrl, chart: "system.io")
+            .getChartData(baseUrl: self.baseUrl, chart: "system.io", basicAuthBase64: self.basicAuthBase64)
             .sink(receiveCompletion: { _ in
             }) { data in
                 self.diskIO = data
@@ -113,7 +115,7 @@ final class ServerDetailViewModel: ObservableObject {
     
     func fetchNetwork() {
         NetDataAPI
-            .getChartData(baseUrl: self.baseUrl, chart: "system.net")
+            .getChartData(baseUrl: self.baseUrl, chart: "system.net", basicAuthBase64: self.basicAuthBase64)
             .sink(receiveCompletion: { _ in
             }) { data in
                 self.network = data
@@ -123,7 +125,7 @@ final class ServerDetailViewModel: ObservableObject {
     
     func fetchDiskSpace() {
         NetDataAPI
-            .getChartData(baseUrl: self.baseUrl, chart: "disk_space._")
+            .getChartData(baseUrl: self.baseUrl, chart: "disk_space._", basicAuthBase64: self.basicAuthBase64)
             .sink(receiveCompletion: { _ in
             }) { data in
                 self.diskSpaceUsage = data
@@ -137,7 +139,7 @@ final class ServerDetailViewModel: ObservableObject {
     
     func fetchCharts() {
         NetDataAPI
-            .getCharts(baseUrl: self.baseUrl)
+            .getCharts(baseUrl: self.baseUrl, basicAuthBase64: self.basicAuthBase64)
             .sink(receiveCompletion: { completion in
                 switch completion {
                 case .finished:
@@ -154,7 +156,7 @@ final class ServerDetailViewModel: ObservableObject {
     func fetchCustomChartData(baseUrl: String, chart: String) {
         self.customChartTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { timer in
             NetDataAPI
-                .getChartData(baseUrl: baseUrl, chart: chart)
+                .getChartData(baseUrl: baseUrl, chart: chart, basicAuthBase64: self.basicAuthBase64)
                 .sink(receiveCompletion: { completion in
                     switch completion {
                     case .finished:
@@ -163,7 +165,6 @@ final class ServerDetailViewModel: ObservableObject {
                         debugPrint("fetchCustomChartData", error)
                     }
                 }) { data in
-                    
                     self.customChartData = data
                 }
                 .store(in: &self.cancellable)

@@ -102,7 +102,7 @@ struct ServerDetailView: View {
             .readableGuidePadding()
         }
         .onAppear {
-            self.viewModel.fetch(baseUrl: server.url)
+            self.viewModel.fetch(baseUrl: server.url, basicAuthBase64: server.basicAuthBase64)
             // hide scroll indicators
             UITableView.appearance().showsVerticalScrollIndicator = false
         }
@@ -124,7 +124,7 @@ struct ServerDetailView: View {
                                     .disabled(self.viewModel.serverChartsToolbarButton)
                                     .sheet(isPresented: $showChartsSheet, onDismiss: {
                                         self.viewModel.destroyModel()
-                                        self.viewModel.fetch(baseUrl: server.url)
+                                        self.viewModel.fetch(baseUrl: server.url, basicAuthBase64: server.basicAuthBase64)
                                     }, content: {
                                         ChartsListView(serverCharts: viewModel.serverCharts, serverUrl: server.url)
                                     })
@@ -140,7 +140,7 @@ struct ServerDetailView: View {
                                     .accentColor(self.alarmStatusColor)
                                     .sheet(isPresented: $showAlarmsSheet, onDismiss: {
                                         self.viewModel.destroyModel()
-                                        self.viewModel.fetch(baseUrl: server.url)
+                                        self.viewModel.fetch(baseUrl: server.url, basicAuthBase64: server.basicAuthBase64)
                                     }, content: {
                                         AlarmsListView(serverAlarms: self.serverAlarms)
                                     })

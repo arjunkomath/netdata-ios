@@ -29,6 +29,11 @@ struct ServerListRow: View {
                 
                 VStack(alignment: .leading, spacing: 5) {
                     HStack {
+                        if !server.basicAuthBase64.isEmpty {
+                            Image(systemName: "lock.shield")
+                                .foregroundColor(.accentColor)
+                        }
+                        
                         Text(server.name)
                             .font(.headline)
                     }
@@ -78,6 +83,7 @@ struct ServerListRow: View {
                                                  description: server.description,
                                                  url: server.url,
                                                  serverInfo: server.serverInfo,
+                                                 basicAuthBase64: server.basicAuthBase64,
                                                  isFavourite: 0)
                     
                     if let record = server.record {
@@ -98,6 +104,7 @@ struct ServerListRow: View {
                                                  description: server.description,
                                                  url: server.url,
                                                  serverInfo: server.serverInfo,
+                                                 basicAuthBase64: server.basicAuthBase64,
                                                  isFavourite: 1)
                     
                     if let record = server.record {
@@ -146,6 +153,14 @@ struct ServerListRow_Previews: PreviewProvider {
                                        description: "gc us server",
                                        url: "techulus.com",
                                        serverInfo: nil,
+                                       basicAuthBase64: nil,
+                                       isFavourite: 0))
+        
+        ServerListRow(server: NDServer(name: "Techulus",
+                                       description: "gc us server",
+                                       url: "techulus.com",
+                                       serverInfo: nil,
+                                       basicAuthBase64: "base64==",
                                        isFavourite: 0))
     }
 }

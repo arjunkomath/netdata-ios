@@ -16,14 +16,22 @@ final class ServerListViewModel: ObservableObject {
     @Published var name = ""
     @Published var description = ""
     @Published var url = ""
+    @Published var isFavourite = 0
+    
+    @Published var enableBasicAuth = false
+    @Published var basicAuthUsername = ""
+    @Published var basicAuthPassword = ""
+    @Published var basicAuthvalidationError = false
+    @Published var basicAuthvalidationErrorMessage = ""
     
     @Published var validatingUrl = false
+    @Published var invalidUrlAlert = false
     @Published var validationError = false
     @Published var validationErrorMessage = ""
     
     func fetchAlarms(server: NDServer, completion: @escaping (ServerAlarms) -> ()) {
         NetDataAPI
-            .getAlarms(baseUrl: server.url)
+            .getAlarms(baseUrl: server.url, basicAuthBase64: server.basicAuthBase64)
             .sink(receiveCompletion: { completion in
                 switch completion {
                 case .finished:
@@ -41,8 +49,15 @@ final class ServerListViewModel: ObservableObject {
     func addServer(completion: @escaping (NDServer) -> ()) {
         validatingUrl = true
         
+        var basicAuthBase64: String = ""
+        if (enableBasicAuth == true && !basicAuthUsername.isEmpty && !basicAuthPassword.isEmpty) {
+            let loginString = String(format: "%@:%@", basicAuthUsername, basicAuthPassword)
+            let loginData = loginString.data(using: String.Encoding.utf8)!
+            basicAuthBase64 = loginData.base64EncodedString()
+        }
+        
         NetDataAPI
-            .getInfo(baseUrl: url)
+            .getInfo(baseUrl: url, basicAuthBase64: basicAuthBase64)
             .sink(receiveCompletion: { completion in
                 print(completion)
                 switch completion {
@@ -64,7 +79,8 @@ final class ServerListViewModel: ObservableObject {
                                       description: self.description,
                                       url: self.url,
                                       serverInfo: info,
-                                      isFavourite: 0)
+                                      basicAuthBase64: basicAuthBase64,
+                                      isFavourite: self.isFavourite)
                 
                 ServerService.shared.add(server: server)
                 
@@ -76,8 +92,15 @@ final class ServerListViewModel: ObservableObject {
     func updateServer(editingServer: NDServer, completion: @escaping (NDServer) -> ()) {
         validatingUrl = true
         
+        var basicAuthBase64: String = ""
+        if (enableBasicAuth == true && !basicAuthUsername.isEmpty && !basicAuthPassword.isEmpty) {
+            let loginString = String(format: "%@:%@", basicAuthUsername, basicAuthPassword)
+            let loginData = loginString.data(using: String.Encoding.utf8)!
+            basicAuthBase64 = loginData.base64EncodedString()
+        }
+        
         NetDataAPI
-            .getInfo(baseUrl: url)
+            .getInfo(baseUrl: url, basicAuthBase64: basicAuthBase64)
             .sink(receiveCompletion: { completion in
                 print(completion)
                 switch completion {
@@ -99,7 +122,8 @@ final class ServerListViewModel: ObservableObject {
                                       description: self.description,
                                       url: self.url,
                                       serverInfo: info,
-                                      isFavourite: 0)
+                                      basicAuthBase64: basicAuthBase64,
+                                      isFavourite: self.isFavourite)
                 
                 if let record = editingServer.record {
                     server.record = record
@@ -110,6 +134,31 @@ final class ServerListViewModel: ObservableObject {
                 }
             })
             .store(in: &self.cancellable)
+    }
+    
+    func validateForm() -> Bool {
+        if (name.isEmpty || description.isEmpty || url.isEmpty) {
+            validationError = true
+            validationErrorMessage = "Please fill all the fields"
+            return false
+        }
+        self.validationError = false
+        
+        if (enableBasicAuth == true && basicAuthUsername.isEmpty && basicAuthPassword.isEmpty) {
+            basicAuthvalidationError = true
+            basicAuthvalidationErrorMessage = "Please fill all the fields"
+            return false
+        }
+        self.basicAuthvalidationError = false
+        
+        if (!validateUrl(urlString: self.url)) {
+            invalidUrlAlert = true
+            return false
+        }
+        
+        self.validationError = false
+        self.validationErrorMessage = ""
+        return true
     }
     
     func validateUrl(urlString: String?) -> Bool {
