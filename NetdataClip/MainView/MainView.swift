@@ -9,7 +9,7 @@ import SwiftUI
 import Combine
 
 struct MainView: View {
-    @State private var serverUrl = ""
+    @State private var serverUrl = " "
     
     @State private var validationError = false
     @State private var validationErrorMessage = ""

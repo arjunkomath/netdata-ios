@@ -62,24 +62,16 @@ struct ServerListView: View {
             .sheet(isPresented: $showWelcomeSheet, content: {
                 WelcomeScreen()
             })
-            .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    settingsButton
-                }
+            .navigationBarItems(leading: settingsButton, trailing: HStack(spacing: 16) {
+                refreshButton
                 
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    HStack(spacing: 16) {
-                        refreshButton
-                        
-                        if self.serverService.isCloudEnabled && self.serverService.mostRecentError == nil {
-                            addButton
-                                .sheet(isPresented: $showAddServerSheet, content: {
-                                    AddServerForm()
-                                })
-                        }
-                    }
+                if self.serverService.isCloudEnabled && self.serverService.mostRecentError == nil {
+                    addButton
+                        .sheet(isPresented: $showAddServerSheet, content: {
+                            AddServerForm()
+                        })
                 }
-            }
+            })
             .navigationTitle("My Servers")
             .listStyle(InsetGroupedListStyle())
             .onAppear(perform: {
