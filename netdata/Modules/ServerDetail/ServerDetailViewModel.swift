@@ -67,7 +67,7 @@ final class ServerDetailViewModel: ObservableObject {
     
     func fetchCpu() {
         NetDataAPI
-            .getChartData(baseUrl: self.baseUrl, chart: "system.cpu", basicAuthBase64: self.basicAuthBase64)
+            .getChartData(baseUrl: self.baseUrl, basicAuthBase64: self.basicAuthBase64, chart: "system.cpu")
             .sink(receiveCompletion: { _ in
             }) { data in
                 self.cpuUsage = data
@@ -81,7 +81,7 @@ final class ServerDetailViewModel: ObservableObject {
     
     func fetchLoad() {
         NetDataAPI
-            .getChartData(baseUrl: self.baseUrl, chart: "system.load", basicAuthBase64: self.basicAuthBase64)
+            .getChartData(baseUrl: self.baseUrl, basicAuthBase64: self.basicAuthBase64, chart: "system.load")
             .sink(receiveCompletion: { _ in
             }) { data in
                 self.load = data
@@ -91,7 +91,7 @@ final class ServerDetailViewModel: ObservableObject {
     
     func fetchRam() {
         NetDataAPI
-            .getChartData(baseUrl: self.baseUrl, chart: "system.ram", basicAuthBase64: self.basicAuthBase64)
+            .getChartData(baseUrl: self.baseUrl, basicAuthBase64: self.basicAuthBase64, chart: "system.ram")
             .sink(receiveCompletion: { _ in
             }) { data in
                 self.ramUsage = data
@@ -105,7 +105,7 @@ final class ServerDetailViewModel: ObservableObject {
     
     func fetchDiskIo() {
         NetDataAPI
-            .getChartData(baseUrl: self.baseUrl, chart: "system.io", basicAuthBase64: self.basicAuthBase64)
+            .getChartData(baseUrl: self.baseUrl, basicAuthBase64: self.basicAuthBase64, chart: "system.io")
             .sink(receiveCompletion: { _ in
             }) { data in
                 self.diskIO = data
@@ -115,7 +115,7 @@ final class ServerDetailViewModel: ObservableObject {
     
     func fetchNetwork() {
         NetDataAPI
-            .getChartData(baseUrl: self.baseUrl, chart: "system.net", basicAuthBase64: self.basicAuthBase64)
+            .getChartData(baseUrl: self.baseUrl, basicAuthBase64: self.basicAuthBase64, chart: "system.net")
             .sink(receiveCompletion: { _ in
             }) { data in
                 self.network = data
@@ -125,7 +125,7 @@ final class ServerDetailViewModel: ObservableObject {
     
     func fetchDiskSpace() {
         NetDataAPI
-            .getChartData(baseUrl: self.baseUrl, chart: "disk_space._", basicAuthBase64: self.basicAuthBase64)
+            .getChartData(baseUrl: self.baseUrl, basicAuthBase64: self.basicAuthBase64, chart: "disk_space._")
             .sink(receiveCompletion: { _ in
             }) { data in
                 self.diskSpaceUsage = data
@@ -156,7 +156,7 @@ final class ServerDetailViewModel: ObservableObject {
     func fetchCustomChartData(baseUrl: String, chart: String) {
         self.customChartTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { timer in
             NetDataAPI
-                .getChartData(baseUrl: baseUrl, chart: chart, basicAuthBase64: self.basicAuthBase64)
+                .getChartData(baseUrl: baseUrl, basicAuthBase64: self.basicAuthBase64, chart: chart)
                 .sink(receiveCompletion: { completion in
                     switch completion {
                     case .finished:

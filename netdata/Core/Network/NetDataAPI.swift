@@ -32,7 +32,7 @@ extension NetDataAPI {
         return run(requestUrl: requestUrl, basicAuthBase64: basicAuthBase64)
     }
     
-    static func getChartData(baseUrl: String, chart: String, basicAuthBase64: String = "") -> AnyPublisher<ServerData, Error> {
+    static func getChartData(baseUrl: String, basicAuthBase64: String = "", chart: String) -> AnyPublisher<ServerData, Error> {
         let requestUrl = URL(string: baseUrl)!.appendingPathComponent(NetDataEndpoint.data.rawValue + chart)
         
         return run(requestUrl: requestUrl, basicAuthBase64: basicAuthBase64)
