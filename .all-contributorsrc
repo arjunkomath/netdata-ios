@@ -1,0 +1,25 @@
+{
+  "files": [
+    "README.md"
+  ],
+  "imageSize": 100,
+  "commit": false,
+  "contributors": [
+    {
+      "login": "kobimx",
+      "name": "Mirko Milovanovic",
+      "avatar_url": "https://avatars3.githubusercontent.com/u/1266640?v=4",
+      "profile": "https://github.com/kobimx",
+      "contributions": [
+        "code",
+        "design"
+      ]
+    }
+  ],
+  "contributorsPerLine": 7,
+  "projectName": "netdata-ios",
+  "projectOwner": "arjunkomath",
+  "repoType": "github",
+  "repoHost": "https://github.com",
+  "skipCi": true
+}
