@@ -2,14 +2,13 @@
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
 [![All Contributors](https://img.shields.io/badge/all_contributors-1-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
+![Xcode build](https://github.com/arjunkomath/netdata-ios/workflows/Xcode%20build/badge.svg)
 
 ### A beautiful and minimal client for Netdata that allows you to monitor cloud infrastructure in real-time.
 
 ## [Download on the App Store](https://apps.apple.com/us/app/netdata-server-monitoring/id1525322870)
 
 *Warning! I'm learning Swift and SwiftUI, so the code is probably terrible.*
-
-![Xcode build](https://github.com/arjunkomath/netdata-ios/workflows/Xcode%20build/badge.svg)
 
 ![screenshot-1](https://github.com/arjunkomath/netdata-ios/blob/main/screenshots/mockup.png?raw=true)
 
