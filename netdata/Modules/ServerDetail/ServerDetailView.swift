@@ -126,7 +126,7 @@ struct ServerDetailView: View {
                                         self.viewModel.destroyModel()
                                         self.viewModel.fetch(baseUrl: server.url, basicAuthBase64: server.basicAuthBase64)
                                     }, content: {
-                                        ChartsListView(serverCharts: viewModel.serverCharts, serverUrl: server.url)
+                                        ChartsListView(serverCharts: viewModel.serverCharts, serverUrl: server.url, basicAuthBase64: server.basicAuthBase64)
                                     })
                                     
                                     Button(action: {

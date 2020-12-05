@@ -153,10 +153,10 @@ final class ServerDetailViewModel: ObservableObject {
             .store(in: &self.cancellable)
     }
     
-    func fetchCustomChartData(baseUrl: String, chart: String) {
+    func fetchCustomChartData(baseUrl: String, basicAuthBase64: String, chart: String) {
         self.customChartTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { timer in
             NetDataAPI
-                .getChartData(baseUrl: baseUrl, basicAuthBase64: self.basicAuthBase64, chart: chart)
+                .getChartData(baseUrl: baseUrl, basicAuthBase64: basicAuthBase64, chart: chart)
                 .sink(receiveCompletion: { completion in
                     switch completion {
                     case .finished:

@@ -11,6 +11,7 @@ struct ChartsListView: View {
     @Environment(\.presentationMode) private var presentationMode
     var serverCharts: ServerCharts
     var serverUrl: String
+    var basicAuthBase64: String
     
     @State private var searchText = ""
     
@@ -23,7 +24,8 @@ struct ChartsListView: View {
                     ForEach(serverCharts.charts.keys.sorted().filter({ searchText.isEmpty ? true : $0.contains(searchText) }), id: \.self) { key in
                         if serverCharts.charts[key] != nil && serverCharts.charts[key]!.enabled == true {
                             NavigationLink(destination: CustomChartDetailView(serverChart: serverCharts.charts[key]!,
-                                                                              serverUrl: serverUrl)) {
+                                                                              serverUrl: serverUrl,
+                                                                              basicAuthBase64: basicAuthBase64)) {
                                 ChartListRow(chart: serverCharts.charts[key]!)
                             }
                         }
@@ -52,6 +54,7 @@ struct ChartsListView_Previews: PreviewProvider {
         ChartsListView(serverCharts: ServerCharts(version: "1.0",
                                                   release_channel: "beta",
                                                   charts: [:]),
-                       serverUrl: "")
+                       serverUrl: "",
+                       basicAuthBase64: "")
     }
 }
