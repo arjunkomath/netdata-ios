@@ -8,15 +8,18 @@
 import SwiftUI
 import Combine
 
+enum ActiveSheet {
+    case alarms, charts, loading
+}
+
 struct ServerDetailView: View {
     var server: NDServer;
     var serverAlarms: ServerAlarms;
-    var alarmStatusColor: Color;
     
     @StateObject var viewModel = ServerDetailViewModel()
     
-    @State private var showAlarmsSheet = false
-    @State private var showChartsSheet = false
+    @State private var showSheet = false
+    @State private var activeSheet: ActiveSheet = .loading
     
     var body: some View {
         List {
@@ -111,42 +114,39 @@ struct ServerDetailView: View {
         }
         .listStyle(InsetGroupedListStyle())
         .navigationTitle(Text(server.name))
-        .navigationBarItems(trailing:
-                                HStack(spacing: 16) {
-                                    Button(action: {
-                                        self.viewModel.destroy()
-                                        self.showChartsSheet = true
-                                    }) {
-                                        Image(systemName: "chart.pie")
-                                            .imageScale(.small)
-                                            .foregroundColor(.accentColor)
-                                    }
-                                    .disabled(self.viewModel.serverChartsToolbarButton)
-                                    .sheet(isPresented: $showChartsSheet, onDismiss: {
-                                        self.viewModel.destroyModel()
-                                        self.viewModel.fetch(baseUrl: server.url, basicAuthBase64: server.basicAuthBase64)
-                                    }, content: {
-                                        ChartsListView(serverCharts: viewModel.serverCharts, serverUrl: server.url, basicAuthBase64: server.basicAuthBase64)
-                                    })
-                                    
-                                    Button(action: {
-                                        self.viewModel.destroy()
-                                        self.showAlarmsSheet = true
-                                    }) {
-                                        Image(systemName: "alarm")
-                                            .imageScale(.small)
-                                            .foregroundColor(self.alarmStatusColor)
-                                    }
-                                    .accentColor(self.alarmStatusColor)
-                                    .sheet(isPresented: $showAlarmsSheet, onDismiss: {
-                                        self.viewModel.destroyModel()
-                                        self.viewModel.fetch(baseUrl: server.url, basicAuthBase64: server.basicAuthBase64)
-                                    }, content: {
-                                        AlarmsListView(serverAlarms: self.serverAlarms)
-                                    })
-                                }
-                                .buttonStyle(BorderedBarButtonStyle())
-        )
+        .toolbar {
+            ToolbarItemGroup(placement: .navigationBarTrailing) {
+                Button(action: {
+                    self.activeSheet = .charts
+                    self.viewModel.destroy()
+                    self.showSheet.toggle()
+                }) {
+                    Image(systemName: "chart.pie")
+                }
+                .disabled(self.viewModel.serverChartsToolbarButton)
+                
+                Button(action: {
+                    self.activeSheet = .alarms
+                    self.viewModel.destroy()
+                    self.showSheet.toggle()
+                }) {
+                    Image(systemName: "alarm")
+                }
+            }
+        }
+        .sheet(isPresented: $showSheet, onDismiss: {
+            self.viewModel.destroyModel()
+            self.viewModel.fetch(baseUrl: server.url, basicAuthBase64: server.basicAuthBase64)
+            self.activeSheet = .loading
+        }, content: {
+            if self.activeSheet == .loading {
+                ProgressView()
+            } else if self.activeSheet == .charts {
+                ChartsListView(serverCharts: viewModel.serverCharts, serverUrl: server.url, basicAuthBase64: server.basicAuthBase64)
+            } else if self.activeSheet == .alarms {
+                AlarmsListView(serverAlarms: self.serverAlarms)
+            }
+        })
     }
     
     func makeSectionHeader(text: String) -> some View {
