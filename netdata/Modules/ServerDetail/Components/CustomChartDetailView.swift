@@ -10,6 +10,7 @@ import SwiftUI
 struct CustomChartDetailView: View {
     var serverChart: ServerChart
     var serverUrl: String
+    var basicAuthBase64: String
     
     @StateObject var viewModel = ServerDetailViewModel()
     
@@ -29,7 +30,7 @@ struct CustomChartDetailView: View {
         }
         .listStyle(InsetGroupedListStyle())
         .onAppear {
-            viewModel.fetchCustomChartData(baseUrl: serverUrl, chart: serverChart.name)
+            viewModel.fetchCustomChartData(baseUrl: serverUrl, basicAuthBase64: basicAuthBase64, chart: serverChart.name)
         }
         .onDisappear {
             viewModel.destroyCustomChartData()
