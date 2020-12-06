@@ -18,8 +18,8 @@ struct EditServerForm: View {
     var body: some View {
         NavigationView {
             Form {
-                Section(header: Text("Update Server details"),
-                        footer: Text("HTTPS is required to connect")) {
+                Section(header: makeSectionHeader(text: "Update Server details"),
+                        footer: Text("HTTPS is required for connections over the internet\nHTTP is allowed for LAN connections with IP or mDNS domains")) {
                     if viewModel.validationError {
                         ErrorMessage(message: viewModel.validationErrorMessage)
                     }
@@ -31,7 +31,8 @@ struct EditServerForm: View {
                         .disableAutocorrection(true)
                 }
 
-                Section(header: Text("Authentication")) {
+                Section(header: makeSectionHeader(text: "Authentication"),
+                        footer: Text("Base64 encoded authorisation header will be stored in iCloud")) {
                     HStack {
                         Toggle(isOn: $viewModel.enableBasicAuth) {
                             Text("Basic Authentication")
@@ -81,7 +82,7 @@ struct EditServerForm: View {
                 return
             }
 
-            viewModel.updateServer(editingServer: editingServer!) { server in
+            viewModel.updateServer(editingServer: editingServer!) { _ in
                 self.presentationMode.wrappedValue.dismiss()
             }
         }) {
@@ -98,6 +99,11 @@ struct EditServerForm: View {
         .alert(isPresented: $viewModel.invalidUrlAlert) {
             Alert(title: Text("Oops!"), message: Text("You've entered an invalid URL"), dismissButton: .default(Text("OK")))
         }
+    }
+    
+    func makeSectionHeader(text: String) -> some View {
+        Text(text)
+            .sectionHeaderStyle()
     }
 }
 
