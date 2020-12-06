@@ -62,16 +62,22 @@ struct ServerListView: View {
             .sheet(isPresented: $showWelcomeSheet, content: {
                 WelcomeScreen()
             })
-            .navigationBarItems(leading: settingsButton, trailing: HStack(spacing: 16) {
-                refreshButton
-                
-                if self.serverService.isCloudEnabled && self.serverService.mostRecentError == nil {
-                    addButton
-                        .sheet(isPresented: $showAddServerSheet, content: {
-                            AddServerForm()
-                        })
+            .toolbar {
+                ToolbarItemGroup(placement: .navigationBarLeading) {
+                    settingsButton
+                    
+                    refreshButton
                 }
-            })
+                
+                ToolbarItem(placement: .primaryAction) {
+                    if self.serverService.isCloudEnabled && self.serverService.mostRecentError == nil {
+                        addButton
+                            .sheet(isPresented: $showAddServerSheet, content: {
+                                AddServerForm()
+                            })
+                    }
+                }
+            }
             .navigationTitle("My Servers")
             .listStyle(InsetGroupedListStyle())
             .onAppear(perform: {
@@ -132,10 +138,8 @@ struct ServerListView: View {
         Button(action: {
             self.addServer()
         }) {
-            Image(systemName: "plus")
-                .imageScale(.medium)
+            Image(systemName: "externaldrive.badge.plus")
         }
-        .buttonStyle(BorderedBarButtonStyle())
     }
     
     private var refreshButton: some View {
@@ -143,13 +147,11 @@ struct ServerListView: View {
             self.serverService.refresh()
         }) {
             if serverService.isSynching {
-                ProgressView().frame(maxWidth: 14.5, maxHeight: 16, alignment: .center) // attempt at fixing the progress circle view
-            } else {                                                                    // from popping and being bigger that the button frame; not pixel perfect
-                Image(systemName: "arrow.clockwise")                                    // which it drives me mad
-                    .imageScale(.small)
+                ProgressView().frame(width: 32, height: 16, alignment: .trailing)
+            } else {
+                Image(systemName: "arrow.clockwise")
             }
         }
-        .buttonStyle(BorderedBarButtonStyle())
     }
     
     private var settingsButton: some View {
@@ -157,9 +159,7 @@ struct ServerListView: View {
             self.showSettingsSheet = true
         }) {
             Image(systemName: "gear")
-                .imageScale(.small)
         }
-        .buttonStyle(BorderedBarButtonStyle())
         .sheet(isPresented: $showSettingsSheet, content: {
             SettingsView()
                 .environmentObject(serverService)

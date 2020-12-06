@@ -86,7 +86,7 @@ struct ServerDetailDemoView: View {
             .readableGuidePadding()
         }
         .onAppear {
-            self.viewModel.fetch(baseUrl: serverUrl)
+            self.viewModel.fetch(baseUrl: serverUrl, basicAuthBase64: "")
             
             // hide scroll indicators
             UITableView.appearance().showsVerticalScrollIndicator = false

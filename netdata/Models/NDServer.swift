@@ -18,6 +18,9 @@ public struct NDServer: CloudModel, Equatable, Identifiable {
     public let serverInfoJson: String
     public let isFavourite: Int
     
+    // authentication
+    public let basicAuthBase64: String
+    
     public var record: CKRecord?
     public let serverInfo: ServerInfo?
     
@@ -26,19 +29,20 @@ public struct NDServer: CloudModel, Equatable, Identifiable {
     }
     
     enum RecordKeys: String {
-        case id, name, description, url, serverInfoJson, isFavourite
+        case id, name, description, url, serverInfoJson, isFavourite, basicAuthBase64
     }
     
     public static func == (lhs: NDServer, rhs: NDServer) -> Bool {
         lhs.id == rhs.id
     }
     
-    public init(name: String, description: String, url: String, serverInfo: ServerInfo?, isFavourite: Int?) {
+    public init(name: String, description: String, url: String, serverInfo: ServerInfo?, basicAuthBase64: String?, isFavourite: Int?) {
         self.id = UUID().uuidString
         self.name = name
         self.description = description
         self.url = url
         self.serverInfo = serverInfo
+        self.basicAuthBase64 = basicAuthBase64 == nil ? "" : basicAuthBase64!
         self.isFavourite = isFavourite == nil ? 0 : isFavourite!
         
         if (serverInfo != nil) {
@@ -56,6 +60,7 @@ public struct NDServer: CloudModel, Equatable, Identifiable {
         self.description = record[RecordKeys.description.rawValue] as? String ?? ""
         self.url = record[RecordKeys.url.rawValue] as? String ?? ""
         self.serverInfoJson = record[RecordKeys.serverInfoJson.rawValue] as? String ?? ""
+        self.basicAuthBase64 = record[RecordKeys.basicAuthBase64.rawValue] as? String ?? ""
         self.isFavourite = record[RecordKeys.isFavourite.rawValue] as? Int ?? 0
         
         self.record = record
@@ -70,6 +75,7 @@ public struct NDServer: CloudModel, Equatable, Identifiable {
         record[RecordKeys.description.rawValue] = description
         record[RecordKeys.url.rawValue] = url
         record[RecordKeys.serverInfoJson.rawValue] = serverInfoJson
+        record[RecordKeys.basicAuthBase64.rawValue] = basicAuthBase64
         record[RecordKeys.isFavourite.rawValue] = isFavourite
         return record
     }

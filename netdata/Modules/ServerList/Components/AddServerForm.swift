@@ -11,13 +11,11 @@ import Combine
 struct AddServerForm: View {
     @Environment(\.presentationMode) private var presentationMode
     @StateObject var viewModel = ServerListViewModel()
-    
-    @State private var invalidUrlAlert = false
-    
+        
     var body: some View {
         NavigationView {
             Form {
-                Section(header: Text("Install Netdata Agent on Server"),
+                Section(header: makeSectionHeader(text: "Install Netdata Agent on Server"),
                         footer: Text("The Netdata Agent is 100% open source and powered by more than 300 contributors. All components are available under the GPL v3 license on GitHub.")) {
                     makeRow(image: "gear",
                             text: "View Installation guide",
@@ -25,18 +23,37 @@ struct AddServerForm: View {
                             color: .accentColor)
                 }
                 
-                Section(header: Text("Enter Server details"),
+                Section(header: makeSectionHeader(text: "Enter Server details"),
                         footer: Text("HTTPS is required for connections over the internet\nHTTP is allowed for LAN connections with IP or mDNS domains")) {
                     if viewModel.validationError {
                         ErrorMessage(message: viewModel.validationErrorMessage)
                     }
-
                     
                     TextField("Name", text: $viewModel.name)
                     TextField("Description", text: $viewModel.description)
                     TextField("NetData Server Full URL", text: $viewModel.url)
                         .autocapitalization(UITextAutocapitalizationType.none)
                         .disableAutocorrection(true)
+                }
+                
+                Section(header: makeSectionHeader(text: "Authentication"),
+                        footer: Text("Base64 encoded authorisation header will be stored in iCloud")) {
+                    HStack {
+                        Toggle(isOn: $viewModel.enableBasicAuth) {
+                            Text("Basic Authentication")
+                        }
+                        .toggleStyle(SwitchToggleStyle(tint: .accentColor))
+                    }
+                    
+                    if viewModel.basicAuthvalidationError {
+                        ErrorMessage(message: viewModel.basicAuthvalidationErrorMessage)
+                    }
+                    
+                    if viewModel.enableBasicAuth {
+                        TextField("Username", text: $viewModel.basicAuthUsername)
+                            .autocapitalization(UITextAutocapitalizationType.none)
+                        SecureField("Password", text: $viewModel.basicAuthPassword)
+                    }
                 }
             }
             .navigationBarTitle("Setup Server")
@@ -66,22 +83,6 @@ struct AddServerForm: View {
         }
     }
     
-    private func checkForMissingField() {
-        if (viewModel.name.isEmpty || viewModel.description.isEmpty || viewModel.url.isEmpty) {
-            viewModel.validationError = true
-            viewModel.validationErrorMessage = "Please fill all the fields"
-            return
-        }
-        
-        if (!viewModel.validateUrl(urlString: viewModel.url)) {
-            self.invalidUrlAlert = true
-            return
-        }
-        
-        viewModel.validationError = false
-        viewModel.validationErrorMessage = ""
-    }
-    
     private var dismissButton: some View {
         Button(action: {
             self.presentationMode.wrappedValue.dismiss()
@@ -95,8 +96,7 @@ struct AddServerForm: View {
     
     private var saveButton: some View {
         Button(action: {
-            self.checkForMissingField()
-            if viewModel.validationError {
+            if viewModel.validateForm() == false {
                 FeedbackGenerator.shared.triggerNotification(type: .error)
                 return
             }
@@ -115,9 +115,14 @@ struct AddServerForm: View {
             }
         }
         .buttonStyle(BorderedBarButtonStyle())
-        .alert(isPresented: $invalidUrlAlert) {
+        .alert(isPresented: $viewModel.invalidUrlAlert) {
             Alert(title: Text("Oops!"), message: Text("You've entered an invalid URL"), dismissButton: .default(Text("OK")))
         }
+    }
+    
+    func makeSectionHeader(text: String) -> some View {
+        Text(text)
+            .sectionHeaderStyle()
     }
 }
 

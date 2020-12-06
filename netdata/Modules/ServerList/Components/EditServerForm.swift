@@ -12,16 +12,14 @@ struct EditServerForm: View {
     @Environment(\.presentationMode) private var presentationMode
     @ObservedObject var userSettings = UserSettings()
     @StateObject var viewModel = ServerListViewModel()
-    
-    @State private var invalidUrlAlert = false
-    
+        
     let editingServer: NDServer?
     
     var body: some View {
         NavigationView {
             Form {
-                Section(header: Text("Update Server details"),
-                        footer: Text("HTTPS is required to connect")) {
+                Section(header: makeSectionHeader(text: "Update Server details"),
+                        footer: Text("HTTPS is required for connections over the internet\nHTTP is allowed for LAN connections with IP or mDNS domains")) {
                     if viewModel.validationError {
                         ErrorMessage(message: viewModel.validationErrorMessage)
                     }
@@ -32,6 +30,26 @@ struct EditServerForm: View {
                         .autocapitalization(UITextAutocapitalizationType.none)
                         .disableAutocorrection(true)
                 }
+
+                Section(header: makeSectionHeader(text: "Authentication"),
+                        footer: Text("Base64 encoded authorisation header will be stored in iCloud")) {
+                    HStack {
+                        Toggle(isOn: $viewModel.enableBasicAuth) {
+                            Text("Basic Authentication")
+                        }
+                        .toggleStyle(SwitchToggleStyle(tint: .accentColor))
+                    }
+                    
+                    if viewModel.basicAuthvalidationError {
+                        ErrorMessage(message: viewModel.basicAuthvalidationErrorMessage)
+                    }
+                    
+                    if viewModel.enableBasicAuth {
+                        TextField("Username", text: $viewModel.basicAuthUsername)
+                            .autocapitalization(UITextAutocapitalizationType.none)
+                        SecureField("Password", text: $viewModel.basicAuthPassword)
+                    }
+                }
             }
             .navigationBarTitle("Edit Server")
             .navigationBarItems(leading: dismissButton, trailing: saveButton)
@@ -40,25 +58,10 @@ struct EditServerForm: View {
                     viewModel.name = server.name
                     viewModel.description = server.description
                     viewModel.url = server.url
+                    viewModel.isFavourite = server.isFavourite
                 }
             }
         }
-    }
-    
-    private func checkForMissingField() {
-        if (viewModel.name.isEmpty || viewModel.description.isEmpty || viewModel.url.isEmpty) {
-            viewModel.validationError = true
-            viewModel.validationErrorMessage = "Please fill all the fields"
-            return
-        }
-        
-        if (!viewModel.validateUrl(urlString: viewModel.url)) {
-            self.invalidUrlAlert = true
-            return
-        }
-        
-        viewModel.validationError = false
-        viewModel.validationErrorMessage = ""
     }
     
     private var dismissButton: some View {
@@ -74,13 +77,12 @@ struct EditServerForm: View {
     
     private var saveButton: some View {
         Button(action: {
-            self.checkForMissingField()
-            if viewModel.validationError {
+            if viewModel.validateForm() == false {
                 FeedbackGenerator.shared.triggerNotification(type: .error)
                 return
             }
 
-            viewModel.updateServer(editingServer: editingServer!) { server in
+            viewModel.updateServer(editingServer: editingServer!) { _ in
                 self.presentationMode.wrappedValue.dismiss()
             }
         }) {
@@ -94,9 +96,14 @@ struct EditServerForm: View {
             }
         }
         .buttonStyle(BorderedBarButtonStyle())
-        .alert(isPresented: $invalidUrlAlert) {
+        .alert(isPresented: $viewModel.invalidUrlAlert) {
             Alert(title: Text("Oops!"), message: Text("You've entered an invalid URL"), dismissButton: .default(Text("OK")))
         }
+    }
+    
+    func makeSectionHeader(text: String) -> some View {
+        Text(text)
+            .sectionHeaderStyle()
     }
 }
 
