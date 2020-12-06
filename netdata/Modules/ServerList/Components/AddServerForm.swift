@@ -15,7 +15,7 @@ struct AddServerForm: View {
     var body: some View {
         NavigationView {
             Form {
-                Section(header: Text("Install Netdata Agent on Server"),
+                Section(header: makeSectionHeader(text: "Install Netdata Agent on Server"),
                         footer: Text("The Netdata Agent is 100% open source and powered by more than 300 contributors. All components are available under the GPL v3 license on GitHub.")) {
                     makeRow(image: "gear",
                             text: "View Installation guide",
@@ -23,7 +23,7 @@ struct AddServerForm: View {
                             color: .accentColor)
                 }
                 
-                Section(header: Text("Enter Server details"),
+                Section(header: makeSectionHeader(text: "Enter Server details"),
                         footer: Text("HTTPS is required for connections over the internet\nHTTP is allowed for LAN connections with IP or mDNS domains")) {
                     if viewModel.validationError {
                         ErrorMessage(message: viewModel.validationErrorMessage)
@@ -36,7 +36,8 @@ struct AddServerForm: View {
                         .disableAutocorrection(true)
                 }
                 
-                Section(header: Text("Authentication")) {
+                Section(header: makeSectionHeader(text: "Authentication"),
+                        footer: Text("Base64 encoded authorisation header will be stored in iCloud")) {
                     HStack {
                         Toggle(isOn: $viewModel.enableBasicAuth) {
                             Text("Basic Authentication")
@@ -117,6 +118,11 @@ struct AddServerForm: View {
         .alert(isPresented: $viewModel.invalidUrlAlert) {
             Alert(title: Text("Oops!"), message: Text("You've entered an invalid URL"), dismissButton: .default(Text("OK")))
         }
+    }
+    
+    func makeSectionHeader(text: String) -> some View {
+        Text(text)
+            .sectionHeaderStyle()
     }
 }
 

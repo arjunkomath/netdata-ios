@@ -64,14 +64,18 @@ final class ServerListViewModel: ObservableObject {
                 case .finished:
                     break
                 case .failure(let error):
-                    DispatchQueue.main.async {
-                        self.validatingUrl = false
-                        self.validationError = true
+                    FeedbackGenerator.shared.triggerNotification(type: .error)
+                    self.validatingUrl = false
+                    self.validationError = true
+                    
+                    guard let apiError = error as? APIError, apiError != .somethingWentWrong else {
                         self.validationErrorMessage = "Invalid server URL! Please ensure Netdata has been installed on the server."
+                        return
                     }
                     
-                    FeedbackGenerator.shared.triggerNotification(type: .error)
-                    debugPrint(error)
+                    if apiError == APIError.authenticationFailed {
+                        self.validationErrorMessage = "Authentication Failed"
+                    }
                 }
             },
             receiveValue: { info in
@@ -81,8 +85,9 @@ final class ServerListViewModel: ObservableObject {
                                       serverInfo: info,
                                       basicAuthBase64: basicAuthBase64,
                                       isFavourite: self.isFavourite)
-                
-                ServerService.shared.add(server: server)
+                DispatchQueue.main.async {
+                    ServerService.shared.add(server: server)
+                }
                 
                 completion(server)
             })
@@ -107,14 +112,18 @@ final class ServerListViewModel: ObservableObject {
                 case .finished:
                     break
                 case .failure(let error):
-                    DispatchQueue.main.async {
-                        self.validatingUrl = false
-                        self.validationError = true
-                        self.validationErrorMessage = "Invalid server URL"
+                    FeedbackGenerator.shared.triggerNotification(type: .error)
+                    self.validatingUrl = false
+                    self.validationError = true
+                    
+                    guard let apiError = error as? APIError, apiError != .somethingWentWrong else {
+                        self.validationErrorMessage = "Invalid server URL! Please ensure Netdata has been installed on the server."
+                        return
                     }
                     
-                    FeedbackGenerator.shared.triggerNotification(type: .error)
-                    debugPrint(error)
+                    if apiError == APIError.authenticationFailed {
+                        self.validationErrorMessage = "Authentication Failed"
+                    }
                 }
             },
             receiveValue: { info in
@@ -128,7 +137,9 @@ final class ServerListViewModel: ObservableObject {
                 if let record = editingServer.record {
                     server.record = record
                     
-                    ServerService.shared.edit(server: server)
+                    DispatchQueue.main.async {
+                        ServerService.shared.edit(server: server)
+                    }
                     
                     completion(server)
                 }
