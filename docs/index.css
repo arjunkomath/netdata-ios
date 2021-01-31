@@ -1,0 +1,12 @@
+html, body {
+    background-color: black;
+}
+
+.text-container {
+    background-color: #1a1a1a;
+    border-radius: 24px;
+}
+
+.promo-image {
+    border-radius: 24px;
+}

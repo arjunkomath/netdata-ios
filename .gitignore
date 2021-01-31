@@ -97,3 +97,5 @@ Pods
 
 # MacOS Indexing file
 .DS_Store
+
+.idea
