@@ -98,7 +98,7 @@ struct AlarmWidgetEntryView : View {
             VStack(alignment: .leading) {
                 Image(systemName: "externaldrive.fill.badge.xmark")
                     .resizable()
-                    .frame(width: 68.0, height: 48.0)
+                    .frame(width: 48.0, height: 36.0)
                     .foregroundColor(.orange)
                     .padding(.bottom, 8)
                 
