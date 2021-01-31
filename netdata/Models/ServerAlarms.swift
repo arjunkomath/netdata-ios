@@ -18,4 +18,9 @@ public struct ServerAlarm: Encodable, Decodable {
 public struct ServerAlarms: Encodable, Decodable {
     var status: Bool;
     var alarms: [String: ServerAlarm];
+    
+    public func getCriticalAlarmsCount() -> Int {
+        return self.alarms.keys.sorted()
+            .reduce(0, { acc, key in acc + (self.alarms[key]?.status == "CRITICAL" ? 1 : 0) })
+    }
 }

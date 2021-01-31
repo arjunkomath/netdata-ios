@@ -14,15 +14,13 @@ struct Provider: TimelineProvider {
     func placeholder(in context: Context) -> AlarmsEntry {
         AlarmsEntry.placeholder
     }
-
+    
     func getSnapshot(in context: Context, completion: @escaping (AlarmsEntry) -> ()) {
-        let entry = AlarmsEntry(count: 0, date: Date())
+        let entry = AlarmsEntry.placeholder
         completion(entry)
     }
-
+    
     func getTimeline(in context: Context, completion: @escaping (Timeline<Entry>) -> ()) {
-        var cancellable = Set<AnyCancellable>()
-        
         if context.isPreview {
             let timeline = Timeline(entries: [AlarmsEntry.placeholder], policy: .atEnd)
             completion(timeline)
@@ -33,35 +31,28 @@ struct Provider: TimelineProvider {
             let fetchDate = Date()
             let serverService = ServerService.shared
             serverService.refresh()
-
             
             // show placeholder when there are no favourite servers
             if serverService.favouriteServers.count == 0 {
                 let timeline = Timeline(entries: [AlarmsEntry.placeholder], policy: .atEnd)
                 completion(timeline)
             } else {
-                var totalAlarmsCount = 0
-                
-                serverService.favouriteServers.forEach({ server in
-                    NetDataAPI
-                        .getAlarms(baseUrl: server.url, basicAuthBase64: server.basicAuthBase64)
-                        .sink(receiveCompletion: { completion in
-                            switch completion {
-                            case .finished:
-                                break
-                            case .failure(let error):
-                                debugPrint("getAlarms", server.name, error)
-                            }
-                        },
-                        receiveValue: { serverAlarm in
-                            totalAlarmsCount = totalAlarmsCount + serverAlarm.alarms.count
-                        })
-                        .store(in: &cancellable)
-                })
+                Publishers.MergeMany(serverService.favouriteServers.map({ server in NetDataAPI.getAlarms(baseUrl: server.url, basicAuthBase64: server.basicAuthBase64) }))
+                    .collect()
+                    .sink(receiveCompletion: { (serverCompletion) in
+                        if case .failure(let error) = serverCompletion {
+                            print("Got error: \(error.localizedDescription)")
+                        }
+                    },
+                    receiveValue: { serverAlarms in
+                        let totalAlarmsCount = serverAlarms.reduce(0, { acc, serverAlarm in acc + serverAlarm.alarms.count })
+                        let criticalAlarmsCount = serverAlarms.reduce(0, { acc, serverAlarm in acc + serverAlarm.getCriticalAlarmsCount() })
                         
-                let entry = AlarmsEntry(count: serverService.defaultServers.count, date: fetchDate)
-                let timeline = Timeline(entries: [entry], policy: .after(refreshDate))
-                completion(timeline)
+                        let entry = AlarmsEntry(count: totalAlarmsCount, criticalCount: criticalAlarmsCount, date: fetchDate)
+                        let timeline = Timeline(entries: [entry], policy: .after(refreshDate))
+                        completion(timeline)
+                    })
+                    .store(in: &ServerService.cancellable)
             }
         }
     }
@@ -69,6 +60,7 @@ struct Provider: TimelineProvider {
 
 struct AlarmsEntry: TimelineEntry {
     let count: Int
+    let criticalCount: Int
     let date: Date
     
     var relevance: TimelineEntryRelevance? {
@@ -78,13 +70,13 @@ struct AlarmsEntry: TimelineEntry {
 
 extension AlarmsEntry {
     static var placeholder: AlarmsEntry {
-        AlarmsEntry(count: -1, date: Date())
+        AlarmsEntry(count: -1, criticalCount: 0, date: Date())
     }
 }
 
 struct AlarmWidgetEntryView : View {
     var entry: Provider.Entry
-
+    
     var body: some View {
         if entry.count == 0 {
             VStack(alignment: .leading) {
@@ -104,16 +96,22 @@ struct AlarmWidgetEntryView : View {
             }
         } else {
             VStack(alignment: .leading) {
-                Image(systemName: "hand.thumbsdown.fill")
+                Image(systemName: "externaldrive.fill.badge.xmark")
                     .resizable()
-                    .frame(width: 48.0, height: 48.0)
-                    .foregroundColor(.red)
+                    .frame(width: 68.0, height: 48.0)
+                    .foregroundColor(.orange)
                     .padding(.bottom, 8)
                 
                 Text("\(entry.count) Active Alarm(s)")
-                    .foregroundColor(.red)
+                    .foregroundColor(.orange)
                     .font(.body)
                     .bold()
+                if entry.criticalCount > 0 {
+                    Text("\(entry.criticalCount) Critical Alarm(s)")
+                        .foregroundColor(.red)
+                        .bold()
+                        .font(.footnote)
+                }
                 Text(entry.date, style: .time)
                     .font(.footnote)
                     .foregroundColor(.gray)
@@ -126,27 +124,30 @@ struct AlarmWidgetEntryView : View {
 @main
 struct AlarmWidget: Widget {
     let kind: String = "AlarmWidget"
-
+    
     var body: some WidgetConfiguration {
         StaticConfiguration(kind: kind, provider: Provider()) { entry in
             AlarmWidgetEntryView(entry: entry)
         }
         .supportedFamilies([.systemSmall])
         .configurationDisplayName("Alarms")
-        .description("Shows the count of active alarms")
+        .description("Shows the count of active alarms in your favourited servers")
     }
 }
 
 struct AlarmWidget_Previews: PreviewProvider {
     static var previews: some View {
-        AlarmWidgetEntryView(entry: AlarmsEntry(count: 0, date: Date()))
+        AlarmWidgetEntryView(entry: AlarmsEntry(count: 0, criticalCount: 0, date: Date()))
             .previewContext(WidgetPreviewContext(family: .systemSmall))
         
-        AlarmWidgetEntryView(entry: AlarmsEntry(count: 0, date: Date()))
+        AlarmWidgetEntryView(entry: AlarmsEntry(count: 0, criticalCount: 0, date: Date()))
             .previewContext(WidgetPreviewContext(family: .systemSmall))
             .redacted(reason: .placeholder)
         
-        AlarmWidgetEntryView(entry: AlarmsEntry(count: 2, date: Date()))
+        AlarmWidgetEntryView(entry: AlarmsEntry(count: 2, criticalCount: 0, date: Date()))
+            .previewContext(WidgetPreviewContext(family: .systemSmall))
+        
+        AlarmWidgetEntryView(entry: AlarmsEntry(count: 2, criticalCount: 1, date: Date()))
             .previewContext(WidgetPreviewContext(family: .systemSmall))
     }
 }

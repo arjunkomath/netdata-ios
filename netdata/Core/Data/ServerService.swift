@@ -7,9 +7,12 @@
 
 import Foundation
 import CloudKit
+import Combine
 import WidgetKit
 
 public class ServerService: ObservableObject, PublicCloudService {
+    
+    public static var cancellable = Set<AnyCancellable>()
     
     // MARK: - Vars
     public static let shared = ServerService()
