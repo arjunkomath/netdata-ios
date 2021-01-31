@@ -655,6 +655,8 @@
 				5538039A254510DF003A9BFE /* PBXTargetDependency */,
 			);
 			name = netdata;
+			packageProductDependencies = (
+			);
 			productName = netdata;
 			productReference = 55D1C4FE24B95E6D0087F8A2 /* netdata.app */;
 			productType = "com.apple.product-type.application";
@@ -740,6 +742,8 @@
 				Base,
 			);
 			mainGroup = 55D1C4F524B95E6D0087F8A2;
+			packageReferences = (
+			);
 			productRefGroup = 55D1C4FF24B95E6D0087F8A2 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";

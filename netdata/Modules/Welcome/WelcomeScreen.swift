@@ -27,7 +27,7 @@ struct WelcomeScreen: View {
                                       subTitle: "Works out-of-the-box with any Netdata instance",
                                       imageName: "wifi")
                 
-                InformationDetailView(title: "Free & Open-source",
+                InformationDetailView(title: "Open-source",
                                       subTitle: "Open-source iOS, iPadOS and macOS client",
                                       imageName: "globe")
             }

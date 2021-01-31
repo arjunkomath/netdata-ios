@@ -19,6 +19,7 @@ final class ServerDetailViewModel: ObservableObject {
     
     @Published var cpuUsage: ServerData = ServerData(labels: [], data: [])
     @Published var cpuUsageGauge: CGFloat = 0
+    @Published var cpuUsageData: [Double] = []
     
     @Published  var ramUsage: ServerData = ServerData(labels: [], data: [])
     @Published  var ramUsageGauge : CGFloat = 0
@@ -71,6 +72,7 @@ final class ServerDetailViewModel: ObservableObject {
             .sink(receiveCompletion: { _ in
             }) { data in
                 self.cpuUsage = data
+                self.cpuUsageData = Array(self.cpuUsage.data[0 ..< 25]).reversed().map({ d in Array(d[1..<d.count]).reduce(0, { acc, val in acc + (val ?? 0) }) })
                 
                 withAnimation(.linear(duration: 0.5)) {
                     self.cpuUsageGauge = CGFloat(Array(self.cpuUsage.data.first![1..<self.cpuUsage.data.first!.count]).reduce(0, { acc, val in acc + (val ?? 0) }) / 100)
