@@ -10,6 +10,22 @@
 		013D3F3D7760922B4F357399 /* Pods_netdata_netdataUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D4908D65829BB6DE09935726 /* Pods_netdata_netdataUITests.framework */; };
 		550072C925161E080096BF4D /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 550072C825161E080096BF4D /* GoogleService-Info.plist */; };
 		5508041624D05ABF002FFAA5 /* ServerAlarms.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5508041524D05ABF002FFAA5 /* ServerAlarms.swift */; };
+		5514041925C68F4F0081E4A4 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 552B4E7724CD16C0008B9DA6 /* WidgetKit.framework */; };
+		5514041A25C68F4F0081E4A4 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 552B4E7924CD16C0008B9DA6 /* SwiftUI.framework */; };
+		5514041D25C68F4F0081E4A4 /* AlarmWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5514041C25C68F4F0081E4A4 /* AlarmWidget.swift */; };
+		5514041F25C68F510081E4A4 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5514041E25C68F510081E4A4 /* Assets.xcassets */; };
+		5514042325C68F510081E4A4 /* AlarmWidgetExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 5514041825C68F4F0081E4A4 /* AlarmWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		5514042F25C6904A0081E4A4 /* ServerService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 558CABAE24B999F7002D115B /* ServerService.swift */; };
+		5514043725C6905A0081E4A4 /* CloudService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 558CABB024B99B42002D115B /* CloudService.swift */; };
+		5514043F25C690620081E4A4 /* NDServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55D1C53324B9636E0087F8A2 /* NDServer.swift */; };
+		5514044725C6906C0081E4A4 /* CloudModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 558CABAB24B99931002D115B /* CloudModel.swift */; };
+		5514044F25C690720081E4A4 /* ServerInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55BA430F24C332C900599345 /* ServerInfo.swift */; };
+		5514045725C6969C0081E4A4 /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 55D1C53724B969AC0087F8A2 /* CloudKit.framework */; };
+		5514047225C6AE940081E4A4 /* Agent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55BFBA2624CC4EA1004461D3 /* Agent.swift */; };
+		5514047325C6AE940081E4A4 /* NetDataAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55BFBA2424CC474A004461D3 /* NetDataAPI.swift */; };
+		5514047B25C6AF750081E4A4 /* ServerCharts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 559300E424D550A6006C6DB4 /* ServerCharts.swift */; };
+		5514048325C6AF830081E4A4 /* ServerData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55BA431124C3395400599345 /* ServerData.swift */; };
+		5514048B25C6AF860081E4A4 /* ServerAlarms.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5508041524D05ABF002FFAA5 /* ServerAlarms.swift */; };
 		551420A924C3D6D200A22E9A /* Meter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 551420A824C3D6D200A22E9A /* Meter.swift */; };
 		55193D2A24E14D9500FE1D55 /* ReadableGuidePadding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55193D2924E14D9500FE1D55 /* ReadableGuidePadding.swift */; };
 		552862E524CD018B008E2B0E /* ErrorMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 552862E424CD018B008E2B0E /* ErrorMessage.swift */; };
@@ -78,6 +94,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		5514042125C68F510081E4A4 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 55D1C4F624B95E6D0087F8A2 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 5514041725C68F4F0081E4A4;
+			remoteInfo = AlarmWidgetExtension;
+		};
 		55380388254510DF003A9BFE /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 55D1C4F624B95E6D0087F8A2 /* Project object */;
@@ -122,6 +145,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 13;
 			files = (
+				5514042325C68F510081E4A4 /* AlarmWidgetExtension.appex in Embed App Extensions */,
 			);
 			name = "Embed App Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -144,6 +168,11 @@
 		43CF445059DFD6753DCD2027 /* Pods-netdata.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-netdata.debug.xcconfig"; path = "Target Support Files/Pods-netdata/Pods-netdata.debug.xcconfig"; sourceTree = "<group>"; };
 		550072C825161E080096BF4D /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		5508041524D05ABF002FFAA5 /* ServerAlarms.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerAlarms.swift; sourceTree = "<group>"; };
+		5514041825C68F4F0081E4A4 /* AlarmWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = AlarmWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		5514041C25C68F4F0081E4A4 /* AlarmWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlarmWidget.swift; sourceTree = "<group>"; };
+		5514041E25C68F510081E4A4 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		5514042025C68F510081E4A4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		5514042425C68F510081E4A4 /* AlarmWidgetExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = AlarmWidgetExtension.entitlements; sourceTree = "<group>"; };
 		551420A824C3D6D200A22E9A /* Meter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Meter.swift; sourceTree = "<group>"; };
 		55193D2924E14D9500FE1D55 /* ReadableGuidePadding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReadableGuidePadding.swift; sourceTree = "<group>"; };
 		552862E424CD018B008E2B0E /* ErrorMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorMessage.swift; sourceTree = "<group>"; };
@@ -218,6 +247,16 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		5514041525C68F4F0081E4A4 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5514045725C6969C0081E4A4 /* CloudKit.framework in Frameworks */,
+				5514041A25C68F4F0081E4A4 /* SwiftUI.framework in Frameworks */,
+				5514041925C68F4F0081E4A4 /* WidgetKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		55380373254510DD003A9BFE /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -320,6 +359,16 @@
 			path = Network;
 			sourceTree = "<group>";
 		};
+		5514041B25C68F4F0081E4A4 /* AlarmWidget */ = {
+			isa = PBXGroup;
+			children = (
+				5514041C25C68F4F0081E4A4 /* AlarmWidget.swift */,
+				5514041E25C68F510081E4A4 /* Assets.xcassets */,
+				5514042025C68F510081E4A4 /* Info.plist */,
+			);
+			path = AlarmWidget;
+			sourceTree = "<group>";
+		};
 		552862E324CD0168008E2B0E /* Charts */ = {
 			isa = PBXGroup;
 			children = (
@@ -419,12 +468,14 @@
 		55D1C4F524B95E6D0087F8A2 = {
 			isa = PBXGroup;
 			children = (
+				5514042425C68F510081E4A4 /* AlarmWidgetExtension.entitlements */,
 				55D1C50024B95E6D0087F8A2 /* netdata */,
 				55D1C51224B95E6F0087F8A2 /* netdataTests */,
 				55D1C51D24B95E6F0087F8A2 /* netdataUITests */,
 				55380377254510DD003A9BFE /* NetdataClip */,
 				5538038A254510DF003A9BFE /* NetdataClipTests */,
 				55380395254510DF003A9BFE /* NetdataClipUITests */,
+				5514041B25C68F4F0081E4A4 /* AlarmWidget */,
 				55D1C4FF24B95E6D0087F8A2 /* Products */,
 				55D1C53624B969AC0087F8A2 /* Frameworks */,
 				6F6281803DF97AE6CAC26AA9 /* Pods */,
@@ -440,6 +491,7 @@
 				55380376254510DD003A9BFE /* NetdataClip.app */,
 				55380387254510DF003A9BFE /* NetdataClipTests.xctest */,
 				55380392254510DF003A9BFE /* NetdataClipUITests.xctest */,
+				5514041825C68F4F0081E4A4 /* AlarmWidgetExtension.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -583,6 +635,23 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		5514041725C68F4F0081E4A4 /* AlarmWidgetExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 5514042525C68F510081E4A4 /* Build configuration list for PBXNativeTarget "AlarmWidgetExtension" */;
+			buildPhases = (
+				5514041425C68F4F0081E4A4 /* Sources */,
+				5514041525C68F4F0081E4A4 /* Frameworks */,
+				5514041625C68F4F0081E4A4 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = AlarmWidgetExtension;
+			productName = AlarmWidgetExtension;
+			productReference = 5514041825C68F4F0081E4A4 /* AlarmWidgetExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 		55380375254510DD003A9BFE /* NetdataClip */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 553803A3254510DF003A9BFE /* Build configuration list for PBXNativeTarget "NetdataClip" */;
@@ -653,6 +722,7 @@
 			);
 			dependencies = (
 				5538039A254510DF003A9BFE /* PBXTargetDependency */,
+				5514042225C68F510081E4A4 /* PBXTargetDependency */,
 			);
 			name = netdata;
 			packageProductDependencies = (
@@ -706,9 +776,12 @@
 		55D1C4F624B95E6D0087F8A2 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastSwiftUpdateCheck = 1210;
+				LastSwiftUpdateCheck = 1240;
 				LastUpgradeCheck = 1200;
 				TargetAttributes = {
+					5514041725C68F4F0081E4A4 = {
+						CreatedOnToolsVersion = 12.4;
+					};
 					55380375254510DD003A9BFE = {
 						CreatedOnToolsVersion = 12.1;
 					};
@@ -754,11 +827,20 @@
 				55380375254510DD003A9BFE /* NetdataClip */,
 				55380386254510DF003A9BFE /* NetdataClipTests */,
 				55380391254510DF003A9BFE /* NetdataClipUITests */,
+				5514041725C68F4F0081E4A4 /* AlarmWidgetExtension */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		5514041625C68F4F0081E4A4 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5514041F25C68F510081E4A4 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		55380374254510DD003A9BFE /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -931,6 +1013,24 @@
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		5514041425C68F4F0081E4A4 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5514048325C6AF830081E4A4 /* ServerData.swift in Sources */,
+				5514048B25C6AF860081E4A4 /* ServerAlarms.swift in Sources */,
+				5514047225C6AE940081E4A4 /* Agent.swift in Sources */,
+				5514042F25C6904A0081E4A4 /* ServerService.swift in Sources */,
+				5514044725C6906C0081E4A4 /* CloudModel.swift in Sources */,
+				5514044F25C690720081E4A4 /* ServerInfo.swift in Sources */,
+				5514041D25C68F4F0081E4A4 /* AlarmWidget.swift in Sources */,
+				5514043F25C690620081E4A4 /* NDServer.swift in Sources */,
+				5514047325C6AE940081E4A4 /* NetDataAPI.swift in Sources */,
+				5514043725C6905A0081E4A4 /* CloudService.swift in Sources */,
+				5514047B25C6AF750081E4A4 /* ServerCharts.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		55380372254510DD003A9BFE /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -1034,6 +1134,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		5514042225C68F510081E4A4 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 5514041725C68F4F0081E4A4 /* AlarmWidgetExtension */;
+			targetProxy = 5514042125C68F510081E4A4 /* PBXContainerItemProxy */;
+		};
 		55380389254510DF003A9BFE /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 55380375254510DD003A9BFE /* NetdataClip */;
@@ -1063,6 +1168,54 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
+		5514042625C68F510081E4A4 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_ENTITLEMENTS = AlarmWidgetExtension.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = H78GYE72WQ;
+				INFOPLIST_FILE = AlarmWidget/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.4;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.techulus.netdata.AlarmWidget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SUPPORTS_MACCATALYST = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		5514042725C68F510081E4A4 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_ENTITLEMENTS = AlarmWidgetExtension.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = H78GYE72WQ;
+				INFOPLIST_FILE = AlarmWidget/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.4;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.techulus.netdata.AlarmWidget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SUPPORTS_MACCATALYST = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
 		5538039D254510DF003A9BFE /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -1466,6 +1619,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		5514042525C68F510081E4A4 /* Build configuration list for PBXNativeTarget "AlarmWidgetExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				5514042625C68F510081E4A4 /* Debug */,
+				5514042725C68F510081E4A4 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		553803A3254510DF003A9BFE /* Build configuration list for PBXNativeTarget "NetdataClip" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
