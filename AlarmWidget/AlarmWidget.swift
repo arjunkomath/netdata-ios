@@ -20,7 +20,7 @@ struct Provider: TimelineProvider {
         completion(entry)
     }
     
-    func getTimeline(in context: Context, completion: @escaping (Timeline<Entry>) -> ()) {
+    func getTimeline(in context: Context, completion: @escaping (Timeline<AlarmsEntry>) -> ()) {
         if context.isPreview {
             let timeline = Timeline(entries: [AlarmsEntry.placeholder], policy: .atEnd)
             completion(timeline)
@@ -48,7 +48,12 @@ struct Provider: TimelineProvider {
                         let totalAlarmsCount = serverAlarms.reduce(0, { acc, serverAlarm in acc + serverAlarm.alarms.count })
                         let criticalAlarmsCount = serverAlarms.reduce(0, { acc, serverAlarm in acc + serverAlarm.getCriticalAlarmsCount() })
                         
-                        let entry = AlarmsEntry(count: totalAlarmsCount, criticalCount: criticalAlarmsCount, date: fetchDate)
+                        var alarms : [String: Color] = [:]
+                        serverService.favouriteServers.indices.forEach({ index in
+                            alarms[serverService.favouriteServers[index].name] = serverAlarms[index].getCriticalAlarmsCount() > 0 ? Color.red : serverAlarms[index].alarms.count > 0 ? Color.orange : Color.green;
+                        })
+                        
+                        let entry = AlarmsEntry(count: totalAlarmsCount, criticalCount: criticalAlarmsCount, alarms: [:], date: fetchDate)
                         let timeline = Timeline(entries: [entry], policy: .after(refreshDate))
                         completion(timeline)
                     })
@@ -61,6 +66,7 @@ struct Provider: TimelineProvider {
 struct AlarmsEntry: TimelineEntry {
     let count: Int
     let criticalCount: Int
+    let alarms: [String: Color]
     let date: Date
     
     var relevance: TimelineEntryRelevance? {
@@ -70,53 +76,24 @@ struct AlarmsEntry: TimelineEntry {
 
 extension AlarmsEntry {
     static var placeholder: AlarmsEntry {
-        AlarmsEntry(count: -1, criticalCount: 0, date: Date())
+        AlarmsEntry(count: -1, criticalCount: 0, alarms: [:], date: Date())
     }
 }
 
 struct AlarmWidgetEntryView : View {
+    @Environment(\.widgetFamily) private var widgetFamily
+    
     var entry: Provider.Entry
     
     var body: some View {
-        if entry.count == 0 {
-            VStack(alignment: .leading) {
-                Image(systemName: "hand.thumbsup.fill")
-                    .resizable()
-                    .frame(width: 48.0, height: 48.0)
-                    .foregroundColor(.green)
-                    .padding(.bottom, 8)
-                
-                Text("No Active Alarms")
-                    .foregroundColor(.green)
-                    .font(.body)
-                    .bold()
-                Text(entry.date, style: .time)
-                    .font(.footnote)
-                    .foregroundColor(.gray)
-            }
-        } else {
-            VStack(alignment: .leading) {
-                Image(systemName: "externaldrive.fill.badge.xmark")
-                    .resizable()
-                    .frame(width: 48.0, height: 36.0)
-                    .foregroundColor(.orange)
-                    .padding(.bottom, 8)
-                
-                Text("\(entry.count) Active Alarm(s)")
-                    .foregroundColor(.orange)
-                    .font(.body)
-                    .bold()
-                if entry.criticalCount > 0 {
-                    Text("\(entry.criticalCount) Critical Alarm(s)")
-                        .foregroundColor(.red)
-                        .bold()
-                        .font(.footnote)
-                }
-                Text(entry.date, style: .time)
-                    .font(.footnote)
-                    .foregroundColor(.gray)
-            }
-            .redacted(reason: entry.count == -1 ? .placeholder : .init())
+        switch widgetFamily {
+        case .systemSmall:
+            SmallWidget(entry: entry)
+        case .systemMedium:
+            MediumWidget(entry: entry)
+        case .systemLarge:
+            Text("unknown")
+        @unknown default: Text("unknown")
         }
     }
 }
@@ -129,7 +106,7 @@ struct AlarmWidget: Widget {
         StaticConfiguration(kind: kind, provider: Provider()) { entry in
             AlarmWidgetEntryView(entry: entry)
         }
-        .supportedFamilies([.systemSmall])
+        .supportedFamilies([.systemSmall, .systemMedium])
         .configurationDisplayName("Alarms")
         .description("Shows the count of active alarms in your favourited servers")
     }
@@ -137,17 +114,10 @@ struct AlarmWidget: Widget {
 
 struct AlarmWidget_Previews: PreviewProvider {
     static var previews: some View {
-        AlarmWidgetEntryView(entry: AlarmsEntry(count: 0, criticalCount: 0, date: Date()))
+        AlarmWidgetEntryView(entry: AlarmsEntry(count: 0, criticalCount: 0, alarms: [:], date: Date()))
             .previewContext(WidgetPreviewContext(family: .systemSmall))
-        
-        AlarmWidgetEntryView(entry: AlarmsEntry(count: 0, criticalCount: 0, date: Date()))
-            .previewContext(WidgetPreviewContext(family: .systemSmall))
-            .redacted(reason: .placeholder)
-        
-        AlarmWidgetEntryView(entry: AlarmsEntry(count: 2, criticalCount: 0, date: Date()))
-            .previewContext(WidgetPreviewContext(family: .systemSmall))
-        
-        AlarmWidgetEntryView(entry: AlarmsEntry(count: 2, criticalCount: 1, date: Date()))
-            .previewContext(WidgetPreviewContext(family: .systemSmall))
+
+        AlarmWidgetEntryView(entry: AlarmsEntry(count: 1, criticalCount: 0, alarms: ["CDN77": Color.red, "London": Color.green, "Test": Color.orange], date: Date()))
+            .previewContext(WidgetPreviewContext(family: .systemMedium))
     }
 }
