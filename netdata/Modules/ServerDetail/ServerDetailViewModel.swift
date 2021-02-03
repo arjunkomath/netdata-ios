@@ -13,10 +13,7 @@ final class ServerDetailViewModel: ObservableObject {
     
     @Published var loading = true
     
-    // MARK:- Charts
-    @Published var serverCharts: ServerCharts = ServerCharts(version: "", release_channel: "", charts: [:])
-    @Published var serverChartsToolbarButton = true
-    
+    // MARK:- Real time data
     @Published var cpuUsage: ServerData = ServerData(labels: [], data: [])
     @Published var cpuUsageGauge: CGFloat = 0
     @Published var cpuUsageData: [Double] = []
@@ -32,7 +29,11 @@ final class ServerDetailViewModel: ObservableObject {
     @Published var network: ServerData = ServerData(labels: [], data: [])
     
     // MARK:- Custom Charts
+    @Published var serverCharts: ServerCharts = ServerCharts(version: "", release_channel: "", charts: [:])
     @Published var customChartData: ServerData = ServerData(labels: [], data: [])
+    
+    // MARK:- Alarms
+    @Published var serverAlarms: ServerAlarms = ServerAlarms(status: false, alarms: [:])
     
     private var baseUrl = ""
     private var basicAuthBase64 = ""
@@ -41,18 +42,12 @@ final class ServerDetailViewModel: ObservableObject {
     private var cancellable = Set<AnyCancellable>()
     
     func fetch(baseUrl: String, basicAuthBase64: String) {
+        debugPrint("fetch", baseUrl)
         self.loading = true
         self.baseUrl = baseUrl
         self.basicAuthBase64 = basicAuthBase64
         
-        self.fetchCharts()
-        
         self.timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { timer in
-            if !self.serverCharts.charts.isEmpty {
-                if (self.serverChartsToolbarButton) {
-                    self.serverChartsToolbarButton = false
-                }
-            }
             self.fetchCpu()
             self.fetchLoad()
             self.fetchRam()
@@ -60,10 +55,6 @@ final class ServerDetailViewModel: ObservableObject {
             self.fetchNetwork()
             self.fetchDiskSpace()
         }
-    }
-    
-    func destroy() {
-        self.timer.invalidate()
     }
     
     func fetchCpu() {
@@ -139,9 +130,10 @@ final class ServerDetailViewModel: ObservableObject {
             .store(in: &self.cancellable)
     }
     
-    func fetchCharts() {
+    func fetchCharts(baseUrl: String, basicAuthBase64: String) {
+        debugPrint("fetchCharts", baseUrl)
         NetDataAPI
-            .getCharts(baseUrl: self.baseUrl, basicAuthBase64: self.basicAuthBase64)
+            .getCharts(baseUrl: baseUrl, basicAuthBase64: basicAuthBase64)
             .sink(receiveCompletion: { completion in
                 switch completion {
                 case .finished:
@@ -155,7 +147,13 @@ final class ServerDetailViewModel: ObservableObject {
             .store(in: &self.cancellable)
     }
     
+    func destroyChartsList() {
+        debugPrint("destroyChartsList")
+        serverCharts = ServerCharts(version: "", release_channel: "", charts: [:])
+    }
+    
     func fetchCustomChartData(baseUrl: String, basicAuthBase64: String, chart: String) {
+        debugPrint("fetchCustomChartData", baseUrl)
         self.customChartTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { timer in
             NetDataAPI
                 .getChartData(baseUrl: baseUrl, basicAuthBase64: basicAuthBase64, chart: chart)
@@ -174,9 +172,33 @@ final class ServerDetailViewModel: ObservableObject {
     }
     
     func destroyCustomChartData() {
+        debugPrint("destroyCustomChartData")
         customChartData = ServerData(labels: [], data: [])
         
         self.customChartTimer.invalidate()
+    }
+    
+    func fetchAlarms(baseUrl: String, basicAuthBase64: String) {
+        debugPrint("fetchAlarms", baseUrl)
+        NetDataAPI
+            .getAlarms(baseUrl: baseUrl, basicAuthBase64: basicAuthBase64)
+            .sink(receiveCompletion: { completion in
+                switch completion {
+                case .finished:
+                    break
+                case .failure(let error):
+                    debugPrint("getAlarms", error)
+                }
+            },
+            receiveValue: { alarms in
+                self.serverAlarms = alarms
+            })
+            .store(in: &cancellable)
+    }
+    
+    func destroyAlarmsData() {
+        debugPrint("destroyAlarmsData")
+        serverAlarms = ServerAlarms(status: false, alarms: [:])
     }
     
     func validateServer(serverUrl: String, completion: @escaping (Bool) -> ()) {
@@ -199,14 +221,11 @@ final class ServerDetailViewModel: ObservableObject {
     }
     
     func destroyModel() {
-        serverCharts = ServerCharts(version: "", release_channel: "", charts: [:])
-        serverChartsToolbarButton = true
-        
         cpuUsage = ServerData(labels: [], data: [])
         cpuUsageGauge = CGFloat(0)
         
         ramUsage = ServerData(labels: [], data: [])
-        ramUsageGauge = CGFloat(0)
+        ramUsageGauge = CGFloat(0) 
         
         diskSpaceUsage = ServerData(labels: [], data: [])
         diskSpaceUsageGauge = CGFloat (0)
@@ -214,6 +233,15 @@ final class ServerDetailViewModel: ObservableObject {
         load = ServerData(labels: [], data: [])
         diskIO = ServerData(labels: [], data: [])
         network = ServerData(labels: [], data: [])
+    }
+    
+    func destroy() {
+        debugPrint("destroy")
+        // stop timer
+        self.timer.invalidate()
+        
+        // destroy data
+        self.destroyModel()
     }
 }
 

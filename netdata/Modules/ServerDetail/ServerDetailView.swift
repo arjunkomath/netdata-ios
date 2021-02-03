@@ -14,7 +14,6 @@ enum ActiveSheet {
 
 struct ServerDetailView: View {
     var server: NDServer;
-    var serverAlarms: ServerAlarms;
     
     @StateObject var viewModel = ServerDetailViewModel()
     
@@ -114,6 +113,7 @@ struct ServerDetailView: View {
         }
         .listStyle(InsetGroupedListStyle())
         .navigationTitle(Text(server.name))
+        .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItemGroup(placement: .navigationBarTrailing) {
                 Button(action: {
@@ -123,7 +123,6 @@ struct ServerDetailView: View {
                 }) {
                     Image(systemName: "chart.pie")
                 }
-                .disabled(self.viewModel.serverChartsToolbarButton)
                 
                 Button(action: {
                     self.activeSheet = .alarms
@@ -135,16 +134,17 @@ struct ServerDetailView: View {
             }
         }
         .sheet(isPresented: $showSheet, onDismiss: {
-            self.viewModel.destroyModel()
+            // workaround for onAppear not being called after the sheet is dismissed
             self.viewModel.fetch(baseUrl: server.url, basicAuthBase64: server.basicAuthBase64)
+            
             self.activeSheet = .loading
         }, content: {
             if self.activeSheet == .loading {
                 ProgressView()
             } else if self.activeSheet == .charts {
-                ChartsListView(serverCharts: viewModel.serverCharts, serverUrl: server.url, basicAuthBase64: server.basicAuthBase64)
+                ChartsListView(serverUrl: server.url, basicAuthBase64: server.basicAuthBase64)
             } else if self.activeSheet == .alarms {
-                AlarmsListView(serverAlarms: self.serverAlarms)
+                AlarmsListView(serverUrl: server.url, basicAuthBase64: server.basicAuthBase64)
             }
         })
     }

@@ -9,10 +9,11 @@ import SwiftUI
 
 struct ChartsListView: View {
     @Environment(\.presentationMode) private var presentationMode
-    var serverCharts: ServerCharts
+    
     var serverUrl: String
     var basicAuthBase64: String
     
+    @StateObject var viewModel = ServerDetailViewModel()
     @State private var searchText = ""
     
     var body: some View {
@@ -21,18 +22,24 @@ struct ChartsListView: View {
                 SearchBar(text: $searchText)
                 
                 List {
-                    ForEach(serverCharts.charts.keys.sorted().filter({ searchText.isEmpty ? true : $0.contains(searchText) }), id: \.self) { key in
-                        if serverCharts.charts[key] != nil && serverCharts.charts[key]!.enabled == true {
-                            NavigationLink(destination: CustomChartDetailView(serverChart: serverCharts.charts[key]!,
+                    ForEach(viewModel.serverCharts.charts.keys.sorted().filter({ searchText.isEmpty ? true : $0.contains(searchText) }), id: \.self) { key in
+                        if viewModel.serverCharts.charts[key] != nil && viewModel.serverCharts.charts[key]!.enabled == true {
+                            NavigationLink(destination: CustomChartDetailView(serverChart: viewModel.serverCharts.charts[key]!,
                                                                               serverUrl: serverUrl,
                                                                               basicAuthBase64: basicAuthBase64)) {
-                                ChartListRow(chart: serverCharts.charts[key]!)
+                                ChartListRow(chart: viewModel.serverCharts.charts[key]!)
                             }
                         }
                     }
                 }
                 .navigationTitle(Text("Available Charts")).navigationBarTitleDisplayMode(.inline)
                 .navigationBarItems(leading: dismissButton)
+                .onAppear {
+                    viewModel.fetchCharts(baseUrl: serverUrl, basicAuthBase64: basicAuthBase64)
+                }
+                .onDisappear {
+                    viewModel.destroyChartsList()
+                }
             }
         }
     }
@@ -51,10 +58,6 @@ struct ChartsListView: View {
 
 struct ChartsListView_Previews: PreviewProvider {
     static var previews: some View {
-        ChartsListView(serverCharts: ServerCharts(version: "1.0",
-                                                  release_channel: "beta",
-                                                  charts: [:]),
-                       serverUrl: "",
-                       basicAuthBase64: "")
+        ChartsListView(serverUrl: "", basicAuthBase64: "")
     }
 }

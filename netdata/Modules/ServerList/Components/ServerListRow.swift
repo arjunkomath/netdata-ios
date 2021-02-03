@@ -18,8 +18,7 @@ struct ServerListRow: View {
     @State private var serverAlarms = ServerAlarms(status: false, alarms: [:])
     
     var body: some View {
-        NavigationLink(destination: ServerDetailView(server: server,
-                                                     serverAlarms: self.serverAlarms)) {
+        NavigationLink(destination: ServerDetailView(server: server)) {
             HStack {
                 Circle()
                     .fill(self.getAlarmStatusColor())
