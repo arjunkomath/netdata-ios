@@ -53,7 +53,8 @@ struct Provider: TimelineProvider {
                             alarms[serverService.favouriteServers[index].name] = serverAlarms[index].getCriticalAlarmsCount() > 0 ? Color.red : serverAlarms[index].alarms.count > 0 ? Color.orange : Color.green;
                         })
                         
-                        let entry = AlarmsEntry(count: totalAlarmsCount, criticalCount: criticalAlarmsCount, alarms: [:], date: fetchDate)
+                        let entry = AlarmsEntry(count: totalAlarmsCount, criticalCount: criticalAlarmsCount, alarms: alarms, date: fetchDate)
+                        
                         let timeline = Timeline(entries: [entry], policy: .after(refreshDate))
                         completion(timeline)
                     })

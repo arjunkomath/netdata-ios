@@ -17,39 +17,46 @@ struct MediumWidget: View {
     ]
     
     var body: some View {
-        LazyVGrid(columns: columns, alignment: .leading, spacing: 8) {
-            if entry.alarms.isEmpty {
-                ForEach(1...8, id: \.self) { key in
-                    HStack {
-                        Circle()
-                            .fill(Color.green)
-                            .frame(width: 16, height: 16, alignment: .leading)
-                            .padding(.trailing, 4)
-                        
-                        Text("helloo")
-                            .font(.title3)
-                            .bold()
-                            .foregroundColor(Color.green)
+        VStack(alignment: .leading) {
+            LazyVGrid(columns: columns, alignment: .leading, spacing: 8) {
+                if entry.alarms.isEmpty {
+                    ForEach(1...8, id: \.self) { key in
+                        HStack {
+                            Circle()
+                                .fill(Color.green)
+                                .frame(width: 12, height: 12, alignment: .leading)
+                                .padding(.trailing, 4)
+                            
+                            Text("Dummy name")
+                                .font(.headline)
+                                .bold()
+                                .foregroundColor(Color.green)
+                        }
+                        .padding(.leading)
+                        .redacted(reason: .placeholder)
                     }
-                    .padding(.leading)
-                    .redacted(reason: .placeholder)
-                }
-            } else {
-                ForEach(entry.alarms.keys.sorted()[0 ..< (entry.alarms.count > 8 ? 8 : entry.alarms.count)], id: \.self) { key in
-                    HStack {
-                        Circle()
-                            .fill(entry.alarms[key] ?? Color.gray)
-                            .frame(width: 16, height: 16, alignment: .leading)
-                            .padding(.trailing, 4)
-                        
-                        Text(key)
-                            .font(.title3)
-                            .bold()
-                            .foregroundColor(entry.alarms[key] ?? Color.gray)
+                } else {
+                    ForEach(entry.alarms.keys.sorted()[0 ..< (entry.alarms.count > 8 ? 8 : entry.alarms.count)], id: \.self) { key in
+                        HStack {
+                            Circle()
+                                .fill(entry.alarms[key] ?? Color.gray)
+                                .frame(width: 16, height: 16, alignment: .leading)
+                                .padding(.trailing, 4)
+                            
+                            Text(key)
+                                .font(.title3)
+                                .bold()
+                                .foregroundColor(entry.alarms[key] ?? Color.gray)
+                        }
+                        .padding(.leading)
                     }
-                    .padding(.leading)
                 }
             }
+            
+            Text(entry.date, style: .time)
+                .font(.footnote)
+                .foregroundColor(.gray)
+                .padding(.leading)
         }
         .redacted(reason: entry.count == -1 ? .placeholder : .init())
     }
