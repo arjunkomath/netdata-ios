@@ -109,7 +109,7 @@ struct AlarmWidget: Widget {
         }
         .supportedFamilies([.systemSmall, .systemMedium])
         .configurationDisplayName("Alarms")
-        .description("Shows the count of active alarms in your favourited servers")
+        .description("Shows the count of active alarms in your favourite servers")
     }
 }
 

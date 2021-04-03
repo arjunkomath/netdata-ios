@@ -6,15 +6,10 @@
 //
 
 import SwiftUI
-import Firebase
 
 @main
 struct netdataApp: App {
     @ObservedObject var userSettings = UserSettings()
-    
-    init() {
-        FirebaseApp.configure()
-    }
     
     var window: UIWindow? {
         guard let scene = UIApplication.shared.connectedScenes.first,
