@@ -31,10 +31,10 @@ struct Provider: TimelineProvider {
             let fetchDate = Date()
             let serverService = ServerService.shared
             serverService.refresh()
-            
+                        
             // show placeholder when there are no favourite servers
             if serverService.favouriteServers.count == 0 {
-                let timeline = Timeline(entries: [AlarmsEntry.placeholder], policy: .atEnd)
+                let timeline = Timeline(entries: [AlarmsEntry(serverCount: 0, count: 0, criticalCount: 0, alarms: [:], date: fetchDate)], policy: .atEnd)
                 completion(timeline)
             } else {
                 Publishers.MergeMany(serverService.favouriteServers.map({ server in NetDataAPI.getAlarms(baseUrl: server.url, basicAuthBase64: server.basicAuthBase64) }))
@@ -53,7 +53,7 @@ struct Provider: TimelineProvider {
                             alarms[serverService.favouriteServers[index].name] = serverAlarms[index].getCriticalAlarmsCount() > 0 ? Color.red : serverAlarms[index].alarms.count > 0 ? Color.orange : Color.green;
                         })
                         
-                        let entry = AlarmsEntry(count: totalAlarmsCount, criticalCount: criticalAlarmsCount, alarms: alarms, date: fetchDate)
+                        let entry = AlarmsEntry(serverCount: serverService.favouriteServers.count, count: totalAlarmsCount, criticalCount: criticalAlarmsCount, alarms: alarms, date: fetchDate)
                         
                         let timeline = Timeline(entries: [entry], policy: .after(refreshDate))
                         completion(timeline)
@@ -65,6 +65,7 @@ struct Provider: TimelineProvider {
 }
 
 struct AlarmsEntry: TimelineEntry {
+    let serverCount: Int
     let count: Int
     let criticalCount: Int
     let alarms: [String: Color]
@@ -77,7 +78,7 @@ struct AlarmsEntry: TimelineEntry {
 
 extension AlarmsEntry {
     static var placeholder: AlarmsEntry {
-        AlarmsEntry(count: -1, criticalCount: 0, alarms: [:], date: Date())
+        AlarmsEntry(serverCount: 0, count: -1, criticalCount: 0, alarms: [:], date: Date())
     }
 }
 
@@ -115,10 +116,10 @@ struct AlarmWidget: Widget {
 
 struct AlarmWidget_Previews: PreviewProvider {
     static var previews: some View {
-        AlarmWidgetEntryView(entry: AlarmsEntry(count: 0, criticalCount: 0, alarms: [:], date: Date()))
+        AlarmWidgetEntryView(entry: AlarmsEntry(serverCount: 0, count: 0, criticalCount: 0, alarms: [:], date: Date()))
             .previewContext(WidgetPreviewContext(family: .systemSmall))
 
-        AlarmWidgetEntryView(entry: AlarmsEntry(count: 1, criticalCount: 0, alarms: ["CDN77": Color.red, "London": Color.green, "Test": Color.orange], date: Date()))
+        AlarmWidgetEntryView(entry: AlarmsEntry(serverCount: 1, count: 1, criticalCount: 0, alarms: ["CDN77": Color.red, "London": Color.green, "Test": Color.orange], date: Date()))
             .previewContext(WidgetPreviewContext(family: .systemMedium))
     }
 }
