@@ -118,6 +118,13 @@ struct ServerListRow: View {
                     Image(systemName: "star.fill")
                 }
             }
+            
+            Button(action: {
+                ServerService.shared.delete(server: server)
+            }) {
+                Text("Delete")
+                Image(systemName: "trash")
+            }
         }
     }
     
