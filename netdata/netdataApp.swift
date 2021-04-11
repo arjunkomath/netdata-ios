@@ -7,6 +7,11 @@
 
 import SwiftUI
 
+#if DEBUG
+#else
+import Bugsnag
+#endif
+
 @main
 struct netdataApp: App {
     @ObservedObject var userSettings = UserSettings()
@@ -28,6 +33,13 @@ struct netdataApp: App {
                     self.setupAppearance()
                 }
         }
+    }
+    
+    init() {
+        #if DEBUG
+        #else
+        Bugsnag.start()
+        #endif
     }
     
     private func setupAppearance() {

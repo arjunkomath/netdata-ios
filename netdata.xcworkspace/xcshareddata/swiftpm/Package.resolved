@@ -1,0 +1,16 @@
+{
+  "object": {
+    "pins": [
+      {
+        "package": "Bugsnag",
+        "repositoryURL": "https://github.com/bugsnag/bugsnag-cocoa",
+        "state": {
+          "branch": null,
+          "revision": "04e6ab85d3aa9dd7495d8b1bfd10bb6241a13dea",
+          "version": "6.8.3"
+        }
+      }
+    ]
+  },
+  "version": 1
+}
