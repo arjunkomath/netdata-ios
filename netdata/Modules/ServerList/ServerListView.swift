@@ -39,7 +39,7 @@ struct ServerListView: View {
                             }
                             .redacted(reason: .placeholder)
                         }
-                        .padding(5)
+                        .padding(8)
                     }
                 } else {
                     if !serverService.favouriteServers.isEmpty {

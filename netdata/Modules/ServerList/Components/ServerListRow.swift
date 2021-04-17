@@ -53,6 +53,7 @@ struct ServerListRow: View {
                     }
                 }
             }
+            .padding(8)
         }
         .onAppear {
             viewModel.fetchAlarms(server: server) { alarms in

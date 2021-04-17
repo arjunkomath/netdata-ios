@@ -31,7 +31,7 @@ struct AlarmListRow: View {
                 .font(.caption)
                 .foregroundColor(.gray)
         }
-        .padding(5)
+        .padding(8)
     }
     
     func isCritical() -> Bool {
