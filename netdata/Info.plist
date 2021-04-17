@@ -59,5 +59,10 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	<key>bugsnag</key>
+	<dict>
+		<key>apiKey</key>
+		<string>407cac143e35e9fffbe2cf3ee3fd4b2c</string>
+	</dict>
 </dict>
 </plist>
