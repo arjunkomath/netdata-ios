@@ -115,14 +115,17 @@ struct ServerDetailView: View {
         .navigationTitle(Text(server.name))
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
-            ToolbarItemGroup(placement: .navigationBarTrailing) {
+            ToolbarItemGroup(placement: .bottomBar) {
                 Button(action: {
                     self.activeSheet = .charts
                     self.viewModel.destroy()
                     self.showSheet.toggle()
                 }) {
                     Image(systemName: "chart.pie")
+                    Text("Charts")
                 }
+                
+                Spacer()
                 
                 Button(action: {
                     self.activeSheet = .alarms
@@ -130,6 +133,7 @@ struct ServerDetailView: View {
                     self.showSheet.toggle()
                 }) {
                     Image(systemName: "alarm")
+                    Text("Alarms")
                 }
             }
         }

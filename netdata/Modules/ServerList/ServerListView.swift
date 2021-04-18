@@ -139,6 +139,7 @@ struct ServerListView: View {
             self.addServer()
         }) {
             Image(systemName: "externaldrive.badge.plus")
+            Text("Add")
         }
     }
     

@@ -19,37 +19,34 @@ struct ServerListRow: View {
     
     var body: some View {
         NavigationLink(destination: ServerDetailView(server: server)) {
-            HStack {
-                Circle()
-                    .fill(self.getAlarmStatusColor())
-                    .frame(width: 10, height: 10, alignment: .leading)
-                    .padding(.trailing, 4)
-                
-                VStack(alignment: .leading, spacing: 5) {
-                    HStack {
-                        if !server.basicAuthBase64.isEmpty {
-                            Image(systemName: "lock.shield")
-                                .foregroundColor(.accentColor)
-                        }
-                        
-                        Text(server.name)
-                            .font(.headline)
+            VStack(alignment: .leading, spacing: 5) {
+                HStack {
+                    Text(server.name)
+                        .font(.system(size: 20, weight: .semibold, design: .rounded))
+                    
+                    Circle()
+                        .fill(self.getAlarmStatusColor())
+                        .frame(width: 12, height: 12, alignment: .leading)
+                    
+                    if !server.basicAuthBase64.isEmpty {
+                        Image(systemName: "lock.shield")
+                            .foregroundColor(.accentColor)
                     }
-                    
-                    Text(server.description)
-                        .font(.caption)
-                        .foregroundColor(.gray)
-                    
-                    if server.serverInfo != nil {
-                        VStack(alignment: .leading) {
-                            Text("\(server.serverInfo!.os_name) \(server.serverInfo!.os_version)")
-                                .font(.caption)
-                                .foregroundColor(.gray)
-                            
-                            Text("\(server.serverInfo!.kernel_name) \(server.serverInfo!.architecture)")
-                                .font(.caption)
-                                .foregroundColor(.gray)
-                        }
+                }
+                
+                Text(server.description)
+                    .font(.subheadline)
+                    .foregroundColor(.gray)
+                
+                if server.serverInfo != nil {
+                    VStack(alignment: .leading) {
+                        Text("\(server.serverInfo!.os_name) \(server.serverInfo!.os_version)")
+                            .font(.subheadline)
+                            .foregroundColor(.gray)
+                        
+                        Text("\(server.serverInfo!.kernel_name) \(server.serverInfo!.architecture)")
+                            .font(.subheadline)
+                            .foregroundColor(.gray)
                     }
                 }
             }
