@@ -17,45 +17,63 @@ struct ServerListView: View {
     
     var body: some View {
         NavigationView {
-            List {
-                if self.serverService.mostRecentError != nil {
-                    if !self.serverService.isCloudEnabled && !serverService.isSynching {
-                        ErrorMessage(message: "iCloud not enabled, you need an iCloud account to add servers")
-                    }
-                    else {
-                        ErrorMessage(message: self.serverService.mostRecentError!.localizedDescription)
-                    }
-                }
-                
-                if serverService.isSynching && serverService.defaultServers.isEmpty && serverService.favouriteServers.isEmpty {
-                    ForEach((1...4), id: \.self) { _ in
-                        Group {
-                            VStack(alignment: .leading, spacing: 5) {
-                                Text("name")
-                                    .font(.headline)
-                                Text("description")
-                                    .font(.subheadline)
-                                    .foregroundColor(.gray)
-                            }
-                            .redacted(reason: .placeholder)
+            VStack(spacing: 0) {
+                List {
+                    if self.serverService.mostRecentError != nil {
+                        if !self.serverService.isCloudEnabled && !serverService.isSynching {
+                            ErrorMessage(message: "iCloud not enabled, you need an iCloud account to add servers")
                         }
-                        .padding(8)
-                    }
-                } else {
-                    if !serverService.favouriteServers.isEmpty {
-                        Section(header: Text("Favourites").sectionHeaderStyle()) {
-                            ForEach(serverService.favouriteServers) { server in
-                                ServerListRow(server: server)
-                            }
-                            .onDelete(perform: self.deleteFavouriteServer)
+                        else {
+                            ErrorMessage(message: self.serverService.mostRecentError!.localizedDescription)
                         }
                     }
                     
-                    Section(header: Text("Servers").sectionHeaderStyle()) {
-                        ForEach(serverService.defaultServers) { server in
-                            ServerListRow(server: server)
+                    if serverService.isSynching && serverService.defaultServers.isEmpty && serverService.favouriteServers.isEmpty {
+                        ForEach((1...4), id: \.self) { _ in
+                            Group {
+                                VStack(alignment: .leading, spacing: 5) {
+                                    Text("name")
+                                        .font(.headline)
+                                    Text("description")
+                                        .font(.subheadline)
+                                        .foregroundColor(.gray)
+                                }
+                                .redacted(reason: .placeholder)
+                            }
+                            .padding(8)
                         }
-                        .onDelete(perform: self.deleteServer)
+                    } else {
+                        if !serverService.favouriteServers.isEmpty {
+                            Section(header: Text("Favourites").sectionHeaderStyle()) {
+                                ForEach(serverService.favouriteServers) { server in
+                                    ServerListRow(server: server)
+                                }
+                                .onDelete(perform: self.deleteFavouriteServer)
+                            }
+                        }
+                        
+                        Section(header: Text("Servers").sectionHeaderStyle()) {
+                            ForEach(serverService.defaultServers) { server in
+                                ServerListRow(server: server)
+                            }
+                            .onDelete(perform: self.deleteServer)
+                        }
+                    }
+                }
+                .listStyle(InsetGroupedListStyle())
+                
+                BottomBar {
+                    refreshButton
+                        .padding(.leading)
+                    
+                    if self.serverService.isCloudEnabled && self.serverService.mostRecentError == nil {
+                        Spacer()
+                        
+                        addButton
+                            .padding(.trailing)
+                            .sheet(isPresented: $showAddServerSheet, content: {
+                                AddServerForm()
+                            })
                     }
                 }
             }
@@ -65,21 +83,9 @@ struct ServerListView: View {
             .toolbar {
                 ToolbarItemGroup(placement: .navigationBarLeading) {
                     settingsButton
-                    
-                    refreshButton
-                }
-                
-                ToolbarItem(placement: .primaryAction) {
-                    if self.serverService.isCloudEnabled && self.serverService.mostRecentError == nil {
-                        addButton
-                            .sheet(isPresented: $showAddServerSheet, content: {
-                                AddServerForm()
-                            })
-                    }
                 }
             }
             .navigationTitle("My Servers")
-            .listStyle(InsetGroupedListStyle())
             .onAppear(perform: {
                 serverService.refresh()
                 
@@ -148,7 +154,7 @@ struct ServerListView: View {
             self.serverService.refresh()
         }) {
             if serverService.isSynching {
-                ProgressView().frame(width: 32, height: 16, alignment: .trailing)
+                ProgressView().frame(width: 20, height: 16, alignment: .trailing)
             } else {
                 Image(systemName: "arrow.clockwise")
             }

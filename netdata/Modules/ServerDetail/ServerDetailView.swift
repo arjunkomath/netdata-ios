@@ -21,101 +21,92 @@ struct ServerDetailView: View {
     @State private var activeSheet: ActiveSheet = .loading
     
     var body: some View {
-        List {
-            Section(header: makeSectionHeader(text: "CPU (%)")) {
-                HStack {
-                    VStack {
-                        Meter(progress: viewModel.cpuUsageGauge)
-                            .redacted(reason: self.viewModel.cpuUsage.labels.count < 1 ? .placeholder : .init())
-                        
-                        if (server.serverInfo != nil && viewModel.cpuUsage.labels.count > 0) {
-                            Spacer()
+        VStack(spacing: 0) {
+            List {
+                Section(header: makeSectionHeader(text: "CPU (%)")) {
+                    HStack {
+                        VStack {
+                            Meter(progress: viewModel.cpuUsageGauge)
+                                .redacted(reason: self.viewModel.cpuUsage.labels.count < 1 ? .placeholder : .init())
                             
-                            AbsoluteUsageData(stringValue: server.serverInfo?.cores_total,
-                                              title: "cores",
-                                              showArrows: false)
+                            if (server.serverInfo != nil && viewModel.cpuUsage.labels.count > 0) {
+                                Spacer()
+                                
+                                AbsoluteUsageData(stringValue: server.serverInfo?.cores_total,
+                                                  title: "cores",
+                                                  showArrows: false)
+                            }
+                            
+                            
                         }
                         
+                        self.getiPadSpacer()
                         
+                        DataGrid(labels: viewModel.cpuUsage.labels,
+                                 data: viewModel.cpuUsage.data,
+                                 dataType: .percentage,
+                                 showArrows: false)
                     }
-                    
-                    self.getiPadSpacer()
-                    
-                    DataGrid(labels: viewModel.cpuUsage.labels,
-                             data: viewModel.cpuUsage.data,
-                             dataType: .percentage,
-                             showArrows: false)
                 }
-            }
-            .readableGuidePadding()
-            
-            Section(header: makeSectionHeader(text: "Load")) {
-                DataGrid(labels: viewModel.load.labels,
-                         data: viewModel.load.data,
-                         dataType: .absolute,
-                         showArrows: false)
-            }
-            .readableGuidePadding()
-            
-            Section(header: makeSectionHeader(text: "Memory (MiB)")) {
-                HStack {
-                    Meter(progress: viewModel.ramUsageGauge)
-                        .redacted(reason: self.viewModel.ramUsage.labels.count < 1 ? .placeholder : .init())
-                    
-                    self.getiPadSpacer()
-                    
-                    DataGrid(labels: viewModel.ramUsage.labels,
-                             data: viewModel.ramUsage.data,
+                .readableGuidePadding()
+                
+                Section(header: makeSectionHeader(text: "Load")) {
+                    DataGrid(labels: viewModel.load.labels,
+                             data: viewModel.load.data,
                              dataType: .absolute,
                              showArrows: false)
                 }
-            }
-            .readableGuidePadding()
-            
-            Section(header: makeSectionHeader(text: "Disk Space (GiB)")) {
-                HStack {
-                    Meter(progress: viewModel.diskSpaceUsageGauge)
-                        .redacted(reason: viewModel.diskSpaceUsage.labels.count < 1 ? .placeholder : .init())
-                    
-                    self.getiPadSpacer()
-                    
-                    DataGrid(labels: viewModel.diskSpaceUsage.labels,
-                             data: viewModel.diskSpaceUsage.data,
-                             dataType: .absolute,
-                             showArrows: false)
+                .readableGuidePadding()
+                
+                Section(header: makeSectionHeader(text: "Memory (MiB)")) {
+                    HStack {
+                        Meter(progress: viewModel.ramUsageGauge)
+                            .redacted(reason: self.viewModel.ramUsage.labels.count < 1 ? .placeholder : .init())
+                        
+                        self.getiPadSpacer()
+                        
+                        DataGrid(labels: viewModel.ramUsage.labels,
+                                 data: viewModel.ramUsage.data,
+                                 dataType: .absolute,
+                                 showArrows: false)
+                    }
                 }
+                .readableGuidePadding()
+                
+                Section(header: makeSectionHeader(text: "Disk Space (GiB)")) {
+                    HStack {
+                        Meter(progress: viewModel.diskSpaceUsageGauge)
+                            .redacted(reason: viewModel.diskSpaceUsage.labels.count < 1 ? .placeholder : .init())
+                        
+                        self.getiPadSpacer()
+                        
+                        DataGrid(labels: viewModel.diskSpaceUsage.labels,
+                                 data: viewModel.diskSpaceUsage.data,
+                                 dataType: .absolute,
+                                 showArrows: false)
+                    }
+                }
+                .readableGuidePadding()
+                
+                Section(header: makeSectionHeader(text: "Disk I/O (KiB/s)")) {
+                    DataGrid(labels: viewModel.diskIO.labels,
+                             data: viewModel.diskIO.data,
+                             dataType: .absolute,
+                             showArrows: true)
+                }
+                .readableGuidePadding()
+                
+                Section(header: makeSectionHeader(text: "Network (kilobits/s)")) {
+                    DataGrid(labels: viewModel.network.labels,
+                             data: viewModel.network.data,
+                             dataType: .absolute,
+                             showArrows: true)
+                }
+                .readableGuidePadding()
             }
-            .readableGuidePadding()
+            .listStyle(InsetGroupedListStyle())
             
-            Section(header: makeSectionHeader(text: "Disk I/O (KiB/s)")) {
-                DataGrid(labels: viewModel.diskIO.labels,
-                         data: viewModel.diskIO.data,
-                         dataType: .absolute,
-                         showArrows: true)
-            }
-            .readableGuidePadding()
-            
-            Section(header: makeSectionHeader(text: "Network (kilobits/s)")) {
-                DataGrid(labels: viewModel.network.labels,
-                         data: viewModel.network.data,
-                         dataType: .absolute,
-                         showArrows: true)
-            }
-            .readableGuidePadding()
-        }
-        .onAppear {
-            self.viewModel.fetch(baseUrl: server.url, basicAuthBase64: server.basicAuthBase64)
-            // hide scroll indicators
-            UITableView.appearance().showsVerticalScrollIndicator = false
-        }
-        .onDisappear {
-            self.viewModel.destroy()
-        }
-        .listStyle(InsetGroupedListStyle())
-        .navigationTitle(Text(server.name))
-        .navigationBarTitleDisplayMode(.inline)
-        .toolbar {
-            ToolbarItemGroup(placement: .bottomBar) {
+            BottomBar {
                 Button(action: {
                     self.activeSheet = .charts
                     self.viewModel.destroy()
@@ -124,6 +115,7 @@ struct ServerDetailView: View {
                     Image(systemName: "chart.pie")
                     Text("Charts")
                 }
+                .padding(.leading)
                 
                 Spacer()
                 
@@ -135,8 +127,18 @@ struct ServerDetailView: View {
                     Image(systemName: "alarm")
                     Text("Alarms")
                 }
+                .padding(.trailing)
             }
         }
+        .onAppear {
+            self.viewModel.fetch(baseUrl: server.url, basicAuthBase64: server.basicAuthBase64)
+            // hide scroll indicators
+            UITableView.appearance().showsVerticalScrollIndicator = false
+        }
+        .onDisappear {
+            self.viewModel.destroy()
+        }
+        .navigationTitle(Text(server.name))
         .sheet(isPresented: $showSheet, onDismiss: {
             // workaround for onAppear not being called after the sheet is dismissed
             self.viewModel.fetch(baseUrl: server.url, basicAuthBase64: server.basicAuthBase64)
