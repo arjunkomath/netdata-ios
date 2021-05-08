@@ -73,34 +73,74 @@ struct ServerDetailView: View {
                 }
                 .readableGuidePadding()
                 
-                Section(header: makeSectionHeader(text: "Disk Space (GiB)")) {
-                    HStack {
-                        Meter(progress: viewModel.diskSpaceUsageGauge)
-                            .redacted(reason: viewModel.diskSpaceUsage.labels.count < 1 ? .placeholder : .init())
+                Section(header: makeSectionHeader(text: "Disk")) {
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("Space (GiB)")
+                            .font(.subheadline)
+                            .padding(.vertical, 4)
                         
-                        self.getiPadSpacer()
+                        HStack {
+                            Meter(progress: viewModel.diskSpaceUsageGauge)
+                                .redacted(reason: viewModel.diskSpaceUsage.labels.count < 1 ? .placeholder : .init())
+                            
+                            self.getiPadSpacer()
+                            
+                            DataGrid(labels: viewModel.diskSpaceUsage.labels,
+                                     data: viewModel.diskSpaceUsage.data,
+                                     dataType: .absolute,
+                                     showArrows: false)
+                        }
                         
-                        DataGrid(labels: viewModel.diskSpaceUsage.labels,
-                                 data: viewModel.diskSpaceUsage.data,
+                        Divider()
+                            .padding(.vertical, 4)
+                        
+                        Text("I/O (KiB/s)")
+                            .font(.subheadline)
+                            .padding(.vertical, 4)
+                        
+                        DataGrid(labels: viewModel.diskIO.labels,
+                                 data: viewModel.diskIO.data,
                                  dataType: .absolute,
-                                 showArrows: false)
+                                 showArrows: true)
                     }
                 }
                 .readableGuidePadding()
                 
-                Section(header: makeSectionHeader(text: "Disk I/O (KiB/s)")) {
-                    DataGrid(labels: viewModel.diskIO.labels,
-                             data: viewModel.diskIO.data,
-                             dataType: .absolute,
-                             showArrows: true)
-                }
-                .readableGuidePadding()
-                
-                Section(header: makeSectionHeader(text: "Network (kilobits/s)")) {
-                    DataGrid(labels: viewModel.network.labels,
-                             data: viewModel.network.data,
-                             dataType: .absolute,
-                             showArrows: true)
+                Section(header: makeSectionHeader(text: "Network")) {
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("system.net (kilobits/s)")
+                            .font(.subheadline)
+                            .padding(.vertical, 4)
+                        
+                        DataGrid(labels: viewModel.network.labels,
+                                 data: viewModel.network.data,
+                                 dataType: .absolute,
+                                 showArrows: true)
+                        
+                        Divider()
+                            .padding(.vertical, 4)
+                        
+                        Text("system.ip (megabits/s)")
+                            .font(.subheadline)
+                            .padding(.vertical, 4)
+                        
+                        DataGrid(labels: viewModel.networkIPv4.labels,
+                                 data: viewModel.networkIPv4.data,
+                                 dataType: .absolute,
+                                 showArrows: true)
+                        
+                        Divider()
+                            .padding(.vertical, 4)
+                        
+                        Text("system.ipv6 (kilobits/s)")
+                            .font(.subheadline)
+                            .padding(.vertical, 4)
+                        
+                        DataGrid(labels: viewModel.networkIPv6.labels,
+                                 data: viewModel.networkIPv6.data,
+                                 dataType: .absolute,
+                                 showArrows: true)
+                    }
                 }
                 .readableGuidePadding()
             }

@@ -17,16 +17,19 @@ final class ServerDetailViewModel: ObservableObject {
     @Published var cpuUsage: ServerData = ServerData(labels: [], data: [])
     @Published var cpuUsageGauge: CGFloat = 0
     @Published var cpuUsageData: [Double] = []
-    
-    @Published  var ramUsage: ServerData = ServerData(labels: [], data: [])
-    @Published  var ramUsageGauge : CGFloat = 0
-    
-    @Published  var diskSpaceUsage: ServerData = ServerData(labels: [], data: [])
-    @Published  var diskSpaceUsageGauge : CGFloat = 0
-    
     @Published var load: ServerData = ServerData(labels: [], data: [])
+    @Published var ramUsage: ServerData = ServerData(labels: [], data: [])
+    @Published var ramUsageGauge : CGFloat = 0
+    
+    // MARK:- Disk
+    @Published var diskSpaceUsage: ServerData = ServerData(labels: [], data: [])
+    @Published var diskSpaceUsageGauge : CGFloat = 0
     @Published var diskIO: ServerData = ServerData(labels: [], data: [])
+    
+    // MARK:- Network
     @Published var network: ServerData = ServerData(labels: [], data: [])
+    @Published var networkIPv4: ServerData = ServerData(labels: [], data: [])
+    @Published var networkIPv6: ServerData = ServerData(labels: [], data: [])
     
     // MARK:- Custom Charts
     @Published var serverCharts: ServerCharts = ServerCharts(version: "", release_channel: "", charts: [:])
@@ -63,7 +66,7 @@ final class ServerDetailViewModel: ObservableObject {
             .sink(receiveCompletion: { _ in
             }) { data in
                 self.cpuUsage = data
-                self.cpuUsageData = Array(self.cpuUsage.data[0 ..< 25]).reversed().map({ d in Array(d[1..<d.count]).reduce(0, { acc, val in acc + (val ?? 0) }) })
+                self.cpuUsageData = Array(self.cpuUsage.data).reversed().map({ d in Array(d[1..<d.count]).reduce(0, { acc, val in acc + (val ?? 0) }) })
                 
                 withAnimation(.linear(duration: 0.5)) {
                     self.cpuUsageGauge = CGFloat(Array(self.cpuUsage.data.first![1..<self.cpuUsage.data.first!.count]).reduce(0, { acc, val in acc + (val ?? 0) }) / 100)
@@ -112,6 +115,22 @@ final class ServerDetailViewModel: ObservableObject {
             .sink(receiveCompletion: { _ in
             }) { data in
                 self.network = data
+            }
+            .store(in: &self.cancellable)
+        
+        NetDataAPI
+            .getChartData(baseUrl: self.baseUrl, basicAuthBase64: self.basicAuthBase64, chart: "system.ip")
+            .sink(receiveCompletion: { _ in
+            }) { data in
+                self.networkIPv4 = data
+            }
+            .store(in: &self.cancellable)
+        
+        NetDataAPI
+            .getChartData(baseUrl: self.baseUrl, basicAuthBase64: self.basicAuthBase64, chart: "system.ipv6")
+            .sink(receiveCompletion: { _ in
+            }) { data in
+                self.networkIPv6 = data
             }
             .store(in: &self.cancellable)
     }
@@ -223,16 +242,17 @@ final class ServerDetailViewModel: ObservableObject {
     func destroyModel() {
         cpuUsage = ServerData(labels: [], data: [])
         cpuUsageGauge = CGFloat(0)
-        
+        load = ServerData(labels: [], data: [])
         ramUsage = ServerData(labels: [], data: [])
         ramUsageGauge = CGFloat(0) 
         
         diskSpaceUsage = ServerData(labels: [], data: [])
         diskSpaceUsageGauge = CGFloat (0)
-        
-        load = ServerData(labels: [], data: [])
         diskIO = ServerData(labels: [], data: [])
+        
         network = ServerData(labels: [], data: [])
+        networkIPv4 = ServerData(labels: [], data: [])
+        networkIPv6 = ServerData(labels: [], data: [])
     }
     
     func destroy() {

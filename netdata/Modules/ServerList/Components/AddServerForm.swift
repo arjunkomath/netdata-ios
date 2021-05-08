@@ -56,7 +56,7 @@ struct AddServerForm: View {
                     }
                 }
             }
-            .navigationBarTitle("Setup Server")
+            .navigationBarTitle("Add Server")
             .navigationBarItems(leading: dismissButton, trailing: saveButton)
         }
     }
