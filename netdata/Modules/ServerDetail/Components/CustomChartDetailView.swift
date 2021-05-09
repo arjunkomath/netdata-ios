@@ -13,6 +13,7 @@ struct CustomChartDetailView: View {
     var basicAuthBase64: String
     
     @StateObject var viewModel = ServerDetailViewModel()
+    @ObservedObject var userSettings = UserSettings()
     
     var body: some View {
         List {
@@ -27,6 +28,20 @@ struct CustomChartDetailView: View {
                          dataType: self.getDataType(),
                          showArrows: false)
             }
+            
+            if userSettings.bookmarks.contains(serverChart.id) {
+                Button(action: {
+                    userSettings.bookmarks = userSettings.bookmarks.filter { $0 != serverChart.id }
+                }, label: {
+                    Label("Remove", systemImage: "bookmark")
+                })
+            } else {
+                Button(action: {
+                    userSettings.bookmarks.insert(serverChart.id, at: 0)
+                }, label: {
+                    Label("Bookmark", systemImage: "bookmark.fill")
+                })
+            }
         }
         .listStyle(InsetGroupedListStyle())
         .onAppear {
@@ -34,6 +49,7 @@ struct CustomChartDetailView: View {
         }
         .onDisappear {
             viewModel.destroyCustomChartData()
+            viewModel.updateBookmarks(bookmarks: userSettings.bookmarks, baseUrl: serverUrl, basicAuthBase64: basicAuthBase64)
         }
     }
     

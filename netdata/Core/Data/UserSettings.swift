@@ -42,6 +42,14 @@ class UserSettings: ObservableObject {
         }
     }
     
+    // MARK: - Charts
+    
+    @Published var bookmarks: [String] {
+        didSet {
+            NSUbiquitousKeyValueStore.default.set(bookmarks, forKey: "bookmarks")
+        }
+    }
+    
     init() {
         // First launch
         self.HasLaunchedOnce = UserDefaults.standard.object(forKey: "HasLaunchedOnce") as? Bool ?? false
@@ -50,5 +58,8 @@ class UserSettings: ObservableObject {
         self.appTintColor = UserDefaults.standard.colorForKey(key: "appTintColor") != nil ?
             Color(UserDefaults.standard.colorForKey(key: "appTintColor")!) : Color.blue
         self.hapticFeedback = UserDefaults.standard.object(forKey: "hapticFeedback") as? Bool ?? true
+        
+        // Charts
+        self.bookmarks = NSUbiquitousKeyValueStore.default.array(forKey: "bookmarks") as? [String] ?? []
     }
 }

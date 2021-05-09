@@ -7,8 +7,8 @@
 
 import Foundation
 
-public struct ServerChart: Encodable, Decodable {
-    var id: String;
+public struct ServerChart: Encodable, Decodable, Identifiable {
+    public var id: String;
     var name: String;
     var type: String;
     var family: String;

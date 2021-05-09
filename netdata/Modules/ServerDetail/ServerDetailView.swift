@@ -16,6 +16,7 @@ struct ServerDetailView: View {
     var server: NDServer;
     
     @StateObject var viewModel = ServerDetailViewModel()
+    @ObservedObject var userSettings = UserSettings()
     
     @State private var showSheet = false
     @State private var activeSheet: ActiveSheet = .loading
@@ -143,6 +144,19 @@ struct ServerDetailView: View {
                     }
                 }
                 .readableGuidePadding()
+                                
+                if viewModel.bookmarks.count > 0 {
+                    Section(header: makeSectionHeader(text: "Bookmarks")) {
+                        ForEach(viewModel.bookmarks) { chart in
+                            NavigationLink(destination: CustomChartDetailView(serverChart: chart,
+                                                                              serverUrl: server.url,
+                                                                              basicAuthBase64: server.basicAuthBase64)) {
+                                ChartListRow(chart: chart)
+                            }
+                        }
+                    }
+                    .readableGuidePadding()
+                }
             }
             .listStyle(InsetGroupedListStyle())
             
@@ -172,13 +186,14 @@ struct ServerDetailView: View {
         }
         .onAppear {
             self.viewModel.fetch(baseUrl: server.url, basicAuthBase64: server.basicAuthBase64)
+            self.viewModel.updateBookmarks(bookmarks: userSettings.bookmarks, baseUrl: server.url, basicAuthBase64: server.basicAuthBase64)
             // hide scroll indicators
             UITableView.appearance().showsVerticalScrollIndicator = false
         }
         .onDisappear {
             self.viewModel.destroy()
         }
-        .navigationTitle(Text(server.name))
+        .navigationBarTitle(server.name, displayMode: .inline)
         .sheet(isPresented: $showSheet, onDismiss: {
             // workaround for onAppear not being called after the sheet is dismissed
             self.viewModel.fetch(baseUrl: server.url, basicAuthBase64: server.basicAuthBase64)

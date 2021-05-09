@@ -38,6 +38,9 @@ final class ServerDetailViewModel: ObservableObject {
     // MARK:- Alarms
     @Published var serverAlarms: ServerAlarms = ServerAlarms(status: false, alarms: [:])
     
+    // MARK:- Bookmarks
+    @Published var bookmarks: [ServerChart] = []
+    
     private var baseUrl = ""
     private var basicAuthBase64 = ""
     private var timer = Timer()
@@ -60,6 +63,33 @@ final class ServerDetailViewModel: ObservableObject {
         }
     }
     
+    func updateBookmarks(bookmarks: [String], baseUrl: String, basicAuthBase64: String) {
+        debugPrint("fetchCharts for bookmark", bookmarks)
+        
+        // Fetch charts for bookmarks
+        if bookmarks.count > 0 {
+            NetDataAPI
+                .getCharts(baseUrl: baseUrl, basicAuthBase64: basicAuthBase64)
+                .sink(receiveCompletion: { completion in
+                    switch completion {
+                    case .finished:
+                        break
+                    case .failure(let error):
+                        debugPrint("fetchCharts", error)
+                    }
+                }) { data in
+                    self.bookmarks = bookmarks.compactMap { chart in
+                        data.charts[chart]
+                    }
+                    debugPrint("bookmarks", self.bookmarks.count)
+                }
+                .store(in: &self.cancellable)
+        } else {
+            self.bookmarks = []
+            debugPrint("bookmarks", self.bookmarks.count)
+        }
+    }
+    
     func fetchCpu() {
         NetDataAPI
             .getChartData(baseUrl: self.baseUrl, basicAuthBase64: self.basicAuthBase64, chart: "system.cpu")
@@ -68,9 +98,9 @@ final class ServerDetailViewModel: ObservableObject {
                 self.cpuUsage = data
                 self.cpuUsageData = Array(self.cpuUsage.data).reversed().map({ d in Array(d[1..<d.count]).reduce(0, { acc, val in acc + (val ?? 0) }) })
                 
-                withAnimation(.linear(duration: 0.5)) {
-                    self.cpuUsageGauge = CGFloat(Array(self.cpuUsage.data.first![1..<self.cpuUsage.data.first!.count]).reduce(0, { acc, val in acc + (val ?? 0) }) / 100)
-                }
+                //                withAnimation(.linear(duration: 0.5)) {
+                self.cpuUsageGauge = CGFloat(Array(self.cpuUsage.data.first![1..<self.cpuUsage.data.first!.count]).reduce(0, { acc, val in acc + (val ?? 0) }) / 100)
+                //                }
             }
             .store(in: &self.cancellable)
     }
@@ -92,9 +122,9 @@ final class ServerDetailViewModel: ObservableObject {
             }) { data in
                 self.ramUsage = data
                 
-                withAnimation(.linear(duration: 0.5)) {
-                    self.ramUsageGauge = CGFloat(self.ramUsage.data.first![2]! / (self.ramUsage.data.first![1]! + self.ramUsage.data.first![2]! + self.ramUsage.data.first![3]!))
-                }
+                //                withAnimation(.linear(duration: 0.5)) {
+                self.ramUsageGauge = CGFloat(self.ramUsage.data.first![2]! / (self.ramUsage.data.first![1]! + self.ramUsage.data.first![2]! + self.ramUsage.data.first![3]!))
+                //                }
             }
             .store(in: &self.cancellable)
     }
@@ -142,9 +172,9 @@ final class ServerDetailViewModel: ObservableObject {
             }) { data in
                 self.diskSpaceUsage = data
                 
-                withAnimation(.linear(duration: 0.5)) {
-                    self.diskSpaceUsageGauge = CGFloat(self.diskSpaceUsage.data.first![2]! / (self.diskSpaceUsage.data.first![1]! + self.diskSpaceUsage.data.first![2]!))
-                }
+                //                withAnimation(.linear(duration: 0.5)) {
+                self.diskSpaceUsageGauge = CGFloat(self.diskSpaceUsage.data.first![2]! / (self.diskSpaceUsage.data.first![1]! + self.diskSpaceUsage.data.first![2]!))
+                //                }
             }
             .store(in: &self.cancellable)
     }
