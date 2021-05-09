@@ -16,7 +16,6 @@ struct ServerDetailView: View {
     var server: NDServer;
     
     @StateObject var viewModel = ServerDetailViewModel()
-    @ObservedObject var userSettings = UserSettings()
     
     @State private var showSheet = false
     @State private var activeSheet: ActiveSheet = .loading
@@ -188,7 +187,7 @@ struct ServerDetailView: View {
         }
         .onAppear {
             self.viewModel.fetch(baseUrl: server.url, basicAuthBase64: server.basicAuthBase64)
-            self.viewModel.updateBookmarks(bookmarks: userSettings.bookmarks, baseUrl: server.url, basicAuthBase64: server.basicAuthBase64)
+            self.viewModel.updateBookmarks(baseUrl: server.url, basicAuthBase64: server.basicAuthBase64)
             // hide scroll indicators
             UITableView.appearance().showsVerticalScrollIndicator = false
         }
@@ -199,6 +198,7 @@ struct ServerDetailView: View {
         .sheet(isPresented: $showSheet, onDismiss: {
             // workaround for onAppear not being called after the sheet is dismissed
             self.viewModel.fetch(baseUrl: server.url, basicAuthBase64: server.basicAuthBase64)
+            self.viewModel.updateBookmarks(baseUrl: server.url, basicAuthBase64: server.basicAuthBase64)
             
             self.activeSheet = .loading
         }, content: {

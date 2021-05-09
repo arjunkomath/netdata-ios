@@ -26,13 +26,17 @@ struct CustomChartDetailView: View {
             
             if userSettings.bookmarks.contains(serverChart.id) {
                 Button(action: {
-                    userSettings.bookmarks = userSettings.bookmarks.filter { $0 != serverChart.id }
+                    withAnimation {
+                        userSettings.bookmarks = userSettings.bookmarks.filter { $0 != serverChart.id }
+                    }
                 }, label: {
                     Label("Remove", systemImage: "bookmark")
                 })
             } else {
                 Button(action: {
-                    userSettings.bookmarks.insert(serverChart.id, at: 0)
+                    withAnimation {
+                        userSettings.bookmarks.insert(serverChart.id, at: 0)
+                    }
                 }, label: {
                     Label("Bookmark", systemImage: "bookmark.fill")
                 })
@@ -45,7 +49,6 @@ struct CustomChartDetailView: View {
         }
         .onDisappear {
             viewModel.destroyCustomChartData()
-            viewModel.updateBookmarks(bookmarks: userSettings.bookmarks, baseUrl: serverUrl, basicAuthBase64: basicAuthBase64)
         }
     }
     

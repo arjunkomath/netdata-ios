@@ -60,7 +60,9 @@ final class ServerDetailViewModel: ObservableObject {
         }
     }
     
-    func updateBookmarks(bookmarks: [String], baseUrl: String, basicAuthBase64: String) {
+    func updateBookmarks(baseUrl: String, basicAuthBase64: String) {
+        // Always fetch latest bookmarks, avoid adding user settings
+        let bookmarks = NSUbiquitousKeyValueStore.default.array(forKey: "bookmarks") as? [String] ?? []
         debugPrint("fetchCharts for bookmark", bookmarks)
         
         // Fetch charts for bookmarks
