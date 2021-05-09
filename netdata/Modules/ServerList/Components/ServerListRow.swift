@@ -41,16 +41,14 @@ struct ServerListRow: View {
                 if server.serverInfo != nil {
                     VStack(alignment: .leading) {
                         Text("\(server.serverInfo!.os_name) \(server.serverInfo!.os_version)")
-                            .font(.subheadline)
-                            .foregroundColor(.gray)
-                        
+            
                         Text("\(server.serverInfo!.kernel_name) \(server.serverInfo!.architecture)")
-                            .font(.subheadline)
-                            .foregroundColor(.gray)
                     }
+                    .font(.footnote)
+                    .foregroundColor(.gray)
                 }
             }
-            .padding(8)
+            .padding(4)
         }
         .onAppear {
             viewModel.fetchAlarms(server: server) { alarms in

@@ -148,10 +148,12 @@ struct ServerDetailView: View {
                 if viewModel.bookmarks.count > 0 {
                     Section(header: makeSectionHeader(text: "Bookmarks")) {
                         ForEach(viewModel.bookmarks) { chart in
-                            NavigationLink(destination: CustomChartDetailView(serverChart: chart,
-                                                                              serverUrl: server.url,
-                                                                              basicAuthBase64: server.basicAuthBase64)) {
-                                ChartListRow(chart: chart)
+                            if chart.enabled {
+                                NavigationLink(destination: CustomChartDetailView(serverChart: chart,
+                                                                                  serverUrl: server.url,
+                                                                                  basicAuthBase64: server.basicAuthBase64)) {
+                                    ChartListRow(chart: chart)
+                                }
                             }
                         }
                     }

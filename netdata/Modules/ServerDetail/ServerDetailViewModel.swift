@@ -11,8 +11,6 @@ import SwiftUI
 
 final class ServerDetailViewModel: ObservableObject {
     
-    @Published var loading = true
-    
     // MARK:- Real time data
     @Published var cpuUsage: ServerData = ServerData(labels: [], data: [])
     @Published var cpuUsageGauge: CGFloat = 0
@@ -49,7 +47,6 @@ final class ServerDetailViewModel: ObservableObject {
     
     func fetch(baseUrl: String, basicAuthBase64: String) {
         debugPrint("fetch", baseUrl)
-        self.loading = true
         self.baseUrl = baseUrl
         self.basicAuthBase64 = basicAuthBase64
         

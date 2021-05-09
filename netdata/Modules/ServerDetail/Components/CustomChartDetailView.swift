@@ -17,12 +17,7 @@ struct CustomChartDetailView: View {
     
     var body: some View {
         List {
-            Section(header: Text("Info").sectionHeaderStyle()) {
-                Text(serverChart.title)
-                    .font(.headline)
-            }
-            
-            Section(header: Text("\(serverChart.name) (\(units()))").sectionHeaderStyle()) {
+            Section(header: Text("\(serverChart.name) (\(units()))").sectionHeaderStyle().padding(.top)) {
                 DataGrid(labels: viewModel.customChartData.labels,
                          data: viewModel.customChartData.data,
                          dataType: self.getDataType(),
@@ -44,6 +39,7 @@ struct CustomChartDetailView: View {
             }
         }
         .listStyle(InsetGroupedListStyle())
+        .navigationTitle(serverChart.name)
         .onAppear {
             viewModel.fetchCustomChartData(baseUrl: serverUrl, basicAuthBase64: basicAuthBase64, chart: serverChart.name)
         }
