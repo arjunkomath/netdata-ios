@@ -23,6 +23,7 @@ struct CustomChartDetailView: View {
                          dataType: self.getDataType(),
                          showArrows: false)
             }
+            .readableGuidePadding()
             
             if userSettings.bookmarks.contains(serverChart.id) {
                 Button(action: {
@@ -32,6 +33,7 @@ struct CustomChartDetailView: View {
                 }, label: {
                     Label("Remove", systemImage: "bookmark")
                 })
+                .readableGuidePadding()
             } else {
                 Button(action: {
                     withAnimation {
@@ -40,6 +42,7 @@ struct CustomChartDetailView: View {
                 }, label: {
                     Label("Bookmark", systemImage: "bookmark.fill")
                 })
+                .readableGuidePadding()
             }
         }
         .listStyle(InsetGroupedListStyle())
