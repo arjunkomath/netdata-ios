@@ -7,13 +7,25 @@
 
 import SwiftUI
 
+final class ServerListActiveSheet: ObservableObject {
+    enum Kind {
+        case add
+        case settings
+        case welcome
+        case none
+    }
+    
+    @Published var kind: Kind = .none {
+        didSet { showSheet = kind != .none }
+    }
+    
+    @Published var showSheet: Bool = false
+}
+
 struct ServerListView: View {
     @EnvironmentObject private var serverService: ServerService
     @ObservedObject var userSettings = UserSettings()
-    
-    @State private var showAddServerSheet = false
-    @State private var showSettingsSheet = false
-    @State private var showWelcomeSheet = false
+    @ObservedObject var activeSheet = ServerListActiveSheet()
     
     var body: some View {
         NavigationView {
@@ -71,15 +83,10 @@ struct ServerListView: View {
                         
                         addButton
                             .padding(.trailing)
-                            .sheet(isPresented: $showAddServerSheet, content: {
-                                AddServerForm()
-                            })
                     }
                 }
             }
-            .sheet(isPresented: $showWelcomeSheet, content: {
-                WelcomeScreen()
-            })
+            .sheet(isPresented: self.$activeSheet.showSheet, content: { self.sheet })
             .toolbar {
                 ToolbarItemGroup(placement: .navigationBarLeading) {
                     settingsButton
@@ -95,7 +102,7 @@ struct ServerListView: View {
                 // show welcome screen
                 if !userSettings.HasLaunchedOnce {
                     userSettings.HasLaunchedOnce = true
-                    self.showWelcomeSheet = true
+                    self.activeSheet.kind = .welcome
                 }
             })
             
@@ -111,9 +118,6 @@ struct ServerListView: View {
                         Text("Add Netdata server")
                     }
                     .buttonStyle(BorderedBarButtonStyle())
-                    .sheet(isPresented: $showAddServerSheet, content: {
-                        AddServerForm()
-                    })
                 } else {
                     Image(systemName: "tray")
                         .imageScale(.large)
@@ -129,7 +133,7 @@ struct ServerListView: View {
             return
         }
         
-        self.showAddServerSheet.toggle()
+        self.activeSheet.kind = .add
     }
     
     func deleteServer(at offsets: IndexSet) {
@@ -163,13 +167,19 @@ struct ServerListView: View {
     
     private var settingsButton: some View {
         Button(action: {
-            self.showSettingsSheet = true
+            self.activeSheet.kind = .settings
         }) {
             Image(systemName: "gear")
         }
-        .sheet(isPresented: $showSettingsSheet, content: {
-            SettingsView()
-                .environmentObject(serverService)
-        })
     }
+    
+    private var sheet: some View {
+           switch activeSheet.kind {
+           case .none: return AnyView(EmptyView())
+           case .add: return AnyView(AddServerForm())
+           case .settings: return AnyView(SettingsView()
+                                            .environmentObject(serverService))
+           case .welcome: return AnyView(WelcomeScreen())
+           }
+       }
 }
