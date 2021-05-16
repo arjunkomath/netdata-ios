@@ -17,7 +17,7 @@ struct ServerDetailDemoView: View {
             Section(header: makeSectionHeader(text: "CPU (%)")) {
                 HStack {
                     VStack {
-                        Meter(progress: viewModel.cpuUsageGauge)
+                        Meter(progress: viewModel.getGaugeData(data: viewModel.cpuUsage.data))
                             .redacted(reason: self.viewModel.cpuUsage.labels.count < 1 ? .placeholder : .init())
                     }
                     

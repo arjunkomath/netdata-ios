@@ -13,7 +13,6 @@ final class ServerDetailViewModel: ObservableObject {
     
     // MARK:- Real time data
     @Published var cpuUsage: ServerData = ServerData(labels: [], data: [])
-    @Published var cpuUsageGauge: CGFloat = 0
     @Published var cpuUsageData: [Double] = []
     @Published var load: ServerData = ServerData(labels: [], data: [])
     @Published var ramUsage: ServerData = ServerData(labels: [], data: [])
@@ -123,10 +122,6 @@ final class ServerDetailViewModel: ObservableObject {
             }) { data in
                 self.cpuUsage = data
                 self.cpuUsageData = Array(self.cpuUsage.data).reversed().map({ d in Array(d[1..<d.count]).reduce(0, { acc, val in acc + (val ?? 0) }) })
-                
-                //                withAnimation(.linear(duration: 0.5)) {
-                self.cpuUsageGauge = CGFloat(Array(self.cpuUsage.data.first![1..<self.cpuUsage.data.first!.count]).reduce(0, { acc, val in acc + (val ?? 0) }) / 100)
-                //                }
             }
             .store(in: &self.cancellable)
     }
@@ -148,9 +143,7 @@ final class ServerDetailViewModel: ObservableObject {
             }) { data in
                 self.ramUsage = data
                 
-                //                withAnimation(.linear(duration: 0.5)) {
                 self.ramUsageGauge = CGFloat(self.ramUsage.data.first![2]! / (self.ramUsage.data.first![1]! + self.ramUsage.data.first![2]! + self.ramUsage.data.first![3]!))
-                //                }
             }
             .store(in: &self.cancellable)
     }
@@ -198,9 +191,7 @@ final class ServerDetailViewModel: ObservableObject {
             }) { data in
                 self.diskSpaceUsage = data
                 
-                //                withAnimation(.linear(duration: 0.5)) {
                 self.diskSpaceUsageGauge = CGFloat(self.diskSpaceUsage.data.first![2]! / (self.diskSpaceUsage.data.first![1]! + self.diskSpaceUsage.data.first![2]!))
-                //                }
             }
             .store(in: &self.cancellable)
     }
