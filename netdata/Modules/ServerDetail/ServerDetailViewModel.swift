@@ -32,6 +32,7 @@ final class ServerDetailViewModel: ObservableObject {
     // MARK:- Custom Charts
     @Published var serverCharts: ServerCharts = ServerCharts(version: "", release_channel: "", charts: [:])
     @Published var customChartData: ServerData = ServerData(labels: [], data: [])
+    @Published var bookmarkedChartData: [ServerData] = []
     
     // MARK:- Alarms
     @Published var serverAlarms: ServerAlarms = ServerAlarms(status: false, alarms: [:])
@@ -41,8 +42,12 @@ final class ServerDetailViewModel: ObservableObject {
     
     private var baseUrl = ""
     private var basicAuthBase64 = ""
+    
+    // MARK:- Timers
     private var timer = Timer()
     private var customChartTimer = Timer()
+    private var bookmarksDataTimer = Timer()
+    
     private var cancellable = Set<AnyCancellable>()
     
     func fetch(baseUrl: String, basicAuthBase64: String) {
@@ -63,7 +68,8 @@ final class ServerDetailViewModel: ObservableObject {
     func updateBookmarks(baseUrl: String, basicAuthBase64: String) {
         // Always fetch latest bookmarks, avoid adding user settings
         let bookmarks = NSUbiquitousKeyValueStore.default.array(forKey: "bookmarks") as? [String] ?? []
-        debugPrint("fetchCharts for bookmark", bookmarks)
+        
+        self.bookmarksDataTimer.invalidate()
         
         // Fetch charts for bookmarks
         if bookmarks.count > 0 {
@@ -77,15 +83,36 @@ final class ServerDetailViewModel: ObservableObject {
                         debugPrint("fetchCharts", error)
                     }
                 }) { data in
-                    self.bookmarks = bookmarks.compactMap { chart in
-                        data.charts[chart]
+                    self.bookmarks = bookmarks
+                        .compactMap { chart in
+                            data.charts[chart]
+                        }.filter { chart in
+                            chart.enabled
+                        }
+                    
+                    self.bookmarkedChartData = Array(repeating: ServerData(labels: [], data: []), count: self.bookmarks.count)
+                    
+                    self.bookmarksDataTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { timer in
+                        for (index, bookmark) in self.bookmarks.enumerated() {
+                            NetDataAPI
+                                .getChartData(baseUrl: baseUrl, basicAuthBase64: basicAuthBase64, chart: bookmark.id)
+                                .sink(receiveCompletion: { completion in
+                                    switch completion {
+                                    case .finished:
+                                        break
+                                    case .failure(let error):
+                                        debugPrint("fetch bookmarks data", error)
+                                    }
+                                }) { data in
+                                    self.bookmarkedChartData[index] = data
+                                }
+                                .store(in: &self.cancellable)
+                        }
                     }
-                    debugPrint("bookmarks", self.bookmarks.count)
                 }
                 .store(in: &self.cancellable)
         } else {
             self.bookmarks = []
-            debugPrint("bookmarks", self.bookmarks.count)
         }
     }
     
@@ -244,6 +271,10 @@ final class ServerDetailViewModel: ObservableObject {
             .store(in: &cancellable)
     }
     
+    func getGaugeData(data: [[Double?]]) -> CGFloat {
+        return data.count == 0 ? 0 : CGFloat(Array(data.first![1..<data.first!.count]).reduce(0, { acc, val in acc + (val ?? 0) }) / 100)
+    }
+    
     func destroyAlarmsData() {
         debugPrint("destroyAlarmsData")
         serverAlarms = ServerAlarms(status: false, alarms: [:])
@@ -268,29 +299,11 @@ final class ServerDetailViewModel: ObservableObject {
             .store(in: &cancellable)
     }
     
-    func destroyModel() {
-        cpuUsage = ServerData(labels: [], data: [])
-        cpuUsageGauge = CGFloat(0)
-        load = ServerData(labels: [], data: [])
-        ramUsage = ServerData(labels: [], data: [])
-        ramUsageGauge = CGFloat(0) 
-        
-        diskSpaceUsage = ServerData(labels: [], data: [])
-        diskSpaceUsageGauge = CGFloat (0)
-        diskIO = ServerData(labels: [], data: [])
-        
-        network = ServerData(labels: [], data: [])
-        networkIPv4 = ServerData(labels: [], data: [])
-        networkIPv6 = ServerData(labels: [], data: [])
-    }
-    
     func destroy() {
         debugPrint("destroy")
         // stop timer
         self.timer.invalidate()
-        
-        // destroy data
-        self.destroyModel()
+        self.bookmarksDataTimer.invalidate()
     }
 }
 

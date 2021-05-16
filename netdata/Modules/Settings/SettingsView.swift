@@ -88,6 +88,16 @@ struct SettingsView: View {
                                    ))
                 }
                 
+                if userSettings.bookmarks.count > 0 {
+                    Section(header: Text("Bookmarks"),
+                            footer: Text("These charts will be shown below default charts for every server")) {
+                        ForEach(userSettings.bookmarks, id: \.self) { chart in
+                            Text(chart)
+                        }
+                        .onDelete(perform: deleteBookmarks)
+                    }
+                }
+                
                 Section(header: Text("Data")) {
                     makeRow(image: self.serverService.isCloudEnabled ? "icloud.fill" : "icloud.slash",
                             text: "iCloud sync \(self.serverService.isCloudEnabled ? "enabled" : "disabled")",
@@ -120,6 +130,10 @@ struct SettingsView: View {
         }
         .buttonStyle(BorderedBarButtonStyle())
         .accentColor(Color.red)
+    }
+    
+    private func deleteBookmarks(at offsets: IndexSet) {
+        userSettings.bookmarks.remove(atOffsets: offsets)
     }
 }
 

@@ -174,12 +174,12 @@ struct ServerListView: View {
     }
     
     private var sheet: some View {
-           switch activeSheet.kind {
-           case .none: return AnyView(EmptyView())
-           case .add: return AnyView(AddServerForm())
-           case .settings: return AnyView(SettingsView()
-                                            .environmentObject(serverService))
-           case .welcome: return AnyView(WelcomeScreen())
-           }
-       }
+        switch activeSheet.kind {
+        case .none: return AnyView(EmptyView())
+        case .add: return AnyView(AddServerForm())
+        case .settings: return AnyView(SettingsView()
+                                        .environmentObject(serverService))
+        case .welcome: return AnyView(WelcomeScreen())
+        }
+    }
 }

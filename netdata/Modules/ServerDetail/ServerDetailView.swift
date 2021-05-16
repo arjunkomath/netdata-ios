@@ -8,17 +8,27 @@
 import SwiftUI
 import Combine
 
-enum ActiveSheet {
-    case alarms, charts, loading
+final class ServerDetailActiveSheet: ObservableObject {
+    enum Kind {
+        case alarms
+        case charts
+        case none
+    }
+    
+    @Published var kind: Kind = .none {
+        didSet { showSheet = kind != .none }
+    }
+    
+    @Published var showSheet: Bool = false
 }
 
 struct ServerDetailView: View {
     var server: NDServer;
     
     @StateObject var viewModel = ServerDetailViewModel()
+    @ObservedObject var activeSheet = ServerDetailActiveSheet()
     
     @State private var showSheet = false
-    @State private var activeSheet: ActiveSheet = .loading
     
     var body: some View {
         VStack(spacing: 0) {
@@ -90,10 +100,9 @@ struct ServerDetailView: View {
                                      dataType: .absolute,
                                      showArrows: false)
                         }
-                        
-                        Divider()
-                            .padding(.vertical, 4)
-                        
+                    }
+                    
+                    VStack(alignment: .leading, spacing: 4) {
                         Text("I/O (KiB/s)")
                             .font(.subheadline)
                             .padding(.vertical, 4)
@@ -116,10 +125,9 @@ struct ServerDetailView: View {
                                  data: viewModel.network.data,
                                  dataType: .absolute,
                                  showArrows: true)
-                        
-                        Divider()
-                            .padding(.vertical, 4)
-                        
+                    }
+                    
+                    VStack(alignment: .leading, spacing: 4) {
                         Text("system.ip (megabits/s)")
                             .font(.subheadline)
                             .padding(.vertical, 4)
@@ -128,10 +136,9 @@ struct ServerDetailView: View {
                                  data: viewModel.networkIPv4.data,
                                  dataType: .absolute,
                                  showArrows: true)
-                        
-                        Divider()
-                            .padding(.vertical, 4)
-                        
+                    }
+                    
+                    VStack(alignment: .leading, spacing: 4) {
                         Text("system.ipv6 (kilobits/s)")
                             .font(.subheadline)
                             .padding(.vertical, 4)
@@ -143,15 +150,25 @@ struct ServerDetailView: View {
                     }
                 }
                 .readableGuidePadding()
-                                
-                if viewModel.bookmarks.count > 0 {
+                
+                if viewModel.bookmarkedChartData.count > 0 {
                     Section(header: makeSectionHeader(text: "Bookmarks")) {
-                        ForEach(viewModel.bookmarks) { chart in
-                            if chart.enabled {
-                                NavigationLink(destination: CustomChartDetailView(serverChart: chart,
-                                                                                  serverUrl: server.url,
-                                                                                  basicAuthBase64: server.basicAuthBase64)) {
-                                    ChartListRow(chart: chart)
+                        ForEach(Array(viewModel.bookmarkedChartData.enumerated()), id: \.offset) { i, chart in
+                            HStack {
+                                if self.getDataType(chart: viewModel.bookmarks[i]) == .percentage {
+                                    Meter(progress: viewModel.getGaugeData(data: chart.data))
+                                        .redacted(reason: chart.labels.count < 1 ? .placeholder : .init())
+                                }
+                                
+                                VStack(alignment: .leading, spacing: 4) {
+                                    Text(viewModel.bookmarks[i].id)
+                                        .font(.subheadline)
+                                        .padding(.vertical, 4)
+                                    
+                                    DataGrid(labels: chart.labels,
+                                             data: chart.data,
+                                             dataType: self.getDataType(chart: viewModel.bookmarks[i]),
+                                             showArrows: false)
                                 }
                             }
                         }
@@ -163,7 +180,7 @@ struct ServerDetailView: View {
             
             BottomBar {
                 Button(action: {
-                    self.activeSheet = .charts
+                    self.activeSheet.kind = .charts
                     self.viewModel.destroy()
                     self.showSheet.toggle()
                 }) {
@@ -175,7 +192,7 @@ struct ServerDetailView: View {
                 Spacer()
                 
                 Button(action: {
-                    self.activeSheet = .alarms
+                    self.activeSheet.kind = .alarms
                     self.viewModel.destroy()
                     self.showSheet.toggle()
                 }) {
@@ -195,21 +212,32 @@ struct ServerDetailView: View {
             self.viewModel.destroy()
         }
         .navigationBarTitle(server.name, displayMode: .inline)
-        .sheet(isPresented: $showSheet, onDismiss: {
+        .sheet(isPresented: self.$activeSheet.showSheet, onDismiss: {
             // workaround for onAppear not being called after the sheet is dismissed
             self.viewModel.fetch(baseUrl: server.url, basicAuthBase64: server.basicAuthBase64)
             self.viewModel.updateBookmarks(baseUrl: server.url, basicAuthBase64: server.basicAuthBase64)
-            
-            self.activeSheet = .loading
         }, content: {
-            if self.activeSheet == .loading {
-                ProgressView()
-            } else if self.activeSheet == .charts {
-                ChartsListView(serverUrl: server.url, basicAuthBase64: server.basicAuthBase64)
-            } else if self.activeSheet == .alarms {
-                AlarmsListView(serverUrl: server.url, basicAuthBase64: server.basicAuthBase64)
-            }
+            self.sheet
         })
+    }
+    
+    private var sheet: some View {
+        switch activeSheet.kind {
+        case .none: return AnyView(EmptyView())
+        case .alarms: return AnyView(AlarmsListView(serverUrl: server.url, basicAuthBase64: server.basicAuthBase64))
+        case .charts: return AnyView(ChartsListView(serverUrl: server.url, basicAuthBase64: server.basicAuthBase64))
+        }
+    }
+    
+    func getDataType(chart: ServerChart) -> GridDataType {
+        if chart.units == "percentage" {
+            return .percentage
+        }
+        else if chart.units == "seconds" {
+            return .secondsToHours
+        }
+        
+        return .absolute
     }
     
     func makeSectionHeader(text: String) -> some View {
