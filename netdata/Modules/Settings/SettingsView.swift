@@ -89,12 +89,21 @@ struct SettingsView: View {
                 }
                 
                 if userSettings.bookmarks.count > 0 {
-                    Section(header: Text("Bookmarks"),
+                    Section(header: Text("Pinned charts"),
                             footer: Text("These charts will be shown below default charts for every server")) {
                         ForEach(userSettings.bookmarks, id: \.self) { chart in
                             Text(chart)
                         }
                         .onDelete(perform: deleteBookmarks)
+                    }
+                }
+                
+                if userSettings.ignoredAlarms.count > 0 {
+                    Section(header: Text("Hidden alarms")) {
+                        ForEach(userSettings.ignoredAlarms, id: \.self) { chart in
+                            Text(chart)
+                        }
+                        .onDelete(perform: deleteIgnoredAlarms)
                     }
                 }
                 
@@ -134,6 +143,10 @@ struct SettingsView: View {
     
     private func deleteBookmarks(at offsets: IndexSet) {
         userSettings.bookmarks.remove(atOffsets: offsets)
+    }
+    
+    private func deleteIgnoredAlarms(at offsets: IndexSet) {
+        userSettings.ignoredAlarms.remove(atOffsets: offsets)
     }
 }
 

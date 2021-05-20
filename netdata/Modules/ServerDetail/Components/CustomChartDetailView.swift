@@ -31,7 +31,7 @@ struct CustomChartDetailView: View {
                         userSettings.bookmarks = userSettings.bookmarks.filter { $0 != serverChart.id }
                     }
                 }, label: {
-                    Label("Remove", systemImage: "bookmark")
+                    Label("Remove pin", systemImage: "pin")
                 })
                 .readableGuidePadding()
             } else {
@@ -40,7 +40,7 @@ struct CustomChartDetailView: View {
                         userSettings.bookmarks.insert(serverChart.id, at: 0)
                     }
                 }, label: {
-                    Label("Bookmark", systemImage: "bookmark.fill")
+                    Label("Pin chart", systemImage: "pin.fill")
                 })
                 .readableGuidePadding()
             }

@@ -9,6 +9,7 @@ import SwiftUI
 
 struct AlarmsListView: View {
     @Environment(\.presentationMode) private var presentationMode
+    @ObservedObject var userSettings = UserSettings()
     
     var serverUrl: String
     var basicAuthBase64: String
@@ -18,7 +19,7 @@ struct AlarmsListView: View {
     var body: some View {
         NavigationView {
             VStack {
-                if viewModel.serverAlarms.alarms.isEmpty && viewModel.serverAlarms.status == true {
+                if self.getActiveAlarms().isEmpty && viewModel.serverAlarms.status == true {
                     VStack(spacing: 16) {
                         Image(systemName: "hand.thumbsup.fill")
                             .imageScale(.large)
@@ -27,14 +28,27 @@ struct AlarmsListView: View {
                         
                         Text("No alarms raised! Everything looks good.")
                             .font(.headline)
+                        
+                        if self.hiddenAlarmsCount() > 0 {
+                            Text("\(self.hiddenAlarmsCount()) hidden alert(s)")
+                                .font(.footnote)
+                                .foregroundColor(.gray)
+                        }
                     }
                 }
                 
                 List {
-                    ForEach(viewModel.serverAlarms.alarms.keys.sorted(), id: \.self) { key in
-                        if viewModel.serverAlarms.alarms[key] != nil {
-                            AlarmListRow(alarm: viewModel.serverAlarms.alarms[key]!)
-                        }
+                    ForEach(self.getActiveAlarms(), id: \.self) { key in
+                        AlarmListRow(alarm: viewModel.serverAlarms.alarms[key]!)
+                            .contextMenu {
+                                Button(action: {
+                                    withAnimation {
+                                        userSettings.ignoredAlarms.append(viewModel.serverAlarms.alarms[key]!.name)
+                                    }
+                                }, label: {
+                                    Label("Hide alert", systemImage: "eye.slash.fill")
+                                })
+                            }
                     }
                 }
             }
@@ -47,6 +61,17 @@ struct AlarmsListView: View {
                 viewModel.destroyAlarmsData()
             }
         }
+    }
+    
+    private func getActiveAlarms() -> [String] {
+        return viewModel.serverAlarms.alarms.keys.sorted().filter { key in
+            return viewModel.serverAlarms.alarms[key] != nil &&
+                !userSettings.ignoredAlarms.contains(viewModel.serverAlarms.alarms[key]!.name)
+        }
+    }
+    
+    private func hiddenAlarmsCount() -> Int {
+        return viewModel.serverAlarms.alarms.keys.count - self.getActiveAlarms().count
     }
     
     private var dismissButton: some View {

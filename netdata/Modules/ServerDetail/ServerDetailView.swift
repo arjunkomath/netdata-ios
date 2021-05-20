@@ -152,7 +152,7 @@ struct ServerDetailView: View {
                 .readableGuidePadding()
                 
                 if viewModel.bookmarkedChartData.count > 0 {
-                    Section(header: makeSectionHeader(text: "Bookmarks")) {
+                    Section(header: makeSectionHeader(text: "Pinned charts")) {
                         ForEach(Array(viewModel.bookmarkedChartData.enumerated()), id: \.offset) { i, chart in
                             HStack {
                                 if self.getDataType(chart: viewModel.bookmarks[i]) == .percentage {

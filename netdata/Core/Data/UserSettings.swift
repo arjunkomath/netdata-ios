@@ -50,6 +50,14 @@ class UserSettings: ObservableObject {
         }
     }
     
+    // MARK: - Alarms
+    
+    @Published var ignoredAlarms: [String] {
+        didSet {
+            NSUbiquitousKeyValueStore.default.set(ignoredAlarms, forKey: "ignoredAlarms")
+        }
+    }
+    
     init() {
         // First launch
         self.HasLaunchedOnce = UserDefaults.standard.object(forKey: "HasLaunchedOnce") as? Bool ?? false
@@ -61,5 +69,8 @@ class UserSettings: ObservableObject {
         
         // Charts
         self.bookmarks = NSUbiquitousKeyValueStore.default.array(forKey: "bookmarks") as? [String] ?? []
+        
+        // Alarms
+        self.ignoredAlarms = NSUbiquitousKeyValueStore.default.array(forKey: "ignoredAlarms") as? [String] ?? []
     }
 }
