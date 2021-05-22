@@ -28,12 +28,6 @@ struct AlarmsListView: View {
                         
                         Text("No alarms raised! Everything looks good.")
                             .font(.headline)
-                        
-                        if self.hiddenAlarmsCount() > 0 {
-                            Text("\(self.hiddenAlarmsCount()) hidden alert(s)")
-                                .font(.footnote)
-                                .foregroundColor(.gray)
-                        }
                     }
                 }
                 
@@ -46,10 +40,16 @@ struct AlarmsListView: View {
                                         userSettings.ignoredAlarms.append(viewModel.serverAlarms.alarms[key]!.name)
                                     }
                                 }, label: {
-                                    Label("Hide alert", systemImage: "eye.slash.fill")
+                                    Label("Hide alarm", systemImage: "eye.slash.fill")
                                 })
                             }
                     }
+                }
+                
+                if self.hiddenAlarmsCount() > 0 {
+                    Text("\(self.hiddenAlarmsCount()) hidden alert(s)")
+                        .font(.footnote)
+                        .foregroundColor(.gray)
                 }
             }
             .navigationTitle(Text("Active Alarms")).navigationBarTitleDisplayMode(.inline)

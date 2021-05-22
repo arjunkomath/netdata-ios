@@ -24,6 +24,7 @@ struct MediumWidget: View {
                     .font(.callout)
                     .bold()
             }
+            .padding()
         } else {
             VStack(alignment: .leading) {
                 LazyVGrid(columns: columns, alignment: .leading, spacing: 8) {

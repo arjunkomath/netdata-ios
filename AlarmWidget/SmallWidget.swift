@@ -19,6 +19,7 @@ struct SmallWidget: View {
                     .font(.callout)
                     .bold()
             }
+            .padding()
         } else {
             if entry.count == 0 {
                 VStack(alignment: .leading) {
