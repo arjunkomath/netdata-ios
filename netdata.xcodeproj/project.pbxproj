@@ -29,7 +29,6 @@
 		552715552622EB2A00A57510 /* Bugsnag in Frameworks */ = {isa = PBXBuildFile; productRef = 552715542622EB2A00A57510 /* Bugsnag */; };
 		552862E524CD018B008E2B0E /* ErrorMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 552862E424CD018B008E2B0E /* ErrorMessage.swift */; };
 		552C2C2624D6B9BB00D3DFBE /* CustomChartDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 552C2C2524D6B9BB00D3DFBE /* CustomChartDetailView.swift */; };
-		552C2C2824D6C84300D3DFBE /* SearchBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 552C2C2724D6C84300D3DFBE /* SearchBar.swift */; };
 		552E19D324CDB71500CDB97F /* EditServerForm.swift in Sources */ = {isa = PBXBuildFile; fileRef = 552E19D224CDB71500CDB97F /* EditServerForm.swift */; };
 		55380379254510DD003A9BFE /* NetdataClipApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55380378254510DD003A9BFE /* NetdataClipApp.swift */; };
 		5538037B254510DD003A9BFE /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5538037A254510DD003A9BFE /* MainView.swift */; };
@@ -176,7 +175,6 @@
 		552B4E7724CD16C0008B9DA6 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
 		552B4E7924CD16C0008B9DA6 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
 		552C2C2524D6B9BB00D3DFBE /* CustomChartDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomChartDetailView.swift; sourceTree = "<group>"; };
-		552C2C2724D6C84300D3DFBE /* SearchBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchBar.swift; sourceTree = "<group>"; };
 		552E19D224CDB71500CDB97F /* EditServerForm.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditServerForm.swift; sourceTree = "<group>"; };
 		55380376254510DD003A9BFE /* NetdataClip.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NetdataClip.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		55380378254510DD003A9BFE /* NetdataClipApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetdataClipApp.swift; sourceTree = "<group>"; };
@@ -325,7 +323,6 @@
 				55C638FE24CC1A4D00395B23 /* BorderedBarButtonStyle.swift */,
 				555401A224D850D100B1B727 /* CustomTextStyle.swift */,
 				552862E424CD018B008E2B0E /* ErrorMessage.swift */,
-				552C2C2724D6C84300D3DFBE /* SearchBar.swift */,
 				55193D2924E14D9500FE1D55 /* ReadableGuidePadding.swift */,
 			);
 			path = UI;
@@ -942,7 +939,6 @@
 				552E19D324CDB71500CDB97F /* EditServerForm.swift in Sources */,
 				55BFBA2724CC4EA1004461D3 /* Agent.swift in Sources */,
 				552862E524CD018B008E2B0E /* ErrorMessage.swift in Sources */,
-				552C2C2824D6C84300D3DFBE /* SearchBar.swift in Sources */,
 				55BA431224C3395400599345 /* ServerData.swift in Sources */,
 				55C638F924CBE6B800395B23 /* PercentageUsageData.swift in Sources */,
 				55BA431024C332C900599345 /* ServerInfo.swift in Sources */,
@@ -1339,7 +1335,7 @@
 				DEVELOPMENT_TEAM = H78GYE72WQ;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = netdata/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				"IPHONEOS_DEPLOYMENT_TARGET[sdk=macosx*]" = 14.2;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1368,7 +1364,7 @@
 				DEVELOPMENT_TEAM = H78GYE72WQ;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = netdata/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				"IPHONEOS_DEPLOYMENT_TARGET[sdk=macosx*]" = 14.2;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",

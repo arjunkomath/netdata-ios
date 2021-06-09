@@ -19,10 +19,8 @@ struct ChartsListView: View {
     var body: some View {
         NavigationView {
             VStack {
-                SearchBar(text: $searchText)
-                
                 List {
-                    ForEach(viewModel.serverCharts.charts.keys.sorted().filter({ searchText.isEmpty ? true : $0.contains(searchText) }), id: \.self) { key in
+                    ForEach(viewModel.serverCharts.charts.keys.sorted().filter({ searchText.isEmpty ? true : $0.lowercased().contains(searchText.lowercased()) }), id: \.self) { key in
                         if viewModel.serverCharts.charts[key] != nil && viewModel.serverCharts.charts[key]!.enabled == true {
                             NavigationLink(destination: CustomChartDetailView(serverChart: viewModel.serverCharts.charts[key]!,
                                                                               serverUrl: serverUrl,
@@ -34,6 +32,7 @@ struct ChartsListView: View {
                 }
                 .navigationTitle(Text("Available Charts")).navigationBarTitleDisplayMode(.inline)
                 .navigationBarItems(leading: dismissButton)
+                .searchable(text: $searchText)
                 .onAppear {
                     viewModel.fetchCharts(baseUrl: serverUrl, basicAuthBase64: basicAuthBase64)
                 }

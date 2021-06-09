@@ -100,8 +100,8 @@ struct SettingsView: View {
                 
                 if userSettings.ignoredAlarms.count > 0 {
                     Section(header: Text("Hidden alarms")) {
-                        ForEach(userSettings.ignoredAlarms, id: \.self) { chart in
-                            Text(chart)
+                        ForEach(userSettings.ignoredAlarms, id: \.self) { alarm in
+                            Text(alarm)
                         }
                         .onDelete(perform: deleteIgnoredAlarms)
                     }
