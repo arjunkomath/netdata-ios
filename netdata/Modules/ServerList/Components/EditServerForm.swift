@@ -51,7 +51,7 @@ struct EditServerForm: View {
                     }
                 }
             }
-            .navigationBarTitle("Edit Server")
+            .navigationBarTitle("Edit Server", displayMode: .inline)
             .navigationBarItems(leading: dismissButton, trailing: saveButton)
             .onAppear {
                 if let server = self.editingServer {

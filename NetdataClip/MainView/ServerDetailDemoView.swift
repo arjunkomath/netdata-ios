@@ -102,11 +102,12 @@ struct ServerDetailDemoView: View {
             .sectionHeaderStyle()
     }
     
-    func getiPadSpacer() -> AnyView? {
+    @ViewBuilder
+    func getiPadSpacer() -> some View {
         #if targetEnvironment(macCatalyst)
-        return AnyView(Spacer(minLength: 36))
+        Spacer(minLength: 36)
         #else
-        return UIDevice.current.userInterfaceIdiom == .pad ? AnyView(Spacer(minLength: 36)) : nil
+        UIDevice.current.userInterfaceIdiom == .pad ? Spacer(minLength: 36) : nil
         #endif
     }
 }

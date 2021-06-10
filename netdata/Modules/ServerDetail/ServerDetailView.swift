@@ -228,11 +228,12 @@ struct ServerDetailView: View {
         })
     }
     
+    @ViewBuilder
     private var sheet: some View {
         switch activeSheet.kind {
-        case .none: return AnyView(EmptyView())
-        case .alarms: return AnyView(AlarmsListView(serverUrl: server.url, basicAuthBase64: server.basicAuthBase64))
-        case .charts: return AnyView(ChartsListView(serverUrl: server.url, basicAuthBase64: server.basicAuthBase64))
+        case .none: EmptyView()
+        case .alarms: AlarmsListView(serverUrl: server.url, basicAuthBase64: server.basicAuthBase64)
+        case .charts: ChartsListView(serverUrl: server.url, basicAuthBase64: server.basicAuthBase64)
         }
     }
     
@@ -252,11 +253,12 @@ struct ServerDetailView: View {
             .sectionHeaderStyle()
     }
     
-    func getiPadSpacer() -> AnyView? {
+    @ViewBuilder
+    func getiPadSpacer() -> some View {
         #if targetEnvironment(macCatalyst)
-        return AnyView(Spacer(minLength: 36))
+        Spacer(minLength: 36)
         #else
-        return UIDevice.current.userInterfaceIdiom == .pad ? AnyView(Spacer(minLength: 36)) : nil
+        UIDevice.current.userInterfaceIdiom == .pad ? Spacer(minLength: 36) : nil
         #endif
     }
 }
