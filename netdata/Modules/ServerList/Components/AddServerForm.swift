@@ -101,7 +101,8 @@ struct AddServerForm: View {
                 return
             }
             
-            viewModel.addServer { _ in
+            async {
+                await viewModel.addServer()
                 self.presentationMode.wrappedValue.dismiss()
             }
         }) {

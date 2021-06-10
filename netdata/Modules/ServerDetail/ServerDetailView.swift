@@ -204,7 +204,11 @@ struct ServerDetailView: View {
         }
         .onAppear {
             self.viewModel.fetch(baseUrl: server.url, basicAuthBase64: server.basicAuthBase64)
-            self.viewModel.updateBookmarks(baseUrl: server.url, basicAuthBase64: server.basicAuthBase64)
+            
+            async {
+                await self.viewModel.updateBookmarks(baseUrl: server.url, basicAuthBase64: server.basicAuthBase64)
+            }
+            
             // hide scroll indicators
             UITableView.appearance().showsVerticalScrollIndicator = false
         }
@@ -215,7 +219,10 @@ struct ServerDetailView: View {
         .sheet(isPresented: self.$activeSheet.showSheet, onDismiss: {
             // workaround for onAppear not being called after the sheet is dismissed
             self.viewModel.fetch(baseUrl: server.url, basicAuthBase64: server.basicAuthBase64)
-            self.viewModel.updateBookmarks(baseUrl: server.url, basicAuthBase64: server.basicAuthBase64)
+            
+            async {
+                await self.viewModel.updateBookmarks(baseUrl: server.url, basicAuthBase64: server.basicAuthBase64)
+            }
         }, content: {
             self.sheet
         })

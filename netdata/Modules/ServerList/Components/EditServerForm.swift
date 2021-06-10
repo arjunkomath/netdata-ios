@@ -82,7 +82,9 @@ struct EditServerForm: View {
                 return
             }
 
-            viewModel.updateServer(editingServer: editingServer!) { _ in
+            async {
+                await viewModel.updateServer(editingServer: editingServer!)
+                
                 self.presentationMode.wrappedValue.dismiss()
             }
         }) {

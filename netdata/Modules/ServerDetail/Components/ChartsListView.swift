@@ -34,7 +34,9 @@ struct ChartsListView: View {
                 .navigationBarItems(leading: dismissButton)
                 .searchable(text: $searchText)
                 .onAppear {
-                    viewModel.fetchCharts(baseUrl: serverUrl, basicAuthBase64: basicAuthBase64)
+                    async {
+                        await viewModel.fetchCharts(baseUrl: serverUrl, basicAuthBase64: basicAuthBase64)
+                    }
                 }
                 .onDisappear {
                     viewModel.destroyChartsList()

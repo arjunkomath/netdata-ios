@@ -75,9 +75,6 @@ struct ServerListView: View {
                 .listStyle(InsetGroupedListStyle())
                 
                 BottomBar {
-                    refreshButton
-                        .padding(.leading)
-                    
                     if self.serverService.isCloudEnabled && self.serverService.mostRecentError == nil {
                         Spacer()
                         
@@ -85,6 +82,9 @@ struct ServerListView: View {
                             .padding(.trailing)
                     }
                 }
+            }
+            .refreshable {
+                serverService.refresh()
             }
             .sheet(isPresented: self.$activeSheet.showSheet, content: { self.sheet })
             .toolbar {
@@ -150,18 +150,6 @@ struct ServerListView: View {
         }) {
             Image(systemName: "externaldrive.badge.plus")
             Text("Add")
-        }
-    }
-    
-    private var refreshButton: some View {
-        Button(action: {
-            self.serverService.refresh()
-        }) {
-            if serverService.isSynching {
-                ProgressView().frame(width: 20, height: 16, alignment: .trailing)
-            } else {
-                Image(systemName: "arrow.clockwise")
-            }
         }
     }
     

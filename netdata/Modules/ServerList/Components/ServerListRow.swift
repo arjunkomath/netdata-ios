@@ -51,8 +51,10 @@ struct ServerListRow: View {
             .padding(4)
         }
         .onAppear {
-            viewModel.fetchAlarms(server: server) { alarms in
-                self.serverAlarms = alarms
+            async {
+                if let alarms = await viewModel.fetchAlarms(server: server) {
+                    self.serverAlarms = alarms
+                }
             }
         }
         .sheet(isPresented: $showEditServerSheet, content: {

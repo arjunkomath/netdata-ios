@@ -13,6 +13,8 @@ final class ServerListViewModel: ObservableObject {
     
     private var cancellable = Set<AnyCancellable>()
     
+    private var netdataClient = NetdataClient()
+    
     @Published var name = ""
     @Published var description = ""
     @Published var url = ""
@@ -29,24 +31,11 @@ final class ServerListViewModel: ObservableObject {
     @Published var validationError = false
     @Published var validationErrorMessage = ""
     
-    func fetchAlarms(server: NDServer, completion: @escaping (ServerAlarms) -> ()) {
-        NetDataAPI
-            .getAlarms(baseUrl: server.url, basicAuthBase64: server.basicAuthBase64)
-            .sink(receiveCompletion: { completion in
-                switch completion {
-                case .finished:
-                    break
-                case .failure(let error):
-                    debugPrint("getAlarms", server.name, error)
-                }
-            },
-            receiveValue: { alarms in
-                completion(alarms)
-            })
-            .store(in: &cancellable)
+    func fetchAlarms(server: NDServer) async -> ServerAlarms? {
+            return try? await netdataClient.getAlarms(baseUrl: server.url, basicAuthBase64: server.basicAuthBase64)
     }
     
-    func addServer(completion: @escaping (NDServer) -> ()) {
+    func addServer() async {
         validatingUrl = true
         
         var basicAuthBase64: String = ""
@@ -56,45 +45,34 @@ final class ServerListViewModel: ObservableObject {
             basicAuthBase64 = loginData.base64EncodedString()
         }
         
-        NetDataAPI
-            .getInfo(baseUrl: url, basicAuthBase64: basicAuthBase64)
-            .sink(receiveCompletion: { completion in
-                print(completion)
-                switch completion {
-                case .finished:
-                    break
-                case .failure(let error):
-                    FeedbackGenerator.shared.triggerNotification(type: .error)
-                    self.validatingUrl = false
-                    self.validationError = true
-                    
-                    guard let apiError = error as? APIError, apiError != .somethingWentWrong else {
-                        self.validationErrorMessage = "Invalid server URL! Please ensure Netdata has been installed on the server."
-                        return
-                    }
-                    
-                    if apiError == APIError.authenticationFailed {
-                        self.validationErrorMessage = "Authentication Failed"
-                    }
-                }
-            },
-            receiveValue: { info in
-                let server = NDServer(name: self.name,
-                                      description: self.description,
-                                      url: self.url,
-                                      serverInfo: info,
-                                      basicAuthBase64: basicAuthBase64,
-                                      isFavourite: self.isFavourite)
-                DispatchQueue.main.async {
-                    ServerService.shared.add(server: server)
-                }
-                
-                completion(server)
-            })
-            .store(in: &cancellable)
+        do {
+            let info = try await netdataClient.getInfo(baseUrl: url, basicAuthBase64: basicAuthBase64)
+            let server = NDServer(name: self.name,
+                                  description: self.description,
+                                  url: self.url,
+                                  serverInfo: info,
+                                  basicAuthBase64: basicAuthBase64,
+                                  isFavourite: self.isFavourite)
+            
+            async {
+                ServerService.shared.add(server: server)
+            }
+        } catch {
+            self.validatingUrl = false
+            self.validationError = true
+            
+            guard let apiError = error as? APIError, apiError != .somethingWentWrong else {
+                self.validationErrorMessage = "Invalid server URL! Please ensure Netdata has been installed on the server."
+                return
+            }
+            
+            if apiError == APIError.authenticationFailed {
+                self.validationErrorMessage = "Authentication Failed"
+            }
+        }
     }
     
-    func updateServer(editingServer: NDServer, completion: @escaping (NDServer) -> ()) {
+    func updateServer(editingServer: NDServer) async {
         validatingUrl = true
         
         var basicAuthBase64: String = ""
@@ -104,47 +82,34 @@ final class ServerListViewModel: ObservableObject {
             basicAuthBase64 = loginData.base64EncodedString()
         }
         
-        NetDataAPI
-            .getInfo(baseUrl: url, basicAuthBase64: basicAuthBase64)
-            .sink(receiveCompletion: { completion in
-                print(completion)
-                switch completion {
-                case .finished:
-                    break
-                case .failure(let error):
-                    FeedbackGenerator.shared.triggerNotification(type: .error)
-                    self.validatingUrl = false
-                    self.validationError = true
-                    
-                    guard let apiError = error as? APIError, apiError != .somethingWentWrong else {
-                        self.validationErrorMessage = "Invalid server URL! Please ensure Netdata has been installed on the server."
-                        return
-                    }
-                    
-                    if apiError == APIError.authenticationFailed {
-                        self.validationErrorMessage = "Authentication Failed"
-                    }
-                }
-            },
-            receiveValue: { info in
-                var server = NDServer(name: self.name,
-                                      description: self.description,
-                                      url: self.url,
-                                      serverInfo: info,
-                                      basicAuthBase64: basicAuthBase64,
-                                      isFavourite: self.isFavourite)
+        do {
+            let info = try await netdataClient.getInfo(baseUrl: url, basicAuthBase64: basicAuthBase64)
+            var server = NDServer(name: self.name,
+                                  description: self.description,
+                                  url: self.url,
+                                  serverInfo: info,
+                                  basicAuthBase64: basicAuthBase64,
+                                  isFavourite: self.isFavourite)
+            
+            if let record = editingServer.record {
+                server.record = record
                 
-                if let record = editingServer.record {
-                    server.record = record
-                    
-                    DispatchQueue.main.async {
-                        ServerService.shared.edit(server: server)
-                    }
-                    
-                    completion(server)
-                }
-            })
-            .store(in: &self.cancellable)
+                ServerService.shared.edit(server: server)
+            }
+        } catch {
+            FeedbackGenerator.shared.triggerNotification(type: .error)
+            self.validatingUrl = false
+            self.validationError = true
+            
+            guard let apiError = error as? APIError, apiError != .somethingWentWrong else {
+                self.validationErrorMessage = "Invalid server URL! Please ensure Netdata has been installed on the server."
+                return
+            }
+            
+            if apiError == APIError.authenticationFailed {
+                self.validationErrorMessage = "Authentication Failed"
+            }
+        }
     }
     
     func validateForm() -> Bool {

@@ -11,6 +11,8 @@ import SwiftUI
 
 final class ServerDetailViewModel: ObservableObject {
     
+    private var netdataClient = NetdataClient()
+    
     // MARK:- Real time data
     @Published var cpuUsage: ServerData = ServerData(labels: [], data: [])
     @Published var cpuUsageData: [Double] = []
@@ -64,7 +66,7 @@ final class ServerDetailViewModel: ObservableObject {
         }
     }
     
-    func updateBookmarks(baseUrl: String, basicAuthBase64: String) {
+    func updateBookmarks(baseUrl: String, basicAuthBase64: String) async {
         // Always fetch latest bookmarks, avoid adding user settings
         let bookmarks = NSUbiquitousKeyValueStore.default.array(forKey: "bookmarks") as? [String] ?? []
         
@@ -72,44 +74,38 @@ final class ServerDetailViewModel: ObservableObject {
         
         // Fetch charts for bookmarks
         if bookmarks.count > 0 {
-            NetDataAPI
-                .getCharts(baseUrl: baseUrl, basicAuthBase64: basicAuthBase64)
-                .sink(receiveCompletion: { completion in
-                    switch completion {
-                    case .finished:
-                        break
-                    case .failure(let error):
-                        debugPrint("fetchCharts", error)
+            do {
+                let charts = try await netdataClient.getCharts(baseUrl: baseUrl, basicAuthBase64: basicAuthBase64)
+                
+                self.bookmarks = bookmarks
+                    .compactMap { chart in
+                        charts.charts[chart]
+                    }.filter { chart in
+                        chart.enabled
                     }
-                }) { data in
-                    self.bookmarks = bookmarks
-                        .compactMap { chart in
-                            data.charts[chart]
-                        }.filter { chart in
-                            chart.enabled
-                        }
-                    
-                    self.bookmarkedChartData = Array(repeating: ServerData(labels: [], data: []), count: self.bookmarks.count)
-                    
-                    self.bookmarksDataTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { timer in
-                        for (index, bookmark) in self.bookmarks.enumerated() {
-                            NetDataAPI
-                                .getChartData(baseUrl: baseUrl, basicAuthBase64: basicAuthBase64, chart: bookmark.id)
-                                .sink(receiveCompletion: { completion in
-                                    switch completion {
-                                    case .finished:
-                                        break
-                                    case .failure(let error):
-                                        debugPrint("fetch bookmarks data", error)
-                                    }
-                                }) { data in
-                                    self.bookmarkedChartData[index] = data
+                
+                self.bookmarkedChartData = Array(repeating: ServerData(labels: [], data: []), count: self.bookmarks.count)
+                
+                self.bookmarksDataTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { timer in
+                    for (index, bookmark) in self.bookmarks.enumerated() {
+                        NetDataAPI
+                            .getChartData(baseUrl: baseUrl, basicAuthBase64: basicAuthBase64, chart: bookmark.id)
+                            .sink(receiveCompletion: { completion in
+                                switch completion {
+                                case .finished:
+                                    break
+                                case .failure(let error):
+                                    debugPrint("fetch bookmarks data", error)
                                 }
-                                .store(in: &self.cancellable)
-                        }
+                            }) { data in
+                                self.bookmarkedChartData[index] = data
+                            }
+                            .store(in: &self.cancellable)
                     }
                 }
-                .store(in: &self.cancellable)
+            } catch {
+                debugPrint("fetchCharts", error)
+            }
         } else {
             self.bookmarks = []
         }
@@ -196,21 +192,15 @@ final class ServerDetailViewModel: ObservableObject {
             .store(in: &self.cancellable)
     }
     
-    func fetchCharts(baseUrl: String, basicAuthBase64: String) {
+    func fetchCharts(baseUrl: String, basicAuthBase64: String) async {
         debugPrint("fetchCharts", baseUrl)
-        NetDataAPI
-            .getCharts(baseUrl: baseUrl, basicAuthBase64: basicAuthBase64)
-            .sink(receiveCompletion: { completion in
-                switch completion {
-                case .finished:
-                    break
-                case .failure(let error):
-                    debugPrint("fetchCharts", error)
-                }
-            }) { data in
-                self.serverCharts = data
-            }
-            .store(in: &self.cancellable)
+        
+        do {
+            let charts = try await netdataClient.getCharts(baseUrl: baseUrl, basicAuthBase64: basicAuthBase64)
+            self.serverCharts = charts
+        } catch {
+            debugPrint("fetchCharts", error)
+        }
     }
     
     func destroyChartsList() {
@@ -244,22 +234,15 @@ final class ServerDetailViewModel: ObservableObject {
         self.customChartTimer.invalidate()
     }
     
-    func fetchAlarms(baseUrl: String, basicAuthBase64: String) {
+    func fetchAlarms(baseUrl: String, basicAuthBase64: String) async {
         debugPrint("fetchAlarms", baseUrl)
-        NetDataAPI
-            .getAlarms(baseUrl: baseUrl, basicAuthBase64: basicAuthBase64)
-            .sink(receiveCompletion: { completion in
-                switch completion {
-                case .finished:
-                    break
-                case .failure(let error):
-                    debugPrint("getAlarms", error)
-                }
-            },
-            receiveValue: { alarms in
-                self.serverAlarms = alarms
-            })
-            .store(in: &cancellable)
+        
+        do {
+            let alarms = try await netdataClient.getAlarms(baseUrl: baseUrl, basicAuthBase64: basicAuthBase64)
+            self.serverAlarms = alarms
+        } catch {
+            debugPrint("getAlarms", error)
+        }
     }
     
     func getGaugeData(data: [[Double?]]) -> CGFloat {
@@ -271,23 +254,14 @@ final class ServerDetailViewModel: ObservableObject {
         serverAlarms = ServerAlarms(status: false, alarms: [:])
     }
     
-    func validateServer(serverUrl: String, completion: @escaping (Bool) -> ()) {
-        NetDataAPI
-            .getInfo(baseUrl: serverUrl)
-            .sink(receiveCompletion: { _completion in
-                print(_completion)
-                switch _completion {
-                case .finished:
-                    break
-                case .failure(let error):
-                    debugPrint(error)
-                    completion(false)
-                }
-            },
-            receiveValue: { info in
-                completion(true)
-            })
-            .store(in: &cancellable)
+    func validateServer(serverUrl: String) async -> Bool {
+        do {
+            let _ = try await netdataClient.getInfo(baseUrl: serverUrl)
+            return true
+        } catch {
+            debugPrint(error)
+            return false
+        }
     }
     
     func destroy() {

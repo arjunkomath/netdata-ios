@@ -55,7 +55,9 @@ struct AlarmsListView: View {
             .navigationTitle(Text("Active Alarms")).navigationBarTitleDisplayMode(.inline)
             .navigationBarItems(leading: dismissButton)
             .onAppear {
-                viewModel.fetchAlarms(baseUrl: serverUrl, basicAuthBase64: basicAuthBase64)
+                async {
+                    await viewModel.fetchAlarms(baseUrl: serverUrl, basicAuthBase64: basicAuthBase64)
+                }
             }
             .onDisappear {
                 viewModel.destroyAlarmsData()

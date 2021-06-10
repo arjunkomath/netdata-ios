@@ -70,7 +70,10 @@ struct MainView: View {
                 }
                 
                 self.validating = true
-                self.viewModel.validateServer(serverUrl: serverUrl) { isValid in
+                
+                async {
+                    let isValid = await viewModel.validateServer(serverUrl: serverUrl)
+                    
                     self.validating = false
                     
                     if !isValid {
