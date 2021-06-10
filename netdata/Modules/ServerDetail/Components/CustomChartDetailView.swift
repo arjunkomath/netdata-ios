@@ -15,6 +15,8 @@ struct CustomChartDetailView: View {
     @StateObject var viewModel = ServerDetailViewModel()
     @ObservedObject var userSettings = UserSettings()
     
+    let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
+    
     var body: some View {
         List {
             Section(header: Text("\(serverChart.name) (\(units()))").sectionHeaderStyle().padding(.top)) {
@@ -47,11 +49,17 @@ struct CustomChartDetailView: View {
         }
         .listStyle(InsetGroupedListStyle())
         .navigationTitle(serverChart.name)
-        .onAppear {
-            viewModel.fetchCustomChartData(baseUrl: serverUrl, basicAuthBase64: basicAuthBase64, chart: serverChart.name)
-        }
         .onDisappear {
-            viewModel.destroyCustomChartData()
+            viewModel.customChartData = ServerData(labels: [], data: [])
+        }
+        .onReceive(timer) { _ in
+            async {
+                do {
+                    viewModel.customChartData = try await viewModel.netdataClient.getChartData(baseUrl: serverUrl, basicAuthBase64: basicAuthBase64, chart: serverChart.name)
+                } catch {
+                    debugPrint("Failed to fetchCustomChartData", serverChart.name)
+                }
+            }
         }
     }
     

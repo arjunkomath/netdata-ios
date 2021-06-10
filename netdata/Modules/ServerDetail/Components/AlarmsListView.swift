@@ -60,7 +60,7 @@ struct AlarmsListView: View {
                 }
             }
             .onDisappear {
-                viewModel.destroyAlarmsData()
+                viewModel.serverAlarms = ServerAlarms(status: false, alarms: [:])
             }
         }
     }

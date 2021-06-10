@@ -39,7 +39,7 @@ struct ChartsListView: View {
                     }
                 }
                 .onDisappear {
-                    viewModel.destroyChartsList()
+                    viewModel.serverCharts = ServerCharts(version: "", release_channel: "", charts: [:])
                 }
             }
         }

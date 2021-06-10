@@ -12,6 +12,8 @@ struct ServerDetailDemoView: View {
     
     @StateObject var viewModel = ServerDetailViewModel()
     
+    let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
+    
     var body: some View {
         List {
             Section(header: makeSectionHeader(text: "CPU (%)")) {
@@ -86,13 +88,21 @@ struct ServerDetailDemoView: View {
             .readableGuidePadding()
         }
         .onAppear {
-            self.viewModel.fetch(baseUrl: serverUrl, basicAuthBase64: "")
+            viewModel.baseUrl = serverUrl
+            viewModel.basicAuthBase64 = ""
             
             // hide scroll indicators
             UITableView.appearance().showsVerticalScrollIndicator = false
         }
-        .onDisappear {
-            self.viewModel.destroy()
+        .onReceive(timer) { _ in
+            async {
+                await viewModel.fetchCpu()
+                await viewModel.fetchLoad()
+                await viewModel.fetchRam()
+                await viewModel.fetchDiskIo()
+                await viewModel.fetchNetwork()
+                await viewModel.fetchDiskSpace()
+            }
         }
         .listStyle(InsetGroupedListStyle())
     }

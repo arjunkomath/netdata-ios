@@ -30,6 +30,8 @@ struct ServerDetailView: View {
     
     @State private var showSheet = false
     
+    let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
+    
     var body: some View {
         VStack(spacing: 0) {
             List {
@@ -181,7 +183,6 @@ struct ServerDetailView: View {
             BottomBar {
                 Button(action: {
                     self.activeSheet.kind = .charts
-                    self.viewModel.destroy()
                     self.showSheet.toggle()
                 }) {
                     Image(systemName: "chart.pie")
@@ -193,7 +194,6 @@ struct ServerDetailView: View {
                 
                 Button(action: {
                     self.activeSheet.kind = .alarms
-                    self.viewModel.destroy()
                     self.showSheet.toggle()
                 }) {
                     Image(systemName: "alarm")
@@ -203,7 +203,8 @@ struct ServerDetailView: View {
             }
         }
         .onAppear {
-            self.viewModel.fetch(baseUrl: server.url, basicAuthBase64: server.basicAuthBase64)
+            viewModel.baseUrl = server.url
+            viewModel.basicAuthBase64 = server.basicAuthBase64
             
             async {
                 await self.viewModel.updateBookmarks(baseUrl: server.url, basicAuthBase64: server.basicAuthBase64)
@@ -212,14 +213,26 @@ struct ServerDetailView: View {
             // hide scroll indicators
             UITableView.appearance().showsVerticalScrollIndicator = false
         }
-        .onDisappear {
-            self.viewModel.destroy()
+        .onReceive(timer) { _ in
+            async {
+                await viewModel.fetchCpu()
+                await viewModel.fetchLoad()
+                await viewModel.fetchRam()
+                await viewModel.fetchDiskIo()
+                await viewModel.fetchNetwork()
+                await viewModel.fetchDiskSpace()
+                
+                for (index, bookmark) in viewModel.bookmarks.enumerated() {
+                    do {
+                        viewModel.bookmarkedChartData[index] = try await viewModel.netdataClient.getChartData(baseUrl: server.url, basicAuthBase64: server.basicAuthBase64, chart: bookmark.id)
+                    } catch {
+                        debugPrint("Failed to fetch chart data")
+                    }
+                }
+            }
         }
         .navigationBarTitle(server.name, displayMode: .inline)
         .sheet(isPresented: self.$activeSheet.showSheet, onDismiss: {
-            // workaround for onAppear not being called after the sheet is dismissed
-            self.viewModel.fetch(baseUrl: server.url, basicAuthBase64: server.basicAuthBase64)
-            
             async {
                 await self.viewModel.updateBookmarks(baseUrl: server.url, basicAuthBase64: server.basicAuthBase64)
             }
@@ -255,11 +268,11 @@ struct ServerDetailView: View {
     
     @ViewBuilder
     func getiPadSpacer() -> some View {
-        #if targetEnvironment(macCatalyst)
+#if targetEnvironment(macCatalyst)
         Spacer(minLength: 36)
-        #else
+#else
         UIDevice.current.userInterfaceIdiom == .pad ? Spacer(minLength: 36) : nil
-        #endif
+#endif
     }
 }
 

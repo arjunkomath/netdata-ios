@@ -15,34 +15,10 @@ enum NetDataEndpoint: String {
     case alarms = "/api/v1/alarms"
 }
 
-enum NetDataAPI {
-    static let agent = Agent()
-}
-
-extension NetDataAPI {
-    static func getChartData(baseUrl: String, basicAuthBase64: String = "", chart: String) -> AnyPublisher<ServerData, Error> {
-        let requestUrl = URL(string: baseUrl)!.appendingPathComponent(NetDataEndpoint.data.rawValue + chart)
-        
-        return run(requestUrl: requestUrl, basicAuthBase64: basicAuthBase64)
-    }
-    
-    static func getAlarms(baseUrl: String, basicAuthBase64: String = "") -> AnyPublisher<ServerAlarms, Error> {
-        let requestUrl = URL(string: baseUrl)!.appendingPathComponent(NetDataEndpoint.alarms.rawValue)
-        
-        return run(requestUrl: requestUrl, basicAuthBase64: basicAuthBase64)
-    }
-    
-    static func run<T: Decodable>(requestUrl: URL, basicAuthBase64: String) -> AnyPublisher<T, Error> {
-        var request = URLRequest(url: requestUrl)
-        
-        if !basicAuthBase64.isEmpty {
-            request.setValue("Basic \(basicAuthBase64)", forHTTPHeaderField: "Authorization")
-        }
-        
-        return agent.run(request)
-            .map(\.value)
-            .eraseToAnyPublisher()
-    }
+enum APIError: Error {
+    case userIsOffline
+    case authenticationFailed
+    case somethingWentWrong
 }
 
 struct NetdataClient {
@@ -62,6 +38,12 @@ struct NetdataClient {
     
     func getCharts(baseUrl: String, basicAuthBase64: String = "") async throws -> ServerCharts {
         let requestUrl = URL(string: baseUrl)!.appendingPathComponent(NetDataEndpoint.charts.rawValue)
+        
+        return try await run(requestUrl: requestUrl, basicAuthBase64: basicAuthBase64)
+    }
+    
+    func getChartData(baseUrl: String, basicAuthBase64: String = "", chart: String) async throws -> ServerData {
+        let requestUrl = URL(string: baseUrl)!.appendingPathComponent(NetDataEndpoint.data.rawValue + chart)
         
         return try await run(requestUrl: requestUrl, basicAuthBase64: basicAuthBase64)
     }

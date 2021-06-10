@@ -10,6 +10,7 @@ import Combine
 import SwiftUI
 
 struct Provider: TimelineProvider {
+    private var netDataClient = NetdataClient()
     
     func placeholder(in context: Context) -> AlarmsEntry {
         AlarmsEntry.placeholder
@@ -31,34 +32,39 @@ struct Provider: TimelineProvider {
             let fetchDate = Date()
             let serverService = ServerService.shared
             serverService.refresh()
-                        
+            
             // show placeholder when there are no favourite servers
             if serverService.favouriteServers.count == 0 {
                 let timeline = Timeline(entries: [AlarmsEntry(serverCount: 0, count: 0, criticalCount: 0, alarms: [:], date: fetchDate)], policy: .atEnd)
                 completion(timeline)
             } else {
-                Publishers.MergeMany(serverService.favouriteServers.map({ server in NetDataAPI.getAlarms(baseUrl: server.url, basicAuthBase64: server.basicAuthBase64) }))
-                    .collect()
-                    .sink(receiveCompletion: { (serverCompletion) in
-                        if case .failure(let error) = serverCompletion {
-                            print("Got error: \(error.localizedDescription)")
+                async {
+                    var totalAlarmsCount = 0
+                    var criticalAlarmsCount = 0
+                    
+                    for server in serverService.favouriteServers {
+                        debugPrint(server)
+                        do {
+                            let serverAlarm = try await netDataClient.getAlarms(baseUrl: server.url, basicAuthBase64: server.basicAuthBase64)
+                            
+                            totalAlarmsCount += serverAlarm.alarms.count
+                            criticalAlarmsCount += serverAlarm.getCriticalAlarmsCount()
+                            
+                            var alarms : [String: Color] = [:]
+                            
+                            alarms[server.name] = serverAlarm.getCriticalAlarmsCount() > 0 ? Color.red : serverAlarm.alarms.count > 0 ? Color.orange : Color.green;
+
+                            let entry = AlarmsEntry(serverCount: serverService.favouriteServers.count, count: totalAlarmsCount, criticalCount: criticalAlarmsCount, alarms: alarms, date: fetchDate)
+                            
+                            let timeline = Timeline(entries: [entry], policy: .after(refreshDate))
+                            completion(timeline)
+                        } catch {
+                            debugPrint("Fetch Alarms failed", error)
+                            let timeline = Timeline(entries: [AlarmsEntry(serverCount: 0, count: 0, criticalCount: 0, alarms: [:], date: fetchDate)], policy: .atEnd)
+                            completion(timeline)
                         }
-                    },
-                    receiveValue: { serverAlarms in
-                        let totalAlarmsCount = serverAlarms.reduce(0, { acc, serverAlarm in acc + serverAlarm.alarms.count })
-                        let criticalAlarmsCount = serverAlarms.reduce(0, { acc, serverAlarm in acc + serverAlarm.getCriticalAlarmsCount() })
-                        
-                        var alarms : [String: Color] = [:]
-                        serverService.favouriteServers.indices.forEach({ index in
-                            alarms[serverService.favouriteServers[index].name] = serverAlarms[index].getCriticalAlarmsCount() > 0 ? Color.red : serverAlarms[index].alarms.count > 0 ? Color.orange : Color.green;
-                        })
-                        
-                        let entry = AlarmsEntry(serverCount: serverService.favouriteServers.count, count: totalAlarmsCount, criticalCount: criticalAlarmsCount, alarms: alarms, date: fetchDate)
-                        
-                        let timeline = Timeline(entries: [entry], policy: .after(refreshDate))
-                        completion(timeline)
-                    })
-                    .store(in: &ServerService.cancellable)
+                    }
+                }
             }
         }
     }
@@ -118,7 +124,7 @@ struct AlarmWidget_Previews: PreviewProvider {
     static var previews: some View {
         AlarmWidgetEntryView(entry: AlarmsEntry(serverCount: 0, count: 0, criticalCount: 0, alarms: [:], date: Date()))
             .previewContext(WidgetPreviewContext(family: .systemSmall))
-
+        
         AlarmWidgetEntryView(entry: AlarmsEntry(serverCount: 1, count: 1, criticalCount: 0, alarms: ["CDN77": Color.red, "London": Color.green, "Test": Color.orange], date: Date()))
             .previewContext(WidgetPreviewContext(family: .systemMedium))
     }
