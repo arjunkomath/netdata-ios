@@ -21,9 +21,14 @@ enum APIError: Error {
     case somethingWentWrong
 }
 
-struct NetdataClient {
+@available(iOS 15.0, *)
+@available(macOS 12.0, *)
+@available(tvOS 15.0, *)
+public class NetdataClient {
+    public static let shared = NetdataClient()
+    
     var session = URLSession.shared
-
+    
     func getInfo(baseUrl: String, basicAuthBase64: String = "") async throws -> ServerInfo {
         let requestUrl = URL(string: baseUrl)!.appendingPathComponent(NetDataEndpoint.info.rawValue)
         

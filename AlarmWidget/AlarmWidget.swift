@@ -10,7 +10,6 @@ import Combine
 import SwiftUI
 
 struct Provider: TimelineProvider {
-    private var netDataClient = NetdataClient()
     
     func placeholder(in context: Context) -> AlarmsEntry {
         AlarmsEntry.placeholder
@@ -45,7 +44,7 @@ struct Provider: TimelineProvider {
                     for server in serverService.favouriteServers {
                         debugPrint(server)
                         do {
-                            let serverAlarm = try await netDataClient.getAlarms(baseUrl: server.url, basicAuthBase64: server.basicAuthBase64)
+                            let serverAlarm = try await NetdataClient.shared.getAlarms(baseUrl: server.url, basicAuthBase64: server.basicAuthBase64)
                             
                             totalAlarmsCount += serverAlarm.alarms.count
                             criticalAlarmsCount += serverAlarm.getCriticalAlarmsCount()

@@ -10,11 +10,7 @@ import Combine
 import SwiftUI
 
 final class ServerListViewModel: ObservableObject {
-    
-    private var cancellable = Set<AnyCancellable>()
-    
-    private var netdataClient = NetdataClient()
-    
+        
     @Published var name = ""
     @Published var description = ""
     @Published var url = ""
@@ -32,7 +28,7 @@ final class ServerListViewModel: ObservableObject {
     @Published var validationErrorMessage = ""
     
     func fetchAlarms(server: NDServer) async -> ServerAlarms? {
-            return try? await netdataClient.getAlarms(baseUrl: server.url, basicAuthBase64: server.basicAuthBase64)
+            return try? await NetdataClient.shared.getAlarms(baseUrl: server.url, basicAuthBase64: server.basicAuthBase64)
     }
     
     func addServer() async {
@@ -46,7 +42,7 @@ final class ServerListViewModel: ObservableObject {
         }
         
         do {
-            let info = try await netdataClient.getInfo(baseUrl: url, basicAuthBase64: basicAuthBase64)
+            let info = try await NetdataClient.shared.getInfo(baseUrl: url, basicAuthBase64: basicAuthBase64)
             let server = NDServer(name: self.name,
                                   description: self.description,
                                   url: self.url,
@@ -83,7 +79,7 @@ final class ServerListViewModel: ObservableObject {
         }
         
         do {
-            let info = try await netdataClient.getInfo(baseUrl: url, basicAuthBase64: basicAuthBase64)
+            let info = try await NetdataClient.shared.getInfo(baseUrl: url, basicAuthBase64: basicAuthBase64)
             var server = NDServer(name: self.name,
                                   description: self.description,
                                   url: self.url,

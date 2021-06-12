@@ -29,49 +29,58 @@ struct ServerListView: View {
     
     var body: some View {
         NavigationView {
-            List {
-                if self.serverService.mostRecentError != nil {
-                    if !self.serverService.isCloudEnabled && !serverService.isSynching {
-                        ErrorMessage(message: "iCloud not enabled, you need an iCloud account to add servers")
-                    }
-                    else {
-                        ErrorMessage(message: self.serverService.mostRecentError!.localizedDescription)
-                    }
-                }
-                
-                if serverService.isSynching && serverService.defaultServers.isEmpty && serverService.favouriteServers.isEmpty {
-                    ForEach((1...4), id: \.self) { _ in
-                        Group {
-                            VStack(alignment: .leading, spacing: 5) {
-                                Text("name")
-                                    .font(.headline)
-                                Text("description")
-                                    .font(.subheadline)
-                                    .foregroundColor(.gray)
-                            }
-                            .redacted(reason: .placeholder)
+            VStack(spacing: 0) {
+                List {
+                    if self.serverService.mostRecentError != nil {
+                        if !self.serverService.isCloudEnabled && !serverService.isSynching {
+                            ErrorMessage(message: "iCloud not enabled, you need an iCloud account to add servers")
                         }
-                        .padding(8)
-                    }
-                } else {
-                    if !serverService.favouriteServers.isEmpty {
-                        Section(header: Text("Favourites").sectionHeaderStyle()) {
-                            ForEach(serverService.favouriteServers) { server in
-                                ServerListRow(server: server)
-                            }
-                            .onDelete(perform: self.deleteFavouriteServer)
+                        else {
+                            ErrorMessage(message: self.serverService.mostRecentError!.localizedDescription)
                         }
                     }
                     
-                    Section(header: Text("Servers").sectionHeaderStyle()) {
-                        ForEach(serverService.defaultServers) { server in
-                            ServerListRow(server: server)
+                    if serverService.isSynching && serverService.defaultServers.isEmpty && serverService.favouriteServers.isEmpty {
+                        ForEach((1...4), id: \.self) { _ in
+                            Group {
+                                VStack(alignment: .leading, spacing: 5) {
+                                    Text("name")
+                                        .font(.headline)
+                                    Text("description")
+                                        .font(.subheadline)
+                                        .foregroundColor(.gray)
+                                }
+                                .redacted(reason: .placeholder)
+                            }
+                            .padding(8)
                         }
-                        .onDelete(perform: self.deleteServer)
+                    } else {
+                        if !serverService.favouriteServers.isEmpty {
+                            Section(header: Text("Favourites").sectionHeaderStyle()) {
+                                ForEach(serverService.favouriteServers) { server in
+                                    ServerListRow(server: server)
+                                }
+                                .onDelete(perform: self.deleteFavouriteServer)
+                            }
+                        }
+                        
+                        Section(header: Text("Servers").sectionHeaderStyle()) {
+                            ForEach(serverService.defaultServers) { server in
+                                ServerListRow(server: server)
+                            }
+                            .onDelete(perform: self.deleteServer)
+                        }
                     }
                 }
+                .listStyle(InsetGroupedListStyle())
+                
+                BottomBar {
+                    Spacer()
+                    
+                    addButton
+                        .padding(.trailing)
+                }
             }
-            .listStyle(InsetGroupedListStyle())
             .refreshable {
                 serverService.refresh()
             }
@@ -79,14 +88,6 @@ struct ServerListView: View {
             .toolbar {
                 ToolbarItemGroup(placement: .navigationBarLeading) {
                     settingsButton
-                }
-                
-                ToolbarItemGroup(placement: .bottomBar) {
-                    HStack {
-                        Spacer()
-                        
-                        addButton
-                    }
                 }
             }
             .navigationTitle("My Servers")

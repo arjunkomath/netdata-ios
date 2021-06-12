@@ -77,7 +77,7 @@ struct AlarmsListView: View {
     private func fetchAlarms() async {
         loading = true
         do {
-            serverAlarms = try await NetdataClient().getAlarms(baseUrl: serverUrl, basicAuthBase64: basicAuthBase64)
+            serverAlarms = try await NetdataClient.shared.getAlarms(baseUrl: serverUrl, basicAuthBase64: basicAuthBase64)
             loading = false
         } catch {
             loading = false

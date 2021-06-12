@@ -23,7 +23,7 @@ struct AddServerForm: View {
                             color: .accentColor)
                 }
                 
-                Section(header: makeSectionHeader(text: "Enter Server details"),
+                Section(header: makeSectionHeader(text: "Server details"),
                         footer: Text("HTTPS is required for connections over the internet\nHTTP is allowed for LAN connections with IP or mDNS domains")) {
                     if viewModel.validationError {
                         ErrorMessage(message: viewModel.validationErrorMessage)

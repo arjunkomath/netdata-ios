@@ -29,7 +29,7 @@ struct ChartsListView: View {
         .onAppear {
             async {
                 do {
-                    charts = try await NetdataClient().getCharts(baseUrl: serverUrl, basicAuthBase64: basicAuthBase64)
+                    charts = try await NetdataClient.shared.getCharts(baseUrl: serverUrl, basicAuthBase64: basicAuthBase64)
                 } catch {
                     debugPrint("fetchCharts", error)
                 }

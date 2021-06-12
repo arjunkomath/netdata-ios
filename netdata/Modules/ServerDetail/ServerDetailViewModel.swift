@@ -34,12 +34,10 @@ final class ServerDetailViewModel: ObservableObject {
     
     var baseUrl = ""
     var basicAuthBase64 = ""
-    
-    var netdataClient = NetdataClient()
-    
+        
     func fetchCpu() async {
         do {
-            let data = try await netdataClient.getChartData(baseUrl: baseUrl, basicAuthBase64: basicAuthBase64, chart: "system.cpu")
+            let data = try await NetdataClient.shared.getChartData(baseUrl: baseUrl, basicAuthBase64: basicAuthBase64, chart: "system.cpu")
             
             self.cpuUsage = data
             self.cpuUsageData = Array(self.cpuUsage.data).reversed().map({ d in Array(d[1..<d.count]).reduce(0, { acc, val in acc + (val ?? 0) }) })
@@ -50,7 +48,7 @@ final class ServerDetailViewModel: ObservableObject {
     
     func fetchLoad() async {
         do {
-            self.load = try await netdataClient.getChartData(baseUrl: baseUrl, basicAuthBase64: basicAuthBase64, chart: "system.load")
+            self.load = try await NetdataClient.shared.getChartData(baseUrl: baseUrl, basicAuthBase64: basicAuthBase64, chart: "system.load")
         } catch {
             debugPrint("Failed to fetch chart data")
         }
@@ -58,7 +56,7 @@ final class ServerDetailViewModel: ObservableObject {
     
     func fetchRam() async {
         do {
-            let data = try await netdataClient.getChartData(baseUrl: baseUrl, basicAuthBase64: basicAuthBase64, chart: "system.ram")
+            let data = try await NetdataClient.shared.getChartData(baseUrl: baseUrl, basicAuthBase64: basicAuthBase64, chart: "system.ram")
             
             self.ramUsage = data
             self.ramUsageGauge = CGFloat(self.ramUsage.data.first![2]! / (self.ramUsage.data.first![1]! + self.ramUsage.data.first![2]! + self.ramUsage.data.first![3]!))
@@ -69,7 +67,7 @@ final class ServerDetailViewModel: ObservableObject {
     
     func fetchDiskIo() async {
         do {
-            self.diskIO = try await netdataClient.getChartData(baseUrl: baseUrl, basicAuthBase64: basicAuthBase64, chart: "system.io")
+            self.diskIO = try await NetdataClient.shared.getChartData(baseUrl: baseUrl, basicAuthBase64: basicAuthBase64, chart: "system.io")
         } catch {
             debugPrint("Failed to fetch chart data")
         }
@@ -77,9 +75,9 @@ final class ServerDetailViewModel: ObservableObject {
     
     func fetchNetwork() async {
         do {
-            self.network = try await netdataClient.getChartData(baseUrl: baseUrl, basicAuthBase64: basicAuthBase64, chart: "system.net")
-            self.networkIPv4 = try await netdataClient.getChartData(baseUrl: baseUrl, basicAuthBase64: basicAuthBase64, chart: "system.ip")
-            self.networkIPv6 = try await netdataClient.getChartData(baseUrl: baseUrl, basicAuthBase64: basicAuthBase64, chart: "system.ipv6")
+            self.network = try await NetdataClient.shared.getChartData(baseUrl: baseUrl, basicAuthBase64: basicAuthBase64, chart: "system.net")
+            self.networkIPv4 = try await NetdataClient.shared.getChartData(baseUrl: baseUrl, basicAuthBase64: basicAuthBase64, chart: "system.ip")
+            self.networkIPv6 = try await NetdataClient.shared.getChartData(baseUrl: baseUrl, basicAuthBase64: basicAuthBase64, chart: "system.ipv6")
         } catch {
             debugPrint("Failed to fetch chart data")
         }
@@ -87,7 +85,7 @@ final class ServerDetailViewModel: ObservableObject {
     
     func fetchDiskSpace() async {
         do {
-            let data = try await netdataClient.getChartData(baseUrl: baseUrl, basicAuthBase64: basicAuthBase64, chart: "disk_space._")
+            let data = try await NetdataClient.shared.getChartData(baseUrl: baseUrl, basicAuthBase64: basicAuthBase64, chart: "disk_space._")
             
             self.diskSpaceUsage = data
             self.diskSpaceUsageGauge = CGFloat(self.diskSpaceUsage.data.first![2]! / (self.diskSpaceUsage.data.first![1]! + self.diskSpaceUsage.data.first![2]!))
@@ -103,7 +101,7 @@ final class ServerDetailViewModel: ObservableObject {
         // Fetch charts for bookmarks
         if bookmarks.count > 0 {
             do {
-                let charts = try await netdataClient.getCharts(baseUrl: baseUrl, basicAuthBase64: basicAuthBase64)
+                let charts = try await NetdataClient.shared.getCharts(baseUrl: baseUrl, basicAuthBase64: basicAuthBase64)
                 
                 self.bookmarks = bookmarks
                     .compactMap { chart in
@@ -127,7 +125,7 @@ final class ServerDetailViewModel: ObservableObject {
     
     func validateServer(serverUrl: String) async -> Bool {
         do {
-            let _ = try await netdataClient.getInfo(baseUrl: serverUrl)
+            let _ = try await NetdataClient.shared.getInfo(baseUrl: serverUrl)
             return true
         } catch {
             debugPrint(error)

@@ -52,7 +52,7 @@ struct CustomChartDetailView: View {
         .onReceive(timer) { _ in
             async {
                 do {
-                    chartData = try await NetdataClient().getChartData(baseUrl: serverUrl, basicAuthBase64: basicAuthBase64, chart: serverChart.name)
+                    chartData = try await NetdataClient.shared.getChartData(baseUrl: serverUrl, basicAuthBase64: basicAuthBase64, chart: serverChart.name)
                 } catch {
                     debugPrint("Failed to fetchCustomChartData", serverChart.name)
                 }

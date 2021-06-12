@@ -18,7 +18,7 @@ struct EditServerForm: View {
     var body: some View {
         NavigationView {
             Form {
-                Section(header: makeSectionHeader(text: "Update Server details"),
+                Section(header: makeSectionHeader(text: "Server details"),
                         footer: Text("HTTPS is required for connections over the internet\nHTTP is allowed for LAN connections with IP or mDNS domains")) {
                     if viewModel.validationError {
                         ErrorMessage(message: viewModel.validationErrorMessage)
@@ -54,11 +54,13 @@ struct EditServerForm: View {
             .navigationBarTitle("Edit Server", displayMode: .inline)
             .navigationBarItems(leading: dismissButton, trailing: saveButton)
             .onAppear {
-                if let server = self.editingServer {
-                    viewModel.name = server.name
-                    viewModel.description = server.description
-                    viewModel.url = server.url
-                    viewModel.isFavourite = server.isFavourite
+                async {
+                    if let server = self.editingServer {
+                        viewModel.name = server.name
+                        viewModel.description = server.description
+                        viewModel.url = server.url
+                        viewModel.isFavourite = server.isFavourite
+                    }
                 }
             }
         }
