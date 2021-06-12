@@ -12,7 +12,8 @@ struct CustomChartDetailView: View {
     var serverUrl: String
     var basicAuthBase64: String
     
-    @StateObject var viewModel = ServerDetailViewModel()
+    @State private var chartData = ServerData(labels: [], data: [])
+    
     @ObservedObject var userSettings = UserSettings()
     
     let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
@@ -20,8 +21,8 @@ struct CustomChartDetailView: View {
     var body: some View {
         List {
             Section(header: Text("\(serverChart.name) (\(units()))").sectionHeaderStyle().padding(.top)) {
-                DataGrid(labels: viewModel.customChartData.labels,
-                         data: viewModel.customChartData.data,
+                DataGrid(labels: chartData.labels,
+                         data: chartData.data,
                          dataType: self.getDataType(),
                          showArrows: false)
             }
@@ -47,19 +48,18 @@ struct CustomChartDetailView: View {
                 .readableGuidePadding()
             }
         }
-        .listStyle(InsetGroupedListStyle())
         .navigationTitle(serverChart.name)
-        .onDisappear {
-            viewModel.customChartData = ServerData(labels: [], data: [])
-        }
         .onReceive(timer) { _ in
             async {
                 do {
-                    viewModel.customChartData = try await viewModel.netdataClient.getChartData(baseUrl: serverUrl, basicAuthBase64: basicAuthBase64, chart: serverChart.name)
+                    chartData = try await NetdataClient().getChartData(baseUrl: serverUrl, basicAuthBase64: basicAuthBase64, chart: serverChart.name)
                 } catch {
                     debugPrint("Failed to fetchCustomChartData", serverChart.name)
                 }
             }
+        }
+        .onDisappear {
+            self.timer.upstream.connect().cancel()
         }
     }
     

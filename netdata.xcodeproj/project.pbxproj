@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		5508041624D05ABF002FFAA5 /* ServerAlarms.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5508041524D05ABF002FFAA5 /* ServerAlarms.swift */; };
+		55096620267463F70091B8D3 /* UIColor+Random.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5509661F267463F70091B8D3 /* UIColor+Random.swift */; };
 		5514041925C68F4F0081E4A4 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 552B4E7724CD16C0008B9DA6 /* WidgetKit.framework */; };
 		5514041A25C68F4F0081E4A4 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 552B4E7924CD16C0008B9DA6 /* SwiftUI.framework */; };
 		5514041D25C68F4F0081E4A4 /* AlarmWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5514041C25C68F4F0081E4A4 /* AlarmWidget.swift */; };
@@ -161,6 +162,7 @@
 
 /* Begin PBXFileReference section */
 		5508041524D05ABF002FFAA5 /* ServerAlarms.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerAlarms.swift; sourceTree = "<group>"; };
+		5509661F267463F70091B8D3 /* UIColor+Random.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIColor+Random.swift"; sourceTree = "<group>"; };
 		5514041825C68F4F0081E4A4 /* AlarmWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = AlarmWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		5514041C25C68F4F0081E4A4 /* AlarmWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlarmWidget.swift; sourceTree = "<group>"; };
 		5514041E25C68F510081E4A4 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -568,6 +570,7 @@
 			isa = PBXGroup;
 			children = (
 				55D3076E24D18F9600CF076B /* UserDefaults+Color.swift */,
+				5509661F267463F70091B8D3 /* UIColor+Random.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -917,6 +920,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				5508041624D05ABF002FFAA5 /* ServerAlarms.swift in Sources */,
+				55096620267463F70091B8D3 /* UIColor+Random.swift in Sources */,
 				55FC8F6B24BAD8F100CA8751 /* ServerDetailView.swift in Sources */,
 				55BFBA2924CC5875004461D3 /* ServerListViewModel.swift in Sources */,
 				55D3077424D19D1E00CF076B /* AlarmListRow.swift in Sources */,
@@ -1328,7 +1332,6 @@
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = netdata/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
-				"IPHONEOS_DEPLOYMENT_TARGET[sdk=macosx*]" = 14.2;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -1357,7 +1360,6 @@
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = netdata/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
-				"IPHONEOS_DEPLOYMENT_TARGET[sdk=macosx*]" = 14.2;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

@@ -14,30 +14,31 @@ struct AlarmsListView: View {
     var serverUrl: String
     var basicAuthBase64: String
     
-    @StateObject var viewModel = ServerDetailViewModel()
+    @State private var serverAlarms = ServerAlarms(status: false, alarms: [:])
     
     var body: some View {
         NavigationView {
             VStack {
-                if self.getActiveAlarms().isEmpty && viewModel.serverAlarms.status == true {
-                    VStack(spacing: 16) {
-                        Image(systemName: "hand.thumbsup.fill")
-                            .imageScale(.large)
-                            .foregroundColor(.green)
-                            .padding()
-                        
-                        Text("No alarms raised! Everything looks good.")
-                            .font(.headline)
-                    }
-                }
-                
                 List {
+                    if self.getActiveAlarms().isEmpty && serverAlarms.status == true {
+                        VStack(alignment: .center, spacing: 16) {
+                            Image(systemName: "hand.thumbsup.fill")
+                                .imageScale(.large)
+                                .foregroundColor(.green)
+                                .padding()
+                            
+                            Text("No alarms raised! Everything looks good.")
+                                .font(.headline)
+                        }
+                    }
+                    
+                    
                     ForEach(self.getActiveAlarms(), id: \.self) { key in
-                        AlarmListRow(alarm: viewModel.serverAlarms.alarms[key]!)
+                        AlarmListRow(alarm: serverAlarms.alarms[key]!)
                             .contextMenu {
                                 Button(action: {
                                     withAnimation {
-                                        userSettings.ignoredAlarms.append(viewModel.serverAlarms.alarms[key]!.name)
+                                        userSettings.ignoredAlarms.append(serverAlarms.alarms[key]!.name)
                                     }
                                 }, label: {
                                     Label("Hide alarm", systemImage: "eye.slash.fill")
@@ -56,24 +57,25 @@ struct AlarmsListView: View {
             .navigationBarItems(leading: dismissButton)
             .onAppear {
                 async {
-                    await viewModel.fetchAlarms(baseUrl: serverUrl, basicAuthBase64: basicAuthBase64)
+                    do {
+                        serverAlarms = try await NetdataClient().getAlarms(baseUrl: serverUrl, basicAuthBase64: basicAuthBase64)
+                    } catch {
+                        debugPrint("getAlarms", error)
+                    }
                 }
-            }
-            .onDisappear {
-                viewModel.serverAlarms = ServerAlarms(status: false, alarms: [:])
             }
         }
     }
     
     private func getActiveAlarms() -> [String] {
-        return viewModel.serverAlarms.alarms.keys.sorted().filter { key in
-            return viewModel.serverAlarms.alarms[key] != nil &&
-                !userSettings.ignoredAlarms.contains(viewModel.serverAlarms.alarms[key]!.name)
+        return serverAlarms.alarms.keys.sorted().filter { key in
+            return serverAlarms.alarms[key] != nil &&
+            !userSettings.ignoredAlarms.contains(serverAlarms.alarms[key]!.name)
         }
     }
     
     private func hiddenAlarmsCount() -> Int {
-        return viewModel.serverAlarms.alarms.keys.count - self.getActiveAlarms().count
+        return serverAlarms.alarms.keys.count - self.getActiveAlarms().count
     }
     
     private var dismissButton: some View {

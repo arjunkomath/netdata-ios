@@ -231,6 +231,9 @@ struct ServerDetailView: View {
                 }
             }
         }
+        .onDisappear {
+            self.timer.upstream.connect().cancel()
+        }
         .navigationBarTitle(server.name, displayMode: .inline)
         .sheet(isPresented: self.$activeSheet.showSheet, onDismiss: {
             async {

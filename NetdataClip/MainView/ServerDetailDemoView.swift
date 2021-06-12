@@ -104,6 +104,9 @@ struct ServerDetailDemoView: View {
                 await viewModel.fetchDiskSpace()
             }
         }
+        .onDisappear {
+            self.timer.upstream.connect().cancel()
+        }
         .listStyle(InsetGroupedListStyle())
     }
     

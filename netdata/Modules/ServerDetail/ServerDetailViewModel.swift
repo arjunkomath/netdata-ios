@@ -28,16 +28,9 @@ final class ServerDetailViewModel: ObservableObject {
     @Published var networkIPv4: ServerData = ServerData(labels: [], data: [])
     @Published var networkIPv6: ServerData = ServerData(labels: [], data: [])
     
-    // MARK:- Custom Charts
-    @Published var serverCharts: ServerCharts = ServerCharts(version: "", release_channel: "", charts: [:])
-    @Published var customChartData: ServerData = ServerData(labels: [], data: [])
-    @Published var bookmarkedChartData: [ServerData] = []
-    
-    // MARK:- Alarms
-    @Published var serverAlarms: ServerAlarms = ServerAlarms(status: false, alarms: [:])
-    
     // MARK:- Bookmarks
     @Published var bookmarks: [ServerChart] = []
+    @Published var bookmarkedChartData: [ServerData] = []
     
     var baseUrl = ""
     var basicAuthBase64 = ""
@@ -125,26 +118,6 @@ final class ServerDetailViewModel: ObservableObject {
             }
         } else {
             self.bookmarks = []
-        }
-    }
-    
-    func fetchCharts(baseUrl: String, basicAuthBase64: String) async {
-        debugPrint("fetchCharts", baseUrl)
-        
-        do {
-            self.serverCharts = try await netdataClient.getCharts(baseUrl: baseUrl, basicAuthBase64: basicAuthBase64)
-        } catch {
-            debugPrint("fetchCharts", error)
-        }
-    }
-    
-    func fetchAlarms(baseUrl: String, basicAuthBase64: String) async {
-        debugPrint("fetchAlarms", baseUrl)
-        
-        do {
-            self.serverAlarms = try await netdataClient.getAlarms(baseUrl: baseUrl, basicAuthBase64: basicAuthBase64)
-        } catch {
-            debugPrint("getAlarms", error)
         }
     }
     

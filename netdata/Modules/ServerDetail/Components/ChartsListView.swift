@@ -13,35 +13,44 @@ struct ChartsListView: View {
     var serverUrl: String
     var basicAuthBase64: String
     
-    @StateObject var viewModel = ServerDetailViewModel()
     @State private var searchText = ""
+    @State private var charts = ServerCharts(version: "", release_channel: "", charts: [:])
     
     var body: some View {
         NavigationView {
             VStack {
                 List {
-                    ForEach(viewModel.serverCharts.charts.keys.sorted().filter({ searchText.isEmpty ? true : $0.lowercased().contains(searchText.lowercased()) }), id: \.self) { key in
-                        if viewModel.serverCharts.charts[key] != nil && viewModel.serverCharts.charts[key]!.enabled == true {
-                            NavigationLink(destination: CustomChartDetailView(serverChart: viewModel.serverCharts.charts[key]!,
-                                                                              serverUrl: serverUrl,
-                                                                              basicAuthBase64: basicAuthBase64)) {
-                                ChartListRow(chart: viewModel.serverCharts.charts[key]!)
-                            }
-                        }
+                    ForEach(getActiveCharts()) { chart in
+                        ChartListRow(chart: chart,
+                                     serverUrl: serverUrl,
+                                     basicAuthBase64: basicAuthBase64)
+                            .background(Color(UIColor.random()))
                     }
                 }
-                .navigationTitle(Text("Available Charts")).navigationBarTitleDisplayMode(.inline)
+                .navigationTitle(Text("Available Charts"))
+                .navigationBarTitleDisplayMode(.inline)
                 .navigationBarItems(leading: dismissButton)
                 .searchable(text: $searchText)
                 .onAppear {
                     async {
-                        await viewModel.fetchCharts(baseUrl: serverUrl, basicAuthBase64: basicAuthBase64)
+                        do {
+                            charts = try await NetdataClient().getCharts(baseUrl: serverUrl, basicAuthBase64: basicAuthBase64)
+                        } catch {
+                            debugPrint("fetchCharts", error)
+                        }
                     }
                 }
-                .onDisappear {
-                    viewModel.serverCharts = ServerCharts(version: "", release_channel: "", charts: [:])
-                }
             }
+        }
+    }
+    
+    private func getActiveCharts() -> [ServerChart] {
+        if searchText.isEmpty {
+            return charts.activeCharts
+        }
+        
+        return charts.activeCharts.filter {
+            $0.name.lowercased().contains(searchText.lowercased())
         }
     }
     

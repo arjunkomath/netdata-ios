@@ -22,4 +22,14 @@ public struct ServerCharts: Encodable, Decodable {
     var version: String;
     var release_channel: String;
     var charts: [String: ServerChart];
+    
+    public var activeCharts: [ServerChart] {
+        return charts.keys.sorted()
+            .filter {
+                charts[$0] != nil && charts[$0]!.enabled
+            }
+            .map {
+                charts[$0]!
+            }
+    }
 }
