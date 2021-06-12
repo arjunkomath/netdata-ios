@@ -29,60 +29,49 @@ struct ServerListView: View {
     
     var body: some View {
         NavigationView {
-            VStack(spacing: 0) {
-                List {
-                    if self.serverService.mostRecentError != nil {
-                        if !self.serverService.isCloudEnabled && !serverService.isSynching {
-                            ErrorMessage(message: "iCloud not enabled, you need an iCloud account to add servers")
+            List {
+                if self.serverService.mostRecentError != nil {
+                    if !self.serverService.isCloudEnabled && !serverService.isSynching {
+                        ErrorMessage(message: "iCloud not enabled, you need an iCloud account to add servers")
+                    }
+                    else {
+                        ErrorMessage(message: self.serverService.mostRecentError!.localizedDescription)
+                    }
+                }
+                
+                if serverService.isSynching && serverService.defaultServers.isEmpty && serverService.favouriteServers.isEmpty {
+                    ForEach((1...4), id: \.self) { _ in
+                        Group {
+                            VStack(alignment: .leading, spacing: 5) {
+                                Text("name")
+                                    .font(.headline)
+                                Text("description")
+                                    .font(.subheadline)
+                                    .foregroundColor(.gray)
+                            }
+                            .redacted(reason: .placeholder)
                         }
-                        else {
-                            ErrorMessage(message: self.serverService.mostRecentError!.localizedDescription)
+                        .padding(8)
+                    }
+                } else {
+                    if !serverService.favouriteServers.isEmpty {
+                        Section(header: Text("Favourites").sectionHeaderStyle()) {
+                            ForEach(serverService.favouriteServers) { server in
+                                ServerListRow(server: server)
+                            }
+                            .onDelete(perform: self.deleteFavouriteServer)
                         }
                     }
                     
-                    if serverService.isSynching && serverService.defaultServers.isEmpty && serverService.favouriteServers.isEmpty {
-                        ForEach((1...4), id: \.self) { _ in
-                            Group {
-                                VStack(alignment: .leading, spacing: 5) {
-                                    Text("name")
-                                        .font(.headline)
-                                    Text("description")
-                                        .font(.subheadline)
-                                        .foregroundColor(.gray)
-                                }
-                                .redacted(reason: .placeholder)
-                            }
-                            .padding(8)
+                    Section(header: Text("Servers").sectionHeaderStyle()) {
+                        ForEach(serverService.defaultServers) { server in
+                            ServerListRow(server: server)
                         }
-                    } else {
-                        if !serverService.favouriteServers.isEmpty {
-                            Section(header: Text("Favourites").sectionHeaderStyle()) {
-                                ForEach(serverService.favouriteServers) { server in
-                                    ServerListRow(server: server)
-                                }
-                                .onDelete(perform: self.deleteFavouriteServer)
-                            }
-                        }
-                        
-                        Section(header: Text("Servers").sectionHeaderStyle()) {
-                            ForEach(serverService.defaultServers) { server in
-                                ServerListRow(server: server)
-                            }
-                            .onDelete(perform: self.deleteServer)
-                        }
-                    }
-                }
-                .listStyle(InsetGroupedListStyle())
-                
-                BottomBar {
-                    if self.serverService.isCloudEnabled && self.serverService.mostRecentError == nil {
-                        Spacer()
-                        
-                        addButton
-                            .padding(.trailing)
+                        .onDelete(perform: self.deleteServer)
                     }
                 }
             }
+            .listStyle(InsetGroupedListStyle())
             .refreshable {
                 serverService.refresh()
             }
@@ -90,6 +79,14 @@ struct ServerListView: View {
             .toolbar {
                 ToolbarItemGroup(placement: .navigationBarLeading) {
                     settingsButton
+                }
+                
+                ToolbarItemGroup(placement: .bottomBar) {
+                    HStack {
+                        Spacer()
+                        
+                        addButton
+                    }
                 }
             }
             .navigationTitle("My Servers")
@@ -148,8 +145,8 @@ struct ServerListView: View {
         Button(action: {
             self.addServer()
         }) {
-            Image(systemName: "externaldrive.badge.plus")
-            Text("Add")
+            Label("Add", systemImage: "externaldrive.badge.plus")
+                .labelStyle(.titleAndIcon)
         }
     }
     
@@ -157,7 +154,7 @@ struct ServerListView: View {
         Button(action: {
             self.activeSheet.kind = .settings
         }) {
-            Image(systemName: "gear")
+            Label("Settings", systemImage: "gear")
         }
     }
     

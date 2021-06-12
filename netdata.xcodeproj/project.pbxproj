@@ -30,27 +30,6 @@
 		552862E524CD018B008E2B0E /* ErrorMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 552862E424CD018B008E2B0E /* ErrorMessage.swift */; };
 		552C2C2624D6B9BB00D3DFBE /* CustomChartDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 552C2C2524D6B9BB00D3DFBE /* CustomChartDetailView.swift */; };
 		552E19D324CDB71500CDB97F /* EditServerForm.swift in Sources */ = {isa = PBXBuildFile; fileRef = 552E19D224CDB71500CDB97F /* EditServerForm.swift */; };
-		55380379254510DD003A9BFE /* NetdataClipApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55380378254510DD003A9BFE /* NetdataClipApp.swift */; };
-		5538037B254510DD003A9BFE /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5538037A254510DD003A9BFE /* MainView.swift */; };
-		5538037D254510DF003A9BFE /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5538037C254510DF003A9BFE /* Assets.xcassets */; };
-		55380380254510DF003A9BFE /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5538037F254510DF003A9BFE /* Preview Assets.xcassets */; };
-		5538038C254510DF003A9BFE /* NetdataClipTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5538038B254510DF003A9BFE /* NetdataClipTests.swift */; };
-		55380397254510DF003A9BFE /* NetdataClipUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55380396254510DF003A9BFE /* NetdataClipUITests.swift */; };
-		5538039B254510DF003A9BFE /* NetdataClip.app in Embed App Clips */ = {isa = PBXBuildFile; fileRef = 55380376254510DD003A9BFE /* NetdataClip.app */; platformFilter = ios; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
-		553803AC254512EB003A9BFE /* ErrorMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 552862E424CD018B008E2B0E /* ErrorMessage.swift */; };
-		553803E7254514A4003A9BFE /* ServerDetailViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 559843B324CEFAAC0034E92D /* ServerDetailViewModel.swift */; };
-		553803EE254514B1003A9BFE /* ServerCharts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 559300E424D550A6006C6DB4 /* ServerCharts.swift */; };
-		553803F5254514B6003A9BFE /* ServerData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55BA431124C3395400599345 /* ServerData.swift */; };
-		553803FC254514C4003A9BFE /* NetdataClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55BFBA2424CC474A004461D3 /* NetdataClient.swift */; };
-		5538040A254514D7003A9BFE /* ServerInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55BA430F24C332C900599345 /* ServerInfo.swift */; };
-		55380411254514DD003A9BFE /* ServerAlarms.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5508041524D05ABF002FFAA5 /* ServerAlarms.swift */; };
-		553804192545150A003A9BFE /* ServerDetailDemoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 553804182545150A003A9BFE /* ServerDetailDemoView.swift */; };
-		55380420254516FE003A9BFE /* DataGrid.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55C638FC24CBFBA400395B23 /* DataGrid.swift */; };
-		5538042725451705003A9BFE /* AbsoluteUsageData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55C638FA24CBEFCA00395B23 /* AbsoluteUsageData.swift */; };
-		5538042E2545170E003A9BFE /* PercentageUsageData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55C638F824CBE6B800395B23 /* PercentageUsageData.swift */; };
-		5538043525451717003A9BFE /* Meter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 551420A824C3D6D200A22E9A /* Meter.swift */; };
-		5538043C25451736003A9BFE /* ReadableGuidePadding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55193D2924E14D9500FE1D55 /* ReadableGuidePadding.swift */; };
-		553804432545174A003A9BFE /* CustomTextStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 555401A224D850D100B1B727 /* CustomTextStyle.swift */; };
 		555401A324D850D100B1B727 /* CustomTextStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 555401A224D850D100B1B727 /* CustomTextStyle.swift */; };
 		556064BE25C7E8CA0018FA14 /* MediumWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 556064BD25C7E8CA0018FA14 /* MediumWidget.swift */; };
 		55840BE6264406CB00CECD6A /* BottomBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55840BE5264406CB00CECD6A /* BottomBar.swift */; };
@@ -98,27 +77,6 @@
 			remoteGlobalIDString = 5514041725C68F4F0081E4A4;
 			remoteInfo = AlarmWidgetExtension;
 		};
-		55380388254510DF003A9BFE /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 55D1C4F624B95E6D0087F8A2 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 55380375254510DD003A9BFE;
-			remoteInfo = NetdataClip;
-		};
-		55380393254510DF003A9BFE /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 55D1C4F624B95E6D0087F8A2 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 55380375254510DD003A9BFE;
-			remoteInfo = NetdataClip;
-		};
-		55380399254510DF003A9BFE /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 55D1C4F624B95E6D0087F8A2 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 55380375254510DD003A9BFE;
-			remoteInfo = NetdataClip;
-		};
 		55D1C51024B95E6F0087F8A2 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 55D1C4F624B95E6D0087F8A2 /* Project object */;
@@ -153,7 +111,6 @@
 			dstPath = "$(CONTENTS_FOLDER_PATH)/AppClips";
 			dstSubfolderSpec = 16;
 			files = (
-				5538039B254510DF003A9BFE /* NetdataClip.app in Embed App Clips */,
 			);
 			name = "Embed App Clips";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -175,20 +132,6 @@
 		552B4E7924CD16C0008B9DA6 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
 		552C2C2524D6B9BB00D3DFBE /* CustomChartDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomChartDetailView.swift; sourceTree = "<group>"; };
 		552E19D224CDB71500CDB97F /* EditServerForm.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditServerForm.swift; sourceTree = "<group>"; };
-		55380376254510DD003A9BFE /* NetdataClip.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NetdataClip.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		55380378254510DD003A9BFE /* NetdataClipApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetdataClipApp.swift; sourceTree = "<group>"; };
-		5538037A254510DD003A9BFE /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
-		5538037C254510DF003A9BFE /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		5538037F254510DF003A9BFE /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
-		55380381254510DF003A9BFE /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		55380382254510DF003A9BFE /* NetdataClip.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = NetdataClip.entitlements; sourceTree = "<group>"; };
-		55380387254510DF003A9BFE /* NetdataClipTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = NetdataClipTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		5538038B254510DF003A9BFE /* NetdataClipTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetdataClipTests.swift; sourceTree = "<group>"; };
-		5538038D254510DF003A9BFE /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		55380392254510DF003A9BFE /* NetdataClipUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = NetdataClipUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		55380396254510DF003A9BFE /* NetdataClipUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetdataClipUITests.swift; sourceTree = "<group>"; };
-		55380398254510DF003A9BFE /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		553804182545150A003A9BFE /* ServerDetailDemoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerDetailDemoView.swift; sourceTree = "<group>"; };
 		555401A224D850D100B1B727 /* CustomTextStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomTextStyle.swift; sourceTree = "<group>"; };
 		556064BD25C7E8CA0018FA14 /* MediumWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediumWidget.swift; sourceTree = "<group>"; };
 		55840BE5264406CB00CECD6A /* BottomBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BottomBar.swift; sourceTree = "<group>"; };
@@ -243,27 +186,6 @@
 				5514045725C6969C0081E4A4 /* CloudKit.framework in Frameworks */,
 				5514041A25C68F4F0081E4A4 /* SwiftUI.framework in Frameworks */,
 				5514041925C68F4F0081E4A4 /* WidgetKit.framework in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		55380373254510DD003A9BFE /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		55380384254510DF003A9BFE /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		5538038F254510DF003A9BFE /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -367,54 +289,6 @@
 			path = Charts;
 			sourceTree = "<group>";
 		};
-		55380377254510DD003A9BFE /* NetdataClip */ = {
-			isa = PBXGroup;
-			children = (
-				5538045025451B45003A9BFE /* MainView */,
-				55380378254510DD003A9BFE /* NetdataClipApp.swift */,
-				5538037C254510DF003A9BFE /* Assets.xcassets */,
-				55380381254510DF003A9BFE /* Info.plist */,
-				55380382254510DF003A9BFE /* NetdataClip.entitlements */,
-				5538037E254510DF003A9BFE /* Preview Content */,
-			);
-			path = NetdataClip;
-			sourceTree = "<group>";
-		};
-		5538037E254510DF003A9BFE /* Preview Content */ = {
-			isa = PBXGroup;
-			children = (
-				5538037F254510DF003A9BFE /* Preview Assets.xcassets */,
-			);
-			path = "Preview Content";
-			sourceTree = "<group>";
-		};
-		5538038A254510DF003A9BFE /* NetdataClipTests */ = {
-			isa = PBXGroup;
-			children = (
-				5538038B254510DF003A9BFE /* NetdataClipTests.swift */,
-				5538038D254510DF003A9BFE /* Info.plist */,
-			);
-			path = NetdataClipTests;
-			sourceTree = "<group>";
-		};
-		55380395254510DF003A9BFE /* NetdataClipUITests */ = {
-			isa = PBXGroup;
-			children = (
-				55380396254510DF003A9BFE /* NetdataClipUITests.swift */,
-				55380398254510DF003A9BFE /* Info.plist */,
-			);
-			path = NetdataClipUITests;
-			sourceTree = "<group>";
-		};
-		5538045025451B45003A9BFE /* MainView */ = {
-			isa = PBXGroup;
-			children = (
-				5538037A254510DD003A9BFE /* MainView.swift */,
-				553804182545150A003A9BFE /* ServerDetailDemoView.swift */,
-			);
-			path = MainView;
-			sourceTree = "<group>";
-		};
 		558CABAA24B99923002D115B /* Protocols */ = {
 			isa = PBXGroup;
 			children = (
@@ -459,9 +333,6 @@
 				55D1C50024B95E6D0087F8A2 /* netdata */,
 				55D1C51224B95E6F0087F8A2 /* netdataTests */,
 				55D1C51D24B95E6F0087F8A2 /* netdataUITests */,
-				55380377254510DD003A9BFE /* NetdataClip */,
-				5538038A254510DF003A9BFE /* NetdataClipTests */,
-				55380395254510DF003A9BFE /* NetdataClipUITests */,
 				5514041B25C68F4F0081E4A4 /* AlarmWidget */,
 				55D1C4FF24B95E6D0087F8A2 /* Products */,
 				55D1C53624B969AC0087F8A2 /* Frameworks */,
@@ -474,9 +345,6 @@
 				55D1C4FE24B95E6D0087F8A2 /* netdata.app */,
 				55D1C50F24B95E6F0087F8A2 /* netdataTests.xctest */,
 				55D1C51A24B95E6F0087F8A2 /* netdataUITests.xctest */,
-				55380376254510DD003A9BFE /* NetdataClip.app */,
-				55380387254510DF003A9BFE /* NetdataClipTests.xctest */,
-				55380392254510DF003A9BFE /* NetdataClipUITests.xctest */,
 				5514041825C68F4F0081E4A4 /* AlarmWidgetExtension.appex */,
 			);
 			name = Products;
@@ -623,59 +491,6 @@
 			productReference = 5514041825C68F4F0081E4A4 /* AlarmWidgetExtension.appex */;
 			productType = "com.apple.product-type.app-extension";
 		};
-		55380375254510DD003A9BFE /* NetdataClip */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 553803A3254510DF003A9BFE /* Build configuration list for PBXNativeTarget "NetdataClip" */;
-			buildPhases = (
-				55380372254510DD003A9BFE /* Sources */,
-				55380373254510DD003A9BFE /* Frameworks */,
-				55380374254510DD003A9BFE /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-			);
-			name = NetdataClip;
-			productName = NetdataClip;
-			productReference = 55380376254510DD003A9BFE /* NetdataClip.app */;
-			productType = "com.apple.product-type.application.on-demand-install-capable";
-		};
-		55380386254510DF003A9BFE /* NetdataClipTests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 553803A4254510DF003A9BFE /* Build configuration list for PBXNativeTarget "NetdataClipTests" */;
-			buildPhases = (
-				55380383254510DF003A9BFE /* Sources */,
-				55380384254510DF003A9BFE /* Frameworks */,
-				55380385254510DF003A9BFE /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				55380389254510DF003A9BFE /* PBXTargetDependency */,
-			);
-			name = NetdataClipTests;
-			productName = NetdataClipTests;
-			productReference = 55380387254510DF003A9BFE /* NetdataClipTests.xctest */;
-			productType = "com.apple.product-type.bundle.unit-test";
-		};
-		55380391254510DF003A9BFE /* NetdataClipUITests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 553803A5254510DF003A9BFE /* Build configuration list for PBXNativeTarget "NetdataClipUITests" */;
-			buildPhases = (
-				5538038E254510DF003A9BFE /* Sources */,
-				5538038F254510DF003A9BFE /* Frameworks */,
-				55380390254510DF003A9BFE /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				55380394254510DF003A9BFE /* PBXTargetDependency */,
-			);
-			name = NetdataClipUITests;
-			productName = NetdataClipUITests;
-			productReference = 55380392254510DF003A9BFE /* NetdataClipUITests.xctest */;
-			productType = "com.apple.product-type.bundle.ui-testing";
-		};
 		55D1C4FD24B95E6D0087F8A2 /* netdata */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 55D1C52324B95E6F0087F8A2 /* Build configuration list for PBXNativeTarget "netdata" */;
@@ -689,7 +504,6 @@
 			buildRules = (
 			);
 			dependencies = (
-				5538039A254510DF003A9BFE /* PBXTargetDependency */,
 				5514042225C68F510081E4A4 /* PBXTargetDependency */,
 			);
 			name = netdata;
@@ -748,17 +562,6 @@
 					5514041725C68F4F0081E4A4 = {
 						CreatedOnToolsVersion = 12.4;
 					};
-					55380375254510DD003A9BFE = {
-						CreatedOnToolsVersion = 12.1;
-					};
-					55380386254510DF003A9BFE = {
-						CreatedOnToolsVersion = 12.1;
-						TestTargetID = 55380375254510DD003A9BFE;
-					};
-					55380391254510DF003A9BFE = {
-						CreatedOnToolsVersion = 12.1;
-						TestTargetID = 55380375254510DD003A9BFE;
-					};
 					55D1C4FD24B95E6D0087F8A2 = {
 						CreatedOnToolsVersion = 12.0;
 					};
@@ -791,9 +594,6 @@
 				55D1C4FD24B95E6D0087F8A2 /* netdata */,
 				55D1C50E24B95E6F0087F8A2 /* netdataTests */,
 				55D1C51924B95E6F0087F8A2 /* netdataUITests */,
-				55380375254510DD003A9BFE /* NetdataClip */,
-				55380386254510DF003A9BFE /* NetdataClipTests */,
-				55380391254510DF003A9BFE /* NetdataClipUITests */,
 				5514041725C68F4F0081E4A4 /* AlarmWidgetExtension */,
 			);
 		};
@@ -805,29 +605,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				5514041F25C68F510081E4A4 /* Assets.xcassets in Resources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		55380374254510DD003A9BFE /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				55380380254510DF003A9BFE /* Preview Assets.xcassets in Resources */,
-				5538037D254510DF003A9BFE /* Assets.xcassets in Resources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		55380385254510DF003A9BFE /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		55380390254510DF003A9BFE /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -873,45 +650,6 @@
 				5514043725C6905A0081E4A4 /* CloudService.swift in Sources */,
 				556064BE25C7E8CA0018FA14 /* MediumWidget.swift in Sources */,
 				5514047B25C6AF750081E4A4 /* ServerCharts.swift in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		55380372254510DD003A9BFE /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				553803F5254514B6003A9BFE /* ServerData.swift in Sources */,
-				553803FC254514C4003A9BFE /* NetdataClient.swift in Sources */,
-				553803E7254514A4003A9BFE /* ServerDetailViewModel.swift in Sources */,
-				5538042E2545170E003A9BFE /* PercentageUsageData.swift in Sources */,
-				553804192545150A003A9BFE /* ServerDetailDemoView.swift in Sources */,
-				553804432545174A003A9BFE /* CustomTextStyle.swift in Sources */,
-				5538042725451705003A9BFE /* AbsoluteUsageData.swift in Sources */,
-				5538037B254510DD003A9BFE /* MainView.swift in Sources */,
-				55380420254516FE003A9BFE /* DataGrid.swift in Sources */,
-				553803EE254514B1003A9BFE /* ServerCharts.swift in Sources */,
-				5538040A254514D7003A9BFE /* ServerInfo.swift in Sources */,
-				5538043C25451736003A9BFE /* ReadableGuidePadding.swift in Sources */,
-				55380411254514DD003A9BFE /* ServerAlarms.swift in Sources */,
-				5538043525451717003A9BFE /* Meter.swift in Sources */,
-				553803AC254512EB003A9BFE /* ErrorMessage.swift in Sources */,
-				55380379254510DD003A9BFE /* NetdataClipApp.swift in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		55380383254510DF003A9BFE /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				5538038C254510DF003A9BFE /* NetdataClipTests.swift in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		5538038E254510DF003A9BFE /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				55380397254510DF003A9BFE /* NetdataClipUITests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -983,22 +721,6 @@
 			target = 5514041725C68F4F0081E4A4 /* AlarmWidgetExtension */;
 			targetProxy = 5514042125C68F510081E4A4 /* PBXContainerItemProxy */;
 		};
-		55380389254510DF003A9BFE /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 55380375254510DD003A9BFE /* NetdataClip */;
-			targetProxy = 55380388254510DF003A9BFE /* PBXContainerItemProxy */;
-		};
-		55380394254510DF003A9BFE /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 55380375254510DD003A9BFE /* NetdataClip */;
-			targetProxy = 55380393254510DF003A9BFE /* PBXContainerItemProxy */;
-		};
-		5538039A254510DF003A9BFE /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			platformFilter = ios;
-			target = 55380375254510DD003A9BFE /* NetdataClip */;
-			targetProxy = 55380399254510DF003A9BFE /* PBXContainerItemProxy */;
-		};
 		55D1C51124B95E6F0087F8A2 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 55D1C4FD24B95E6D0087F8A2 /* netdata */;
@@ -1019,7 +741,7 @@
 				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
 				CODE_SIGN_ENTITLEMENTS = AlarmWidgetExtension.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 32;
+				CURRENT_PROJECT_VERSION = 33;
 				DEVELOPMENT_TEAM = H78GYE72WQ;
 				INFOPLIST_FILE = AlarmWidget/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
@@ -1028,7 +750,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.9.1;
+				MARKETING_VERSION = 1.10.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.techulus.netdata.AlarmWidget;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -1046,7 +768,7 @@
 				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
 				CODE_SIGN_ENTITLEMENTS = AlarmWidgetExtension.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 32;
+				CURRENT_PROJECT_VERSION = 33;
 				DEVELOPMENT_TEAM = H78GYE72WQ;
 				INFOPLIST_FILE = AlarmWidget/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
@@ -1055,7 +777,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.9.1;
+				MARKETING_VERSION = 1.10.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.techulus.netdata.AlarmWidget;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -1063,142 +785,6 @@
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2,6";
-			};
-			name = Release;
-		};
-		5538039D254510DF003A9BFE /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = NetdataClip/NetdataClip.entitlements;
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 32;
-				DEVELOPMENT_ASSET_PATHS = "\"NetdataClip/Preview Content\"";
-				DEVELOPMENT_TEAM = H78GYE72WQ;
-				ENABLE_PREVIEWS = YES;
-				INFOPLIST_FILE = NetdataClip/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-				);
-				MARKETING_VERSION = 1.9.1;
-				PRODUCT_BUNDLE_IDENTIFIER = com.techulus.netdata.Clip;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
-		5538039E254510DF003A9BFE /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = NetdataClip/NetdataClip.entitlements;
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 32;
-				DEVELOPMENT_ASSET_PATHS = "\"NetdataClip/Preview Content\"";
-				DEVELOPMENT_TEAM = H78GYE72WQ;
-				ENABLE_PREVIEWS = YES;
-				INFOPLIST_FILE = NetdataClip/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-				);
-				MARKETING_VERSION = 1.9.1;
-				PRODUCT_BUNDLE_IDENTIFIER = com.techulus.netdata.Clip;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Release;
-		};
-		5538039F254510DF003A9BFE /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = H78GYE72WQ;
-				INFOPLIST_FILE = NetdataClipTests/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.1;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@loader_path/Frameworks",
-				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.techulus.netdata.NetdataClipTests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/NetdataClip.app/NetdataClip";
-			};
-			name = Debug;
-		};
-		553803A0254510DF003A9BFE /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = H78GYE72WQ;
-				INFOPLIST_FILE = NetdataClipTests/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.1;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@loader_path/Frameworks",
-				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.techulus.netdata.NetdataClipTests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/NetdataClip.app/NetdataClip";
-			};
-			name = Release;
-		};
-		553803A1254510DF003A9BFE /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = H78GYE72WQ;
-				INFOPLIST_FILE = NetdataClipUITests/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.1;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@loader_path/Frameworks",
-				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.techulus.netdata.NetdataClipUITests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_TARGET_NAME = NetdataClip;
-			};
-			name = Debug;
-		};
-		553803A2254510DF003A9BFE /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = H78GYE72WQ;
-				INFOPLIST_FILE = NetdataClipUITests/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.1;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@loader_path/Frameworks",
-				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.techulus.netdata.NetdataClipUITests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_TARGET_NAME = NetdataClip;
 			};
 			name = Release;
 		};
@@ -1326,7 +912,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = netdata/netdata.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 32;
+				CURRENT_PROJECT_VERSION = 33;
 				DEVELOPMENT_ASSET_PATHS = "\"netdata/Preview Content\"";
 				DEVELOPMENT_TEAM = H78GYE72WQ;
 				ENABLE_PREVIEWS = YES;
@@ -1336,7 +922,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.9.1;
+				MARKETING_VERSION = 1.10.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.techulus.netdata;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTS_MACCATALYST = YES;
@@ -1354,7 +940,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = netdata/netdata.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 32;
+				CURRENT_PROJECT_VERSION = 33;
 				DEVELOPMENT_ASSET_PATHS = "\"netdata/Preview Content\"";
 				DEVELOPMENT_TEAM = H78GYE72WQ;
 				ENABLE_PREVIEWS = YES;
@@ -1364,7 +950,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.9.1;
+				MARKETING_VERSION = 1.10.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.techulus.netdata;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTS_MACCATALYST = YES;
@@ -1466,33 +1052,6 @@
 			buildConfigurations = (
 				5514042625C68F510081E4A4 /* Debug */,
 				5514042725C68F510081E4A4 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		553803A3254510DF003A9BFE /* Build configuration list for PBXNativeTarget "NetdataClip" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				5538039D254510DF003A9BFE /* Debug */,
-				5538039E254510DF003A9BFE /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		553803A4254510DF003A9BFE /* Build configuration list for PBXNativeTarget "NetdataClipTests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				5538039F254510DF003A9BFE /* Debug */,
-				553803A0254510DF003A9BFE /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		553803A5254510DF003A9BFE /* Build configuration list for PBXNativeTarget "NetdataClipUITests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				553803A1254510DF003A9BFE /* Debug */,
-				553803A2254510DF003A9BFE /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
