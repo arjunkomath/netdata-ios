@@ -13,11 +13,20 @@ struct ChartsListView: View {
     var serverUrl: String
     var basicAuthBase64: String
     
-    @State private var searchText = ""
+    @State private var loading = false
     @State private var charts = ServerCharts(version: "", release_channel: "", charts: [:])
+    @State private var searchText = ""
     
     var body: some View {
         List {
+            if loading {
+                VStack(alignment: .center, spacing: 16) {
+                    ProgressView()
+                }
+                .frame(minWidth: 0, maxWidth: .infinity)
+                .padding()
+            }
+            
             ForEach(getActiveCharts()) { chart in
                 ChartListRow(chart: chart,
                              serverUrl: serverUrl,
@@ -26,14 +35,26 @@ struct ChartsListView: View {
         }
         .navigationTitle(Text("All Charts"))
         .searchable(text: $searchText)
+        .refreshable {
+            async {
+                await fetchCharts()
+            }
+        }
         .onAppear {
             async {
-                do {
-                    charts = try await NetdataClient.shared.getCharts(baseUrl: serverUrl, basicAuthBase64: basicAuthBase64)
-                } catch {
-                    debugPrint("fetchCharts", error)
-                }
+                await fetchCharts()
             }
+        }
+    }
+    
+    private func fetchCharts() async {
+        loading = true
+        do {
+            loading = false
+            charts = try await NetdataClient.shared.getCharts(baseUrl: serverUrl, basicAuthBase64: basicAuthBase64)
+        } catch {
+            loading = false
+            debugPrint("fetchCharts", error)
         }
     }
     
