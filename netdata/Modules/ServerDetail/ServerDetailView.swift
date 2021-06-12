@@ -15,7 +15,7 @@ struct ServerDetailView: View {
     
     @State private var showSheet = false
     
-    let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
+    @State var timer: Timer.TimerPublisher = Timer.publish(every: 1, on: .main, in: .common)
     
     var body: some View {
         VStack(spacing: 0) {
@@ -187,6 +187,10 @@ struct ServerDetailView: View {
                 await self.viewModel.updateBookmarks(baseUrl: server.url, basicAuthBase64: server.basicAuthBase64)
             }
             
+            // Start timer
+            self.timer = Timer.publish(every: 1, on: .main, in: .common)
+            self.timer.connect()
+                        
             // hide scroll indicators
             UITableView.appearance().showsVerticalScrollIndicator = false
         }
@@ -198,7 +202,7 @@ struct ServerDetailView: View {
                 await viewModel.fetchDiskIo()
                 await viewModel.fetchNetwork()
                 await viewModel.fetchDiskSpace()
-                
+                                
                 for (index, bookmark) in viewModel.bookmarks.enumerated() {
                     do {
                         viewModel.bookmarkedChartData[index] = try await NetdataClient.shared.getChartData(baseUrl: server.url, basicAuthBase64: server.basicAuthBase64, chart: bookmark.id)
@@ -209,7 +213,7 @@ struct ServerDetailView: View {
             }
         }
         .onDisappear {
-            self.timer.upstream.connect().cancel()
+            self.timer.connect().cancel()
         }
         .navigationBarTitle(server.name)
     }
