@@ -17,28 +17,21 @@ struct ChartsListView: View {
     @State private var charts = ServerCharts(version: "", release_channel: "", charts: [:])
     
     var body: some View {
-        NavigationView {
-            VStack {
-                List {
-                    ForEach(getActiveCharts()) { chart in
-                        ChartListRow(chart: chart,
-                                     serverUrl: serverUrl,
-                                     basicAuthBase64: basicAuthBase64)
-                            .background(Color(UIColor.random()))
-                    }
-                }
-                .navigationTitle(Text("Available Charts"))
-                .navigationBarTitleDisplayMode(.inline)
-                .navigationBarItems(leading: dismissButton)
-                .searchable(text: $searchText)
-                .onAppear {
-                    async {
-                        do {
-                            charts = try await NetdataClient().getCharts(baseUrl: serverUrl, basicAuthBase64: basicAuthBase64)
-                        } catch {
-                            debugPrint("fetchCharts", error)
-                        }
-                    }
+        List {
+            ForEach(getActiveCharts()) { chart in
+                ChartListRow(chart: chart,
+                             serverUrl: serverUrl,
+                             basicAuthBase64: basicAuthBase64)
+            }
+        }
+        .navigationTitle(Text("All Charts"))
+        .searchable(text: $searchText)
+        .onAppear {
+            async {
+                do {
+                    charts = try await NetdataClient().getCharts(baseUrl: serverUrl, basicAuthBase64: basicAuthBase64)
+                } catch {
+                    debugPrint("fetchCharts", error)
                 }
             }
         }

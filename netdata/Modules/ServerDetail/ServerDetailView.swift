@@ -8,25 +8,10 @@
 import SwiftUI
 import Combine
 
-final class ServerDetailActiveSheet: ObservableObject {
-    enum Kind {
-        case alarms
-        case charts
-        case none
-    }
-    
-    @Published var kind: Kind = .none {
-        didSet { showSheet = kind != .none }
-    }
-    
-    @Published var showSheet: Bool = false
-}
-
 struct ServerDetailView: View {
     var server: NDServer;
     
     @StateObject var viewModel = ServerDetailViewModel()
-    @ObservedObject var activeSheet = ServerDetailActiveSheet()
     
     @State private var showSheet = false
     
@@ -181,23 +166,15 @@ struct ServerDetailView: View {
             .listStyle(InsetGroupedListStyle())
             
             BottomBar {
-                Button(action: {
-                    self.activeSheet.kind = .charts
-                    self.showSheet.toggle()
-                }) {
-                    Image(systemName: "chart.pie")
-                    Text("Charts")
+                NavigationLink(destination: ChartsListView(serverUrl: server.url, basicAuthBase64: server.basicAuthBase64)) {
+                    Label("Charts", systemImage: "chart.pie")
                 }
                 .padding(.leading)
                 
                 Spacer()
                 
-                Button(action: {
-                    self.activeSheet.kind = .alarms
-                    self.showSheet.toggle()
-                }) {
-                    Image(systemName: "alarm")
-                    Text("Alarms")
+                NavigationLink(destination: AlarmsListView(serverUrl: server.url, basicAuthBase64: server.basicAuthBase64)) {
+                    Label("Alarms", systemImage: "alarm")
                 }
                 .padding(.trailing)
             }
@@ -234,23 +211,7 @@ struct ServerDetailView: View {
         .onDisappear {
             self.timer.upstream.connect().cancel()
         }
-        .navigationBarTitle(server.name, displayMode: .inline)
-        .sheet(isPresented: self.$activeSheet.showSheet, onDismiss: {
-            async {
-                await self.viewModel.updateBookmarks(baseUrl: server.url, basicAuthBase64: server.basicAuthBase64)
-            }
-        }, content: {
-            self.sheet
-        })
-    }
-    
-    @ViewBuilder
-    private var sheet: some View {
-        switch activeSheet.kind {
-        case .none: EmptyView()
-        case .alarms: AlarmsListView(serverUrl: server.url, basicAuthBase64: server.basicAuthBase64)
-        case .charts: ChartsListView(serverUrl: server.url, basicAuthBase64: server.basicAuthBase64)
-        }
+        .navigationBarTitle(server.name)
     }
     
     func getDataType(chart: ServerChart) -> GridDataType {

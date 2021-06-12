@@ -14,56 +14,74 @@ struct AlarmsListView: View {
     var serverUrl: String
     var basicAuthBase64: String
     
+    @State private var loading = false
     @State private var serverAlarms = ServerAlarms(status: false, alarms: [:])
     
     var body: some View {
-        NavigationView {
-            VStack {
-                List {
-                    if self.getActiveAlarms().isEmpty && serverAlarms.status == true {
-                        VStack(alignment: .center, spacing: 16) {
-                            Image(systemName: "hand.thumbsup.fill")
-                                .imageScale(.large)
-                                .foregroundColor(.green)
-                                .padding()
-                            
-                            Text("No alarms raised! Everything looks good.")
-                                .font(.headline)
-                        }
-                    }
-                    
-                    
-                    ForEach(self.getActiveAlarms(), id: \.self) { key in
-                        AlarmListRow(alarm: serverAlarms.alarms[key]!)
-                            .contextMenu {
-                                Button(action: {
-                                    withAnimation {
-                                        userSettings.ignoredAlarms.append(serverAlarms.alarms[key]!.name)
-                                    }
-                                }, label: {
-                                    Label("Hide alarm", systemImage: "eye.slash.fill")
-                                })
-                            }
-                    }
+        List {
+            if loading {
+                VStack(alignment: .center, spacing: 16) {
+                    ProgressView()
                 }
-                
-                if self.hiddenAlarmsCount() > 0 {
+                .frame(minWidth: 0, maxWidth: .infinity)
+                .padding()
+            }
+            
+            if self.getActiveAlarms().isEmpty && serverAlarms.status == true {
+                VStack(alignment: .center, spacing: 16) {
+                    Image(systemName: "hand.thumbsup.fill")
+                        .imageScale(.large)
+                        .foregroundColor(.green)
+                    
+                    Text("No active alarms.")
+                        .font(.headline)
+                }
+                .frame(minWidth: 0, maxWidth: .infinity)
+                .padding()
+            }
+            
+            ForEach(self.getActiveAlarms(), id: \.self) { key in
+                AlarmListRow(alarm: serverAlarms.alarms[key]!)
+                    .contextMenu {
+                        Button(action: {
+                            withAnimation {
+                                userSettings.ignoredAlarms.append(serverAlarms.alarms[key]!.name)
+                            }
+                        }, label: {
+                            Label("Hide alarm", systemImage: "eye.slash.fill")
+                        })
+                    }
+            }
+            
+            if self.hiddenAlarmsCount() > 0 {
+                Section {
                     Text("\(self.hiddenAlarmsCount()) hidden alert(s)")
                         .font(.footnote)
                         .foregroundColor(.gray)
                 }
             }
-            .navigationTitle(Text("Active Alarms")).navigationBarTitleDisplayMode(.inline)
-            .navigationBarItems(leading: dismissButton)
-            .onAppear {
-                async {
-                    do {
-                        serverAlarms = try await NetdataClient().getAlarms(baseUrl: serverUrl, basicAuthBase64: basicAuthBase64)
-                    } catch {
-                        debugPrint("getAlarms", error)
-                    }
-                }
+        }
+        .navigationTitle(Text("Alarms"))
+        .refreshable {
+            async {
+                await self.fetchAlarms()
             }
+        }
+        .onAppear {
+            async {
+                await self.fetchAlarms()
+            }
+        }
+    }
+    
+    private func fetchAlarms() async {
+        loading = true
+        do {
+            serverAlarms = try await NetdataClient().getAlarms(baseUrl: serverUrl, basicAuthBase64: basicAuthBase64)
+            loading = false
+        } catch {
+            loading = false
+            debugPrint("getAlarms", error)
         }
     }
     

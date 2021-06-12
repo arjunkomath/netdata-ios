@@ -48,7 +48,7 @@ struct CustomChartDetailView: View {
                 .readableGuidePadding()
             }
         }
-        .navigationTitle(serverChart.name)
+        .navigationBarTitle(serverChart.name, displayMode: .inline)
         .onReceive(timer) { _ in
             async {
                 do {
