@@ -87,14 +87,20 @@ public class ServerService: ObservableObject, PublicCloudService {
     }
     
     private func addOperation(operation: CKModifyRecordsOperation, fetch: Bool) {
-        operation.modifyRecordsCompletionBlock = { _, _, error in
+        operation.modifyRecordsResultBlock = { result in
             DispatchQueue.main.async {
-                self.setError(error: error)
-                if fetch {
-                    self.fetchServers()
+                switch result {
+                case .success():
+                    if fetch {
+                        self.fetchServers()
+                    }
+                    
+                case .failure(let error):
+                    self.setError(error: error)
                 }
             }
         }
+        
         database.add(operation)
     }
     
@@ -103,21 +109,31 @@ public class ServerService: ObservableObject, PublicCloudService {
         let query = CKQuery(recordType: NDServer.RecordType, predicate: NSPredicate(value: true))
         query.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: false)]
         
-        database.perform(query, inZoneWith: nil) { (records, error) in
-            self.setError(error: error)
-            if let records = records {
+        database.fetch(withQuery: query, inZoneWith: nil) { result in
+            switch result {
+            case .success(let response):
                 var nativeRecords: [NDServer] = []
-                for record in records {
-                    nativeRecords.append(NDServer(withRecord: record))
+                
+                for recordResult in response.matchResults {
+                    switch recordResult.value {
+                    case .success(let record):
+                        nativeRecords.append(NDServer(withRecord: record))
+                    case .failure(let error):
+                        debugPrint("failed to parse record", error)
+                    }
                 }
+
                 DispatchQueue.main.async {
                     self.favouriteServers = nativeRecords.filter { $0.isFavourite == 1 }
                     self.defaultServers = nativeRecords.filter { $0.isFavourite != 1 }
                 }
-            } else {
+                
+            case .failure(let error):
                 self.favouriteServers = []
                 self.defaultServers = []
+                self.setError(error: error)
             }
+            
             DispatchQueue.main.async {
                 self.isSynching = false
             }

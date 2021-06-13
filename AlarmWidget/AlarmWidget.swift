@@ -99,7 +99,9 @@ struct AlarmWidgetEntryView : View {
         case .systemMedium:
             MediumWidget(entry: entry)
         case .systemLarge:
-            Text("unknown")
+            Text("Unsupported")
+        case .systemExtraLarge:
+            Text("Unsupported")
         @unknown default: Text("unknown")
         }
     }
