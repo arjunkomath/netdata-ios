@@ -13,8 +13,6 @@ struct ServerDetailView: View {
     
     @StateObject var viewModel = ServerDetailViewModel()
     
-    @State private var showSheet = false
-    
     @State var timer: Timer.TimerPublisher = Timer.publish(every: 1, on: .main, in: .common)
     
     var body: some View {
@@ -189,8 +187,8 @@ struct ServerDetailView: View {
             
             // Start timer
             self.timer = Timer.publish(every: 1, on: .main, in: .common)
-            self.timer.connect()
-                        
+            _ = self.timer.connect()
+            
             // hide scroll indicators
             UITableView.appearance().showsVerticalScrollIndicator = false
         }
@@ -202,7 +200,7 @@ struct ServerDetailView: View {
                 await viewModel.fetchDiskIo()
                 await viewModel.fetchNetwork()
                 await viewModel.fetchDiskSpace()
-                                
+                
                 for (index, bookmark) in viewModel.bookmarks.enumerated() {
                     do {
                         viewModel.bookmarkedChartData[index] = try await NetdataClient.shared.getChartData(baseUrl: server.url, basicAuthBase64: server.basicAuthBase64, chart: bookmark.id)
@@ -216,6 +214,11 @@ struct ServerDetailView: View {
             self.timer.connect().cancel()
         }
         .navigationBarTitle(server.name)
+        .toolbar {
+            ToolbarItem(placement: .navigationBarTrailing) {
+                PulsatingView(live: viewModel.isLive)
+            }
+        }
     }
     
     func getDataType(chart: ServerChart) -> GridDataType {

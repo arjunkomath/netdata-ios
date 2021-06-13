@@ -32,6 +32,9 @@ final class ServerDetailViewModel: ObservableObject {
     @Published var bookmarks: [ServerChart] = []
     @Published var bookmarkedChartData: [ServerData] = []
     
+    // MARK:- Real-time status
+    @Published var isLive: Bool = false
+
     var baseUrl = ""
     var basicAuthBase64 = ""
         
@@ -41,8 +44,11 @@ final class ServerDetailViewModel: ObservableObject {
             
             self.cpuUsage = data
             self.cpuUsageData = Array(self.cpuUsage.data).reversed().map({ d in Array(d[1..<d.count]).reduce(0, { acc, val in acc + (val ?? 0) }) })
+            
+            self.isLive = true
         } catch {
             debugPrint("Failed to fetch chart data")
+            self.isLive = false
         }
     }
     

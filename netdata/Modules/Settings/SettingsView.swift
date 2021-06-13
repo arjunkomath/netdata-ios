@@ -89,10 +89,11 @@ struct SettingsView: View {
                 }
                 
                 if userSettings.bookmarks.count > 0 {
-                    Section(header: Text("Pinned charts"),
-                            footer: Text("These charts will be shown below default charts for every server")) {
+                    Section(header: Text("Pinned charts")) {
                         ForEach(userSettings.bookmarks, id: \.self) { chart in
-                            Text(chart)
+                            HStack {
+                                Label(chart, systemImage: "pin")
+                            }
                         }
                         .onDelete(perform: deleteBookmarks)
                     }
@@ -101,7 +102,7 @@ struct SettingsView: View {
                 if userSettings.ignoredAlarms.count > 0 {
                     Section(header: Text("Hidden alarms")) {
                         ForEach(userSettings.ignoredAlarms, id: \.self) { alarm in
-                            Text(alarm)
+                            Label(alarm, systemImage: "alarm")
                         }
                         .onDelete(perform: deleteIgnoredAlarms)
                     }
@@ -123,7 +124,7 @@ struct SettingsView: View {
                                   detail: "\(versionNumber) (\(buildNumber))")
                 }
             }
-            .listStyle(InsetGroupedListStyle())
+            .listStyle(.sidebar)
             .navigationBarItems(leading: dismissButton)
             .navigationBarTitle(Text("Settings"), displayMode: .inline)
         }

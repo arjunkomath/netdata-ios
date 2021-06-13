@@ -13,6 +13,7 @@ struct CustomChartDetailView: View {
     var basicAuthBase64: String
     
     @State private var chartData = ServerData(labels: [], data: [])
+    @State private var isLive = false
     
     @ObservedObject var userSettings = UserSettings()
     
@@ -53,13 +54,20 @@ struct CustomChartDetailView: View {
             async {
                 do {
                     chartData = try await NetdataClient.shared.getChartData(baseUrl: serverUrl, basicAuthBase64: basicAuthBase64, chart: serverChart.name)
+                    isLive = true
                 } catch {
                     debugPrint("Failed to fetchCustomChartData", serverChart.name)
+                    isLive = false
                 }
             }
         }
         .onDisappear {
             self.timer.upstream.connect().cancel()
+        }
+        .toolbar {
+            ToolbarItem(placement: .navigationBarTrailing) {
+                PulsatingView(live: isLive)
+            }
         }
     }
     
