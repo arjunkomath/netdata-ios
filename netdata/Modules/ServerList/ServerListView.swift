@@ -75,6 +75,15 @@ struct ServerListView: View {
                 .listStyle(InsetGroupedListStyle())
                 
                 BottomBar {
+                    Menu {
+                        Link("Report an issue", destination: URL(string: "https://github.com/arjunkomath/netdata-ios/issues")!)
+                        Link("Email", destination: URL(string: "mailto:support+netdata@techulus.com")!)
+                    } label: {
+                        Label("Support", systemImage: "lifepreserver.fill")
+                            .padding(.leading)
+                            .labelStyle(.iconOnly)
+                    }
+                    
                     Spacer()
                     
                     addButton
