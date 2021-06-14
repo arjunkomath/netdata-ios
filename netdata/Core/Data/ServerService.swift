@@ -107,7 +107,7 @@ public class ServerService: ObservableObject, PublicCloudService {
     private func fetchServers() {
         self.isSynching = true
         let query = CKQuery(recordType: NDServer.RecordType, predicate: NSPredicate(value: true))
-        query.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: false)]
+//        query.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: false)]
         
         database.fetch(withQuery: query, inZoneWith: nil) { result in
             switch result {
@@ -122,6 +122,9 @@ public class ServerService: ObservableObject, PublicCloudService {
                         debugPrint("failed to parse record", error)
                     }
                 }
+                
+                // Work around for async exec, I'm not sure whats going on
+                nativeRecords.sort { $0.creationDate > $1.creationDate }
 
                 DispatchQueue.main.async {
                     self.favouriteServers = nativeRecords.filter { $0.isFavourite == 1 }
