@@ -13,12 +13,15 @@ struct SmallWidget: View {
     
     var body: some View {
         if entry.serverCount == 0 {
-            VStack(alignment: .leading) {
+            VStack(alignment: .leading, spacing: 8) {
+                Image(systemName: "xmark.octagon.fill")
+                    .imageScale(.large)
+                
                 Text("Please favourite servers to view alarms")
-                    .foregroundColor(.gray)
-                    .font(.callout)
+                    .font(.subheadline)
                     .bold()
             }
+            .foregroundColor(.red)
             .padding()
         } else {
             if entry.count == 0 {
@@ -74,6 +77,9 @@ struct SmallWidget_Previews: PreviewProvider {
             .previewContext(WidgetPreviewContext(family: .systemSmall))
         
         SmallWidget(entry: AlarmsEntry(serverCount: 1, count: 2, criticalCount: 1, alarms: [:], date: Date()))
+            .previewContext(WidgetPreviewContext(family: .systemSmall))
+        
+        SmallWidget(entry: AlarmsEntry(serverCount: 0, count: 0, criticalCount: 0, alarms: [:], date: Date()))
             .previewContext(WidgetPreviewContext(family: .systemSmall))
     }
 }

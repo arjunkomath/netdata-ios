@@ -29,40 +29,41 @@ struct Provider: TimelineProvider {
             let refreshDate = Calendar.current.date(byAdding: .minute, value: 1, to: currentDate)!
             
             let fetchDate = Date()
-            let serverService = ServerService.shared
             
-            // TODO: (arjun) fix widget
-//            serverService.refresh()
-            
-            // show placeholder when there are no favourite servers
-            if serverService.favouriteServers.count == 0 {
-                let timeline = Timeline(entries: [AlarmsEntry(serverCount: 0, count: 0, criticalCount: 0, alarms: [:], date: fetchDate)], policy: .atEnd)
-                completion(timeline)
-            } else {
-                async {
-                    var totalAlarmsCount = 0
-                    var criticalAlarmsCount = 0
-                    
-                    for server in serverService.favouriteServers {
-                        debugPrint(server)
-                        do {
-                            let serverAlarm = try await NetdataClient.shared.getAlarms(baseUrl: server.url, basicAuthBase64: server.basicAuthBase64)
-                            
-                            totalAlarmsCount += serverAlarm.alarms.count
-                            criticalAlarmsCount += serverAlarm.getCriticalAlarmsCount()
-                            
-                            var alarms : [String: Color] = [:]
-                            
-                            alarms[server.name] = serverAlarm.getCriticalAlarmsCount() > 0 ? Color.red : serverAlarm.alarms.count > 0 ? Color.orange : Color.green;
-
-                            let entry = AlarmsEntry(serverCount: serverService.favouriteServers.count, count: totalAlarmsCount, criticalCount: criticalAlarmsCount, alarms: alarms, date: fetchDate)
-                            
-                            let timeline = Timeline(entries: [entry], policy: .after(refreshDate))
-                            completion(timeline)
-                        } catch {
-                            debugPrint("Fetch Alarms failed", error)
-                            let timeline = Timeline(entries: [AlarmsEntry(serverCount: 0, count: 0, criticalCount: 0, alarms: [:], date: fetchDate)], policy: .atEnd)
-                            completion(timeline)
+            // I have no clue if this is the right way to do it ¯\_(ツ)_/¯
+            async {
+                let (favouriteServers, _) = await ServerService.shared.fetchServers()
+                
+                // show placeholder when there are no favourite servers
+                if favouriteServers.count == 0 {
+                    let timeline = Timeline(entries: [AlarmsEntry(serverCount: 0, count: 0, criticalCount: 0, alarms: [:], date: fetchDate)], policy: .atEnd)
+                    completion(timeline)
+                } else {
+                    async {
+                        var totalAlarmsCount = 0
+                        var criticalAlarmsCount = 0
+                        
+                        for server in favouriteServers {
+                            debugPrint(server)
+                            do {
+                                let serverAlarm = try await NetdataClient.shared.getAlarms(baseUrl: server.url, basicAuthBase64: server.basicAuthBase64)
+                                
+                                totalAlarmsCount += serverAlarm.alarms.count
+                                criticalAlarmsCount += serverAlarm.getCriticalAlarmsCount()
+                                
+                                var alarms : [String: Color] = [:]
+                                
+                                alarms[server.name] = serverAlarm.getCriticalAlarmsCount() > 0 ? Color.red : serverAlarm.alarms.count > 0 ? Color.orange : Color.green;
+                                
+                                let entry = AlarmsEntry(serverCount: favouriteServers.count, count: totalAlarmsCount, criticalCount: criticalAlarmsCount, alarms: alarms, date: fetchDate)
+                                
+                                let timeline = Timeline(entries: [entry], policy: .after(refreshDate))
+                                completion(timeline)
+                            } catch {
+                                debugPrint("Fetch Alarms failed", error)
+                                let timeline = Timeline(entries: [AlarmsEntry(serverCount: 0, count: 0, criticalCount: 0, alarms: [:], date: fetchDate)], policy: .atEnd)
+                                completion(timeline)
+                            }
                         }
                     }
                 }

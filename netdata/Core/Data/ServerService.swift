@@ -71,7 +71,6 @@ public class ServerService: ObservableObject, PublicCloudService {
     }
     
     public func edit(server: NDServer) {
-        isSynching = true
         let operation = CKModifyRecordsOperation(recordsToSave: [server.toRecord(owner: nil)],
                                                  recordIDsToDelete: nil)
         addOperation(operation: operation, fetch: true)
@@ -106,7 +105,9 @@ public class ServerService: ObservableObject, PublicCloudService {
         database.add(operation)
     }
     
-    @MainActor private func fetchServers() async {
+    @MainActor
+    @discardableResult
+    func fetchServers() async -> ([NDServer], [NDServer]) {
         self.isSynching = true
         
         do {
@@ -118,13 +119,16 @@ public class ServerService: ObservableObject, PublicCloudService {
             
             self.favouriteServers = nativeRecords.filter { $0.isFavourite == 1 }
             self.defaultServers = nativeRecords.filter { $0.isFavourite != 1 }
+            self.isSynching = false
+
+            return (self.favouriteServers, self.defaultServers)
         } catch {
             self.favouriteServers = []
             self.defaultServers = []
             self.setError(error: error)
+            self.isSynching = false
+            return ([],[])
         }
-        
-        self.isSynching = false
     }
     
     private func setError(error: Error?) {
