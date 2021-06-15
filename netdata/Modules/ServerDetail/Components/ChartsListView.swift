@@ -36,9 +36,7 @@ struct ChartsListView: View {
         .navigationTitle(Text("All Charts"))
         .searchable(text: $searchText)
         .refreshable {
-            async {
-                await fetchCharts()
-            }
+            await fetchCharts()
         }
         .onAppear {
             async {

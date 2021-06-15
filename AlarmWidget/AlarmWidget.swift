@@ -30,7 +30,9 @@ struct Provider: TimelineProvider {
             
             let fetchDate = Date()
             let serverService = ServerService.shared
-            serverService.refresh()
+            
+            // TODO: (arjun) fix widget
+//            serverService.refresh()
             
             // show placeholder when there are no favourite servers
             if serverService.favouriteServers.count == 0 {

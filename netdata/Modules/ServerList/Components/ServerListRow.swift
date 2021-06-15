@@ -88,7 +88,8 @@ struct ServerListRow: View {
                         ServerService.shared.edit(server: updatedServer)
                         
                         FeedbackGenerator.shared.triggerNotification(type: .success)
-                        serverService.refresh()
+                        
+                        async { await serverService.refresh() }
                     }
                 }) {
                     Text("Unfavourite")
@@ -109,7 +110,8 @@ struct ServerListRow: View {
                         ServerService.shared.edit(server: updatedServer)
                         
                         FeedbackGenerator.shared.triggerNotification(type: .success)
-                        serverService.refresh()
+                        
+                        async { await serverService.refresh() }
                     }
                 }) {
                     Text("Favourite")

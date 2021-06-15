@@ -77,7 +77,7 @@ struct ServerListView: View {
                 BottomBar {
                     Menu {
                         Link("Report an issue", destination: URL(string: "https://github.com/arjunkomath/netdata-ios/issues")!)
-                        Link("Email", destination: URL(string: "mailto:support+netdata@techulus.com")!)
+                        Link("Q&A", destination: URL(string: "https://github.com/arjunkomath/netdata-ios/discussions/categories/q-a")!)
                     } label: {
                         Label("Support", systemImage: "lifepreserver.fill")
                             .padding(.leading)
@@ -91,7 +91,7 @@ struct ServerListView: View {
                 }
             }
             .refreshable {
-                serverService.refresh()
+                await serverService.refresh()
             }
             .sheet(isPresented: self.$activeSheet.showSheet, content: { self.sheet })
             .toolbar {
@@ -101,7 +101,9 @@ struct ServerListView: View {
             }
             .navigationTitle("My Servers")
             .onAppear(perform: {
-                serverService.refresh()
+                async {
+                    await serverService.refresh()
+                }
                 
                 // hide scroll indicators
                 UITableView.appearance().showsVerticalScrollIndicator = false

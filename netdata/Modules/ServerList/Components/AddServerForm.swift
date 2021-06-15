@@ -56,6 +56,12 @@ struct AddServerForm: View {
                     }
                 }
             }
+            .onSubmit {
+                async {
+                    await self.addServer()
+                }
+            }
+            .submitLabel(.done)
             .navigationBarTitle("Add Server", displayMode: .inline)
             .navigationBarItems(leading: dismissButton, trailing: saveButton)
         }
@@ -96,14 +102,8 @@ struct AddServerForm: View {
     
     private var saveButton: some View {
         Button(action: {
-            if viewModel.validateForm() == false {
-                FeedbackGenerator.shared.triggerNotification(type: .error)
-                return
-            }
-            
             async {
-                await viewModel.addServer()
-                self.presentationMode.wrappedValue.dismiss()
+                await addServer()
             }
         }) {
             if (viewModel.validatingUrl) {
@@ -119,6 +119,16 @@ struct AddServerForm: View {
         .alert(isPresented: $viewModel.invalidUrlAlert) {
             Alert(title: Text("Oops!"), message: Text("You've entered an invalid URL"), dismissButton: .default(Text("OK")))
         }
+    }
+    
+    func addServer() async {
+        if viewModel.validateForm() == false {
+            FeedbackGenerator.shared.triggerNotification(type: .error)
+            return
+        }
+        
+        await viewModel.addServer()
+        self.presentationMode.wrappedValue.dismiss()
     }
     
     func makeSectionHeader(text: String) -> some View {

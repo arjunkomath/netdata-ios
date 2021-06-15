@@ -50,9 +50,7 @@ final class ServerListViewModel: ObservableObject {
                                   basicAuthBase64: basicAuthBase64,
                                   isFavourite: self.isFavourite)
             
-            async {
-                ServerService.shared.add(server: server)
-            }
+            await ServerService.shared.add(server: server)
         } catch {
             self.validatingUrl = false
             self.validationError = true
