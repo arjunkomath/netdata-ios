@@ -38,10 +38,8 @@ struct ChartsListView: View {
         .refreshable {
             await fetchCharts()
         }
-        .onAppear {
-            async {
-                await fetchCharts()
-            }
+        .task {
+            await fetchCharts()
         }
     }
     

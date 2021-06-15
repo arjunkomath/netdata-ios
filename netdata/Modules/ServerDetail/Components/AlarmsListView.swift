@@ -65,10 +65,8 @@ struct AlarmsListView: View {
         .refreshable {
             await self.fetchAlarms()
         }
-        .onAppear {
-            async {
-                await self.fetchAlarms()
-            }
+        .task {
+            await self.fetchAlarms()
         }
     }
     
