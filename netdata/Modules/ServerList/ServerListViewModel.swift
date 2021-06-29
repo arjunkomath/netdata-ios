@@ -32,12 +32,13 @@ final class ServerListViewModel: ObservableObject {
     func fetchAlarms(server: NDServer, completion: @escaping (ServerAlarms) -> ()) {
         NetDataAPI
             .getAlarms(baseUrl: server.url, basicAuthBase64: server.basicAuthBase64)
-            .sink(receiveCompletion: { completion in
-                switch completion {
+            .sink(receiveCompletion: { _completion in
+                switch _completion {
                 case .finished:
                     break
                 case .failure(let error):
                     debugPrint("getAlarms", server.name, error)
+                    completion(ServerAlarms(status: false, alarms: [:]))
                 }
             },
             receiveValue: { alarms in
