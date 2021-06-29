@@ -112,6 +112,7 @@ public class ServerService: ObservableObject, PublicCloudService {
         
         do {
             let query = CKQuery(recordType: NDServer.RecordType, predicate: NSPredicate(value: true))
+            query.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: false)]
             let (matchResults, _) = try await database.records(matching: query, inZoneWith: nil)
             
             let nativeRecords: [NDServer] = matchResults

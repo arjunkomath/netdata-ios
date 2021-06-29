@@ -15,18 +15,32 @@ struct ServerListRow: View {
     var server: NDServer
     
     @State private var showEditServerSheet = false
+    
+    @State private var fetchingAlarm = true
     @State private var serverAlarms = ServerAlarms(status: false, alarms: [:])
     
     var body: some View {
         NavigationLink(destination: ServerDetailView(server: server)) {
             VStack(alignment: .leading, spacing: 5) {
                 HStack {
+                    if self.isOffline() {
+                        Image(systemName: "display.trianglebadge.exclamationmark")
+                            .foregroundColor(.red)
+                    }
+                    
                     Text(server.name)
                         .font(.system(size: 20, weight: .semibold, design: .rounded))
+                        .foregroundColor(self.isOffline() ? .red : .primary)
                     
-                    Circle()
-                        .fill(self.getAlarmStatusColor())
-                        .frame(width: 12, height: 12, alignment: .leading)
+                    if fetchingAlarm {
+                        ProgressView()
+                            .frame(width: 6, height: 6, alignment: .leading)
+                            .padding(.leading, 1)
+                    } else {
+                        Circle()
+                            .fill(self.getAlarmStatusColor())
+                            .frame(width: 12, height: 12, alignment: .leading)
+                    }
                     
                     if !server.basicAuthBase64.isEmpty {
                         Image(systemName: "lock.shield")
@@ -52,7 +66,14 @@ struct ServerListRow: View {
         }
         .task {
             if let alarms = await viewModel.fetchAlarms(server: server) {
-                self.serverAlarms = alarms
+                withAnimation {
+                    self.fetchingAlarm = false
+                    self.serverAlarms = alarms
+                }
+            } else {
+                withAnimation {
+                    self.fetchingAlarm = false
+                }
             }
         }
         .sheet(isPresented: $showEditServerSheet, content: {
@@ -130,7 +151,15 @@ struct ServerListRow: View {
         }
     }
     
+    func isOffline() -> Bool {
+        return !fetchingAlarm && !serverAlarms.status
+    }
+    
     func getAlarmStatusColor() -> Color {
+        if !serverAlarms.status {
+            return Color.gray
+        }
+        
         if serverAlarms.alarms.isEmpty {
             return Color.green
         }
