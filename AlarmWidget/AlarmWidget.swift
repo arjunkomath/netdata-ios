@@ -29,36 +29,44 @@ struct Provider: TimelineProvider {
             let refreshDate = Calendar.current.date(byAdding: .minute, value: 1, to: currentDate)!
             
             let fetchDate = Date()
-            let serverService = ServerService.shared
-            serverService.refresh()
+            
+            // I have no clue if this is the right way to do it ¯\_(ツ)_/¯
+            async {
+                let (favouriteServers, _) = await ServerService.shared.fetchServers()
+                
+                // show placeholder when there are no favourite servers
+                if favouriteServers.count == 0 {
+                    let timeline = Timeline(entries: [AlarmsEntry(serverCount: 0, count: 0, criticalCount: 0, alarms: [:], date: fetchDate)], policy: .atEnd)
+                    completion(timeline)
+                } else {
+                    async {
+                        var totalAlarmsCount = 0
+                        var criticalAlarmsCount = 0
                         
-            // show placeholder when there are no favourite servers
-            if serverService.favouriteServers.count == 0 {
-                let timeline = Timeline(entries: [AlarmsEntry(serverCount: 0, count: 0, criticalCount: 0, alarms: [:], date: fetchDate)], policy: .atEnd)
-                completion(timeline)
-            } else {
-                Publishers.MergeMany(serverService.favouriteServers.map({ server in NetDataAPI.getAlarms(baseUrl: server.url, basicAuthBase64: server.basicAuthBase64) }))
-                    .collect()
-                    .sink(receiveCompletion: { (serverCompletion) in
-                        if case .failure(let error) = serverCompletion {
-                            print("Got error: \(error.localizedDescription)")
+                        for server in favouriteServers {
+                            debugPrint(server)
+                            do {
+                                let serverAlarm = try await NetdataClient.shared.getAlarms(baseUrl: server.url, basicAuthBase64: server.basicAuthBase64)
+                                
+                                totalAlarmsCount += serverAlarm.alarms.count
+                                criticalAlarmsCount += serverAlarm.getCriticalAlarmsCount()
+                                
+                                var alarms : [String: Color] = [:]
+                                
+                                alarms[server.name] = serverAlarm.getCriticalAlarmsCount() > 0 ? Color.red : serverAlarm.alarms.count > 0 ? Color.orange : Color.green;
+                                
+                                let entry = AlarmsEntry(serverCount: favouriteServers.count, count: totalAlarmsCount, criticalCount: criticalAlarmsCount, alarms: alarms, date: fetchDate)
+                                
+                                let timeline = Timeline(entries: [entry], policy: .after(refreshDate))
+                                completion(timeline)
+                            } catch {
+                                debugPrint("Fetch Alarms failed", error)
+                                let timeline = Timeline(entries: [AlarmsEntry(serverCount: 0, count: 0, criticalCount: 0, alarms: [:], date: fetchDate)], policy: .atEnd)
+                                completion(timeline)
+                            }
                         }
-                    },
-                    receiveValue: { serverAlarms in
-                        let totalAlarmsCount = serverAlarms.reduce(0, { acc, serverAlarm in acc + serverAlarm.alarms.count })
-                        let criticalAlarmsCount = serverAlarms.reduce(0, { acc, serverAlarm in acc + serverAlarm.getCriticalAlarmsCount() })
-                        
-                        var alarms : [String: Color] = [:]
-                        serverService.favouriteServers.indices.forEach({ index in
-                            alarms[serverService.favouriteServers[index].name] = serverAlarms[index].getCriticalAlarmsCount() > 0 ? Color.red : serverAlarms[index].alarms.count > 0 ? Color.orange : Color.green;
-                        })
-                        
-                        let entry = AlarmsEntry(serverCount: serverService.favouriteServers.count, count: totalAlarmsCount, criticalCount: criticalAlarmsCount, alarms: alarms, date: fetchDate)
-                        
-                        let timeline = Timeline(entries: [entry], policy: .after(refreshDate))
-                        completion(timeline)
-                    })
-                    .store(in: &ServerService.cancellable)
+                    }
+                }
             }
         }
     }
@@ -94,7 +102,9 @@ struct AlarmWidgetEntryView : View {
         case .systemMedium:
             MediumWidget(entry: entry)
         case .systemLarge:
-            Text("unknown")
+            Text("Unsupported")
+        case .systemExtraLarge:
+            Text("Unsupported")
         @unknown default: Text("unknown")
         }
     }
@@ -118,7 +128,7 @@ struct AlarmWidget_Previews: PreviewProvider {
     static var previews: some View {
         AlarmWidgetEntryView(entry: AlarmsEntry(serverCount: 0, count: 0, criticalCount: 0, alarms: [:], date: Date()))
             .previewContext(WidgetPreviewContext(family: .systemSmall))
-
+        
         AlarmWidgetEntryView(entry: AlarmsEntry(serverCount: 1, count: 1, criticalCount: 0, alarms: ["CDN77": Color.red, "London": Color.green, "Test": Color.orange], date: Date()))
             .previewContext(WidgetPreviewContext(family: .systemMedium))
     }

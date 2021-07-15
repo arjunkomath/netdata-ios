@@ -12,14 +12,18 @@ struct CustomChartDetailView: View {
     var serverUrl: String
     var basicAuthBase64: String
     
-    @StateObject var viewModel = ServerDetailViewModel()
+    @State private var chartData = ServerData(labels: [], data: [])
+    @State private var isLive = false
+    
     @ObservedObject var userSettings = UserSettings()
+    
+    let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
     
     var body: some View {
         List {
             Section(header: Text("\(serverChart.name) (\(units()))").sectionHeaderStyle().padding(.top)) {
-                DataGrid(labels: viewModel.customChartData.labels,
-                         data: viewModel.customChartData.data,
+                DataGrid(labels: chartData.labels,
+                         data: chartData.data,
                          dataType: self.getDataType(),
                          showArrows: false)
             }
@@ -45,13 +49,25 @@ struct CustomChartDetailView: View {
                 .readableGuidePadding()
             }
         }
-        .listStyle(InsetGroupedListStyle())
-        .navigationTitle(serverChart.name)
-        .onAppear {
-            viewModel.fetchCustomChartData(baseUrl: serverUrl, basicAuthBase64: basicAuthBase64, chart: serverChart.name)
+        .navigationBarTitle(serverChart.name, displayMode: .inline)
+        .onReceive(timer) { _ in
+            async {
+                do {
+                    chartData = try await NetdataClient.shared.getChartData(baseUrl: serverUrl, basicAuthBase64: basicAuthBase64, chart: serverChart.name)
+                    isLive = true
+                } catch {
+                    debugPrint("Failed to fetchCustomChartData", serverChart.name)
+                    isLive = false
+                }
+            }
         }
         .onDisappear {
-            viewModel.destroyCustomChartData()
+            self.timer.upstream.connect().cancel()
+        }
+        .toolbar {
+            ToolbarItem(placement: .navigationBarTrailing) {
+                PulsatingView(live: isLive)
+            }
         }
     }
     

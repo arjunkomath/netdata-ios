@@ -28,7 +28,6 @@ struct Meter : View {
                 Text(String(format: "%.0f %%", min(self.progress, 1.0)*100.0))
                     .font(.caption)
                     .bold()
-                    .animation(nil) //fixes text clipping that happens when switching from 1 digit to 2 digits
             }
             .frame(height: 72)
         }
