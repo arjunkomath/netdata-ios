@@ -15,12 +15,6 @@ jobs:
     - name: Xcode version
       run: /usr/bin/xcodebuild -version
       
-    - name: Install pods
-      run: pod install
-    
-    - name: Update dummy plist
-      run: mv netdata/GoogleService-Info-Sample.plist netdata/GoogleService-Info.plist
-      
     - name: Xcode build iOS App
       run: |
         xcodebuild clean build -workspace netdata.xcworkspace -scheme netdata -destination 'platform=iOS Simulator,name=iPhone 11,OS=14.0'
