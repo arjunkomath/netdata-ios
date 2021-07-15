@@ -26,7 +26,7 @@
 		5514048B25C6AF860081E4A4 /* ServerAlarms.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5508041524D05ABF002FFAA5 /* ServerAlarms.swift */; };
 		551420A924C3D6D200A22E9A /* Meter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 551420A824C3D6D200A22E9A /* Meter.swift */; };
 		55193D2A24E14D9500FE1D55 /* ReadableGuidePadding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55193D2924E14D9500FE1D55 /* ReadableGuidePadding.swift */; };
-		552715552622EB2A00A57510 /* Bugsnag in Frameworks */ = {isa = PBXBuildFile; productRef = 552715542622EB2A00A57510 /* Bugsnag */; };
+		552715552622EB2A00A57510 /* BuildFile in Frameworks */ = {isa = PBXBuildFile; productRef = 552715542622EB2A00A57510 /* SwiftPackageProductDependency */; };
 		552862E524CD018B008E2B0E /* ErrorMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 552862E424CD018B008E2B0E /* ErrorMessage.swift */; };
 		552C2C2624D6B9BB00D3DFBE /* CustomChartDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 552C2C2524D6B9BB00D3DFBE /* CustomChartDetailView.swift */; };
 		552C2C2824D6C84300D3DFBE /* SearchBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 552C2C2724D6C84300D3DFBE /* SearchBar.swift */; };
@@ -196,7 +196,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				552715552622EB2A00A57510 /* Bugsnag in Frameworks */,
+				552715552622EB2A00A57510 /* BuildFile in Frameworks */,
 				55D1C53824B969AC0087F8A2 /* CloudKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -512,7 +512,7 @@
 			);
 			name = netdata;
 			packageProductDependencies = (
-				552715542622EB2A00A57510 /* Bugsnag */,
+				552715542622EB2A00A57510 /* SwiftPackageProductDependency */,
 			);
 			productName = netdata;
 			productReference = 55D1C4FE24B95E6D0087F8A2 /* netdata.app */;
@@ -589,7 +589,7 @@
 			);
 			mainGroup = 55D1C4F524B95E6D0087F8A2;
 			packageReferences = (
-				552715532622EB2A00A57510 /* XCRemoteSwiftPackageReference "bugsnag-cocoa" */,
+				552715532622EB2A00A57510 /* RemoteSwiftPackageReference */,
 			);
 			productRefGroup = 55D1C4FF24B95E6D0087F8A2 /* Products */;
 			projectDirPath = "";
@@ -1103,7 +1103,7 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		552715532622EB2A00A57510 /* XCRemoteSwiftPackageReference "bugsnag-cocoa" */ = {
+		552715532622EB2A00A57510 /* RemoteSwiftPackageReference */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/bugsnag/bugsnag-cocoa";
 			requirement = {
@@ -1114,9 +1114,9 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		552715542622EB2A00A57510 /* Bugsnag */ = {
+		552715542622EB2A00A57510 /* SwiftPackageProductDependency */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 552715532622EB2A00A57510 /* XCRemoteSwiftPackageReference "bugsnag-cocoa" */;
+			package = 552715532622EB2A00A57510 /* RemoteSwiftPackageReference */;
 			productName = Bugsnag;
 		};
 /* End XCSwiftPackageProductDependency section */
