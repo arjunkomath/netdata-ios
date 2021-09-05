@@ -6,6 +6,8 @@
 
 ### A beautiful and minimal client for Netdata that allows you to monitor cloud infrastructure in real-time.
 
+## ⚠️⚠️⚠️ This app does NOT work with Netdata Cloud ⚠️⚠️⚠️
+
 ## [Download on the App Store](https://apps.apple.com/us/app/netdata-server-monitoring/id1525322870)
 
 *Warning! I'm learning Swift and SwiftUI, so the code is probably terrible.*
