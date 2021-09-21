@@ -55,7 +55,7 @@ struct ServerListRow: View {
                 if server.serverInfo != nil {
                     VStack(alignment: .leading) {
                         Text("\(server.serverInfo!.os_name) \(server.serverInfo!.os_version)")
-            
+                        
                         Text("\(server.serverInfo!.kernel_name) \(server.serverInfo!.architecture)")
                     }
                     .font(.footnote)
@@ -64,11 +64,15 @@ struct ServerListRow: View {
             }
             .padding(4)
         }
-        .onAppear {
-            viewModel.fetchAlarms(server: server) { alarms in
+        .task {
+            if let alarms = await viewModel.fetchAlarms(server: server) {
                 withAnimation {
                     self.fetchingAlarm = false
                     self.serverAlarms = alarms
+                }
+            } else {
+                withAnimation {
+                    self.fetchingAlarm = false
                 }
             }
         }
@@ -76,68 +80,74 @@ struct ServerListRow: View {
             EditServerForm(editingServer: server)
         })
         .contextMenu {
+            editServerButton
+            
+            self.getFavouriteButtons()
+            
             Link(destination: URL(string: server.url)!, label: {
-                Text("View in browser")
-                Image(systemName: "safari")
+                Label("Open in browser", systemImage: "safari")
             })
             
-            Button(action: {
-                self.showEditServerSheet = true
-            }) {
-                Text("Edit")
-                Image(systemName: "pencil")
-            }
-            
-            if server.isFavourite == 1 {
-                Button(action: {
-                    var updatedServer = NDServer(name: server.name,
-                                                 description: server.description,
-                                                 url: server.url,
-                                                 serverInfo: server.serverInfo,
-                                                 basicAuthBase64: server.basicAuthBase64,
-                                                 isFavourite: 0)
-                    
-                    if let record = server.record {
-                        updatedServer.record = record
-                        
-                        ServerService.shared.edit(server: updatedServer)
-                        
-                        FeedbackGenerator.shared.triggerNotification(type: .success)
-                        serverService.refresh()
-                    }
-                }) {
-                    Text("Unfavourite")
-                    Image(systemName: "star.slash")
-                }
-            } else {
-                Button(action: {
-                    var updatedServer = NDServer(name: server.name,
-                                                 description: server.description,
-                                                 url: server.url,
-                                                 serverInfo: server.serverInfo,
-                                                 basicAuthBase64: server.basicAuthBase64,
-                                                 isFavourite: 1)
-                    
-                    if let record = server.record {
-                        updatedServer.record = record
-                        
-                        ServerService.shared.edit(server: updatedServer)
-                        
-                        FeedbackGenerator.shared.triggerNotification(type: .success)
-                        serverService.refresh()
-                    }
-                }) {
-                    Text("Favourite")
-                    Image(systemName: "star.fill")
-                }
-            }
-            
-            Button(action: {
+            Button(role: .destructive, action: {
                 ServerService.shared.delete(server: server)
             }) {
-                Text("Delete")
-                Image(systemName: "trash")
+                Label("Delete", systemImage: "trash")
             }
+        }
+        .swipeActions(edge: .leading, allowsFullSwipe: true) {
+            self.getFavouriteButtons()
+        }
+        .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+            editServerButton
+        }
+    }
+    
+    private var editServerButton: some View {
+        Button(action: {
+            self.showEditServerSheet = true
+        }) {
+            Text("Edit")
+            Image(systemName: "pencil")
+        }
+        .tint(.orange)
+    }
+    
+    @ViewBuilder
+    private func getFavouriteButtons() -> some View {
+        if server.isFavourite == 1 {
+            Button(action: {
+                async { await updateServer(favourite: false) }
+            }) {
+                Text("Unfavourite")
+                Image(systemName: "star.slash")
+            }
+            .tint(.red)
+        } else {
+            Button(action: {
+                async { await updateServer(favourite: true) }
+            }) {
+                Text("Favourite")
+                Image(systemName: "star.fill")
+            }
+            .tint(.accentColor)
+        }
+    }
+    
+    func updateServer(favourite: Bool) async {
+        var updatedServer = NDServer(name: server.name,
+                                     description: server.description,
+                                     url: server.url,
+                                     serverInfo: server.serverInfo,
+                                     basicAuthBase64: server.basicAuthBase64,
+                                     isFavourite: favourite ? 1 : 0)
+        
+        if let record = server.record {
+            updatedServer.record = record
+            
+            ServerService.shared.edit(server: updatedServer)
+            FeedbackGenerator.shared.triggerNotification(type: .success)
+            
+            await serverService.refresh()
         }
     }
     

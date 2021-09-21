@@ -12,13 +12,13 @@ struct EditServerForm: View {
     @Environment(\.presentationMode) private var presentationMode
     @ObservedObject var userSettings = UserSettings()
     @StateObject var viewModel = ServerListViewModel()
-        
+    
     let editingServer: NDServer?
     
     var body: some View {
         NavigationView {
             Form {
-                Section(header: makeSectionHeader(text: "Update Server details"),
+                Section(header: makeSectionHeader(text: "Server details"),
                         footer: Text("HTTPS is required for connections over the internet\nHTTP is allowed for LAN connections with IP or mDNS domains")) {
                     if viewModel.validationError {
                         ErrorMessage(message: viewModel.validationErrorMessage)
@@ -30,7 +30,7 @@ struct EditServerForm: View {
                         .autocapitalization(UITextAutocapitalizationType.none)
                         .disableAutocorrection(true)
                 }
-
+                
                 Section(header: makeSectionHeader(text: "Authentication"),
                         footer: Text("Base64 encoded authorisation header will be stored in iCloud")) {
                     HStack {
@@ -51,9 +51,15 @@ struct EditServerForm: View {
                     }
                 }
             }
-            .navigationBarTitle("Edit Server")
+            .onSubmit {
+                async {
+                    await self.updateServer()
+                }
+            }
+            .submitLabel(.done)
+            .navigationBarTitle("Edit Server", displayMode: .inline)
             .navigationBarItems(leading: dismissButton, trailing: saveButton)
-            .onAppear {
+            .task {
                 if let server = self.editingServer {
                     viewModel.name = server.name
                     viewModel.description = server.description
@@ -77,13 +83,8 @@ struct EditServerForm: View {
     
     private var saveButton: some View {
         Button(action: {
-            if viewModel.validateForm() == false {
-                FeedbackGenerator.shared.triggerNotification(type: .error)
-                return
-            }
-
-            viewModel.updateServer(editingServer: editingServer!) { _ in
-                self.presentationMode.wrappedValue.dismiss()
+            async {
+                await updateServer()
             }
         }) {
             if (viewModel.validatingUrl) {
@@ -98,6 +99,18 @@ struct EditServerForm: View {
         .buttonStyle(BorderedBarButtonStyle())
         .alert(isPresented: $viewModel.invalidUrlAlert) {
             Alert(title: Text("Oops!"), message: Text("You've entered an invalid URL"), dismissButton: .default(Text("OK")))
+        }
+    }
+    
+    func updateServer() async {
+        if viewModel.validateForm() == false {
+            FeedbackGenerator.shared.triggerNotification(type: .error)
+            return
+        }
+        
+        async {
+            await viewModel.updateServer(editingServer: editingServer!)
+            self.presentationMode.wrappedValue.dismiss()
         }
     }
     

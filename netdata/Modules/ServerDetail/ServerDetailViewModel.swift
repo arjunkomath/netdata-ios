@@ -28,273 +28,115 @@ final class ServerDetailViewModel: ObservableObject {
     @Published var networkIPv4: ServerData = ServerData(labels: [], data: [])
     @Published var networkIPv6: ServerData = ServerData(labels: [], data: [])
     
-    // MARK:- Custom Charts
-    @Published var serverCharts: ServerCharts = ServerCharts(version: "", release_channel: "", charts: [:])
-    @Published var customChartData: ServerData = ServerData(labels: [], data: [])
-    @Published var bookmarkedChartData: [ServerData] = []
-    
-    // MARK:- Alarms
-    @Published var serverAlarms: ServerAlarms = ServerAlarms(status: false, alarms: [:])
-    
     // MARK:- Bookmarks
     @Published var bookmarks: [ServerChart] = []
+    @Published var bookmarkedChartData: [ServerData] = []
     
-    private var baseUrl = ""
-    private var basicAuthBase64 = ""
-    
-    // MARK:- Timers
-    private var timer = Timer()
-    private var customChartTimer = Timer()
-    private var bookmarksDataTimer = Timer()
-    
-    private var cancellable = Set<AnyCancellable>()
-    
-    func fetch(baseUrl: String, basicAuthBase64: String) {
-        debugPrint("fetch", baseUrl)
-        self.baseUrl = baseUrl
-        self.basicAuthBase64 = basicAuthBase64
+    // MARK:- Real-time status
+    @Published var isLive: Bool = false
+
+    var baseUrl = ""
+    var basicAuthBase64 = ""
         
-        self.timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { timer in
-            self.fetchCpu()
-            self.fetchLoad()
-            self.fetchRam()
-            self.fetchDiskIo()
-            self.fetchNetwork()
-            self.fetchDiskSpace()
+    func fetchCpu() async {
+        do {
+            let data = try await NetdataClient.shared.getChartData(baseUrl: baseUrl, basicAuthBase64: basicAuthBase64, chart: "system.cpu")
+            
+            self.cpuUsage = data
+            self.cpuUsageData = Array(self.cpuUsage.data).reversed().map({ d in Array(d[1..<d.count]).reduce(0, { acc, val in acc + (val ?? 0) }) })
+            
+            self.isLive = true
+        } catch {
+            debugPrint("Failed to fetch chart data")
+            self.isLive = false
         }
     }
     
-    func updateBookmarks(baseUrl: String, basicAuthBase64: String) {
+    func fetchLoad() async {
+        do {
+            self.load = try await NetdataClient.shared.getChartData(baseUrl: baseUrl, basicAuthBase64: basicAuthBase64, chart: "system.load")
+        } catch {
+            debugPrint("Failed to fetch chart data")
+        }
+    }
+    
+    func fetchRam() async {
+        do {
+            let data = try await NetdataClient.shared.getChartData(baseUrl: baseUrl, basicAuthBase64: basicAuthBase64, chart: "system.ram")
+            
+            self.ramUsage = data
+            self.ramUsageGauge = CGFloat(self.ramUsage.data.first![2]! / (self.ramUsage.data.first![1]! + self.ramUsage.data.first![2]! + self.ramUsage.data.first![3]!))
+        } catch {
+            debugPrint("Failed to fetch chart data")
+        }
+    }
+    
+    func fetchDiskIo() async {
+        do {
+            self.diskIO = try await NetdataClient.shared.getChartData(baseUrl: baseUrl, basicAuthBase64: basicAuthBase64, chart: "system.io")
+        } catch {
+            debugPrint("Failed to fetch chart data")
+        }
+    }
+    
+    func fetchNetwork() async {
+        do {
+            self.network = try await NetdataClient.shared.getChartData(baseUrl: baseUrl, basicAuthBase64: basicAuthBase64, chart: "system.net")
+            self.networkIPv4 = try await NetdataClient.shared.getChartData(baseUrl: baseUrl, basicAuthBase64: basicAuthBase64, chart: "system.ip")
+            self.networkIPv6 = try await NetdataClient.shared.getChartData(baseUrl: baseUrl, basicAuthBase64: basicAuthBase64, chart: "system.ipv6")
+        } catch {
+            debugPrint("Failed to fetch chart data")
+        }
+    }
+    
+    func fetchDiskSpace() async {
+        do {
+            let data = try await NetdataClient.shared.getChartData(baseUrl: baseUrl, basicAuthBase64: basicAuthBase64, chart: "disk_space._")
+            
+            self.diskSpaceUsage = data
+            self.diskSpaceUsageGauge = CGFloat(self.diskSpaceUsage.data.first![2]! / (self.diskSpaceUsage.data.first![1]! + self.diskSpaceUsage.data.first![2]!))
+        } catch {
+            debugPrint("Failed to fetch chart data")
+        }
+    }
+    
+    func updateBookmarks(baseUrl: String, basicAuthBase64: String) async {
         // Always fetch latest bookmarks, avoid adding user settings
         let bookmarks = NSUbiquitousKeyValueStore.default.array(forKey: "bookmarks") as? [String] ?? []
         
-        self.bookmarksDataTimer.invalidate()
-        
         // Fetch charts for bookmarks
         if bookmarks.count > 0 {
-            NetDataAPI
-                .getCharts(baseUrl: baseUrl, basicAuthBase64: basicAuthBase64)
-                .sink(receiveCompletion: { completion in
-                    switch completion {
-                    case .finished:
-                        break
-                    case .failure(let error):
-                        debugPrint("fetchCharts", error)
+            do {
+                let charts = try await NetdataClient.shared.getCharts(baseUrl: baseUrl, basicAuthBase64: basicAuthBase64)
+                
+                self.bookmarks = bookmarks
+                    .compactMap { chart in
+                        charts.charts[chart]
+                    }.filter { chart in
+                        chart.enabled
                     }
-                }) { data in
-                    self.bookmarks = bookmarks
-                        .compactMap { chart in
-                            data.charts[chart]
-                        }.filter { chart in
-                            chart.enabled
-                        }
-                    
-                    self.bookmarkedChartData = Array(repeating: ServerData(labels: [], data: []), count: self.bookmarks.count)
-                    
-                    self.bookmarksDataTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { timer in
-                        for (index, bookmark) in self.bookmarks.enumerated() {
-                            NetDataAPI
-                                .getChartData(baseUrl: baseUrl, basicAuthBase64: basicAuthBase64, chart: bookmark.id)
-                                .sink(receiveCompletion: { completion in
-                                    switch completion {
-                                    case .finished:
-                                        break
-                                    case .failure(let error):
-                                        debugPrint("fetch bookmarks data", error)
-                                    }
-                                }) { data in
-                                    self.bookmarkedChartData[index] = data
-                                }
-                                .store(in: &self.cancellable)
-                        }
-                    }
-                }
-                .store(in: &self.cancellable)
+                
+                self.bookmarkedChartData = Array(repeating: ServerData(labels: [], data: []), count: self.bookmarks.count)
+            } catch {
+                debugPrint("fetchCharts", error)
+            }
         } else {
             self.bookmarks = []
         }
-    }
-    
-    func fetchCpu() {
-        NetDataAPI
-            .getChartData(baseUrl: self.baseUrl, basicAuthBase64: self.basicAuthBase64, chart: "system.cpu")
-            .sink(receiveCompletion: { _ in
-            }) { data in
-                self.cpuUsage = data
-                self.cpuUsageData = Array(self.cpuUsage.data).reversed().map({ d in Array(d[1..<d.count]).reduce(0, { acc, val in acc + (val ?? 0) }) })
-            }
-            .store(in: &self.cancellable)
-    }
-    
-    func fetchLoad() {
-        NetDataAPI
-            .getChartData(baseUrl: self.baseUrl, basicAuthBase64: self.basicAuthBase64, chart: "system.load")
-            .sink(receiveCompletion: { _ in
-            }) { data in
-                self.load = data
-            }
-            .store(in: &self.cancellable)
-    }
-    
-    func fetchRam() {
-        NetDataAPI
-            .getChartData(baseUrl: self.baseUrl, basicAuthBase64: self.basicAuthBase64, chart: "system.ram")
-            .sink(receiveCompletion: { _ in
-            }) { data in
-                self.ramUsage = data
-                
-                self.ramUsageGauge = CGFloat(self.ramUsage.data.first![2]! / (self.ramUsage.data.first![1]! + self.ramUsage.data.first![2]! + self.ramUsage.data.first![3]!))
-            }
-            .store(in: &self.cancellable)
-    }
-    
-    func fetchDiskIo() {
-        NetDataAPI
-            .getChartData(baseUrl: self.baseUrl, basicAuthBase64: self.basicAuthBase64, chart: "system.io")
-            .sink(receiveCompletion: { _ in
-            }) { data in
-                self.diskIO = data
-            }
-            .store(in: &self.cancellable)
-    }
-    
-    func fetchNetwork() {
-        NetDataAPI
-            .getChartData(baseUrl: self.baseUrl, basicAuthBase64: self.basicAuthBase64, chart: "system.net")
-            .sink(receiveCompletion: { _ in
-            }) { data in
-                self.network = data
-            }
-            .store(in: &self.cancellable)
-        
-        NetDataAPI
-            .getChartData(baseUrl: self.baseUrl, basicAuthBase64: self.basicAuthBase64, chart: "system.ip")
-            .sink(receiveCompletion: { _ in
-            }) { data in
-                self.networkIPv4 = data
-            }
-            .store(in: &self.cancellable)
-        
-        NetDataAPI
-            .getChartData(baseUrl: self.baseUrl, basicAuthBase64: self.basicAuthBase64, chart: "system.ipv6")
-            .sink(receiveCompletion: { _ in
-            }) { data in
-                self.networkIPv6 = data
-            }
-            .store(in: &self.cancellable)
-    }
-    
-    func fetchDiskSpace() {
-        NetDataAPI
-            .getChartData(baseUrl: self.baseUrl, basicAuthBase64: self.basicAuthBase64, chart: "disk_space._")
-            .sink(receiveCompletion: { _ in
-            }) { data in
-                self.diskSpaceUsage = data
-                
-                self.diskSpaceUsageGauge = CGFloat(self.diskSpaceUsage.data.first![2]! / (self.diskSpaceUsage.data.first![1]! + self.diskSpaceUsage.data.first![2]!))
-            }
-            .store(in: &self.cancellable)
-    }
-    
-    func fetchCharts(baseUrl: String, basicAuthBase64: String) {
-        debugPrint("fetchCharts", baseUrl)
-        NetDataAPI
-            .getCharts(baseUrl: baseUrl, basicAuthBase64: basicAuthBase64)
-            .sink(receiveCompletion: { completion in
-                switch completion {
-                case .finished:
-                    break
-                case .failure(let error):
-                    debugPrint("fetchCharts", error)
-                }
-            }) { data in
-                self.serverCharts = data
-            }
-            .store(in: &self.cancellable)
-    }
-    
-    func destroyChartsList() {
-        debugPrint("destroyChartsList")
-        serverCharts = ServerCharts(version: "", release_channel: "", charts: [:])
-    }
-    
-    func fetchCustomChartData(baseUrl: String, basicAuthBase64: String, chart: String) {
-        debugPrint("fetchCustomChartData", baseUrl)
-        self.customChartTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { timer in
-            NetDataAPI
-                .getChartData(baseUrl: baseUrl, basicAuthBase64: basicAuthBase64, chart: chart)
-                .sink(receiveCompletion: { completion in
-                    switch completion {
-                    case .finished:
-                        break
-                    case .failure(let error):
-                        debugPrint("fetchCustomChartData", error)
-                    }
-                }) { data in
-                    self.customChartData = data
-                }
-                .store(in: &self.cancellable)
-        }
-    }
-    
-    func destroyCustomChartData() {
-        debugPrint("destroyCustomChartData")
-        customChartData = ServerData(labels: [], data: [])
-        
-        self.customChartTimer.invalidate()
-    }
-    
-    func fetchAlarms(baseUrl: String, basicAuthBase64: String) {
-        debugPrint("fetchAlarms", baseUrl)
-        NetDataAPI
-            .getAlarms(baseUrl: baseUrl, basicAuthBase64: basicAuthBase64)
-            .sink(receiveCompletion: { completion in
-                switch completion {
-                case .finished:
-                    break
-                case .failure(let error):
-                    debugPrint("getAlarms", error)
-                }
-            },
-            receiveValue: { alarms in
-                self.serverAlarms = alarms
-            })
-            .store(in: &cancellable)
     }
     
     func getGaugeData(data: [[Double?]]) -> CGFloat {
         return data.count == 0 ? 0 : CGFloat(Array(data.first![1..<data.first!.count]).reduce(0, { acc, val in acc + (val ?? 0) }) / 100)
     }
     
-    func destroyAlarmsData() {
-        debugPrint("destroyAlarmsData")
-        serverAlarms = ServerAlarms(status: false, alarms: [:])
-    }
-    
-    func validateServer(serverUrl: String, completion: @escaping (Bool) -> ()) {
-        NetDataAPI
-            .getInfo(baseUrl: serverUrl)
-            .sink(receiveCompletion: { _completion in
-                print(_completion)
-                switch _completion {
-                case .finished:
-                    break
-                case .failure(let error):
-                    debugPrint(error)
-                    completion(false)
-                }
-            },
-            receiveValue: { info in
-                completion(true)
-            })
-            .store(in: &cancellable)
-    }
-    
-    func destroy() {
-        debugPrint("destroy")
-        // stop timer
-        self.timer.invalidate()
-        self.bookmarksDataTimer.invalidate()
+    func validateServer(serverUrl: String) async -> Bool {
+        do {
+            let _ = try await NetdataClient.shared.getInfo(baseUrl: serverUrl)
+            return true
+        } catch {
+            debugPrint(error)
+            return false
+        }
     }
 }
 

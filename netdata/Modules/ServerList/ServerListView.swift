@@ -75,16 +75,23 @@ struct ServerListView: View {
                 .listStyle(InsetGroupedListStyle())
                 
                 BottomBar {
-                    refreshButton
-                        .padding(.leading)
-                    
-                    if self.serverService.isCloudEnabled && self.serverService.mostRecentError == nil {
-                        Spacer()
-                        
-                        addButton
-                            .padding(.trailing)
+                    Menu {
+                        Link("Report an issue", destination: URL(string: "https://github.com/arjunkomath/netdata-ios/issues")!)
+                        Link("Q&A", destination: URL(string: "https://github.com/arjunkomath/netdata-ios/discussions/categories/q-a")!)
+                    } label: {
+                        Label("Support", systemImage: "lifepreserver.fill")
+                            .padding(.leading)
+                            .labelStyle(.iconOnly)
                     }
+                    
+                    Spacer()
+                    
+                    addButton
+                        .padding(.trailing)
                 }
+            }
+            .refreshable {
+                await serverService.refresh()
             }
             .sheet(isPresented: self.$activeSheet.showSheet, content: { self.sheet })
             .toolbar {
@@ -94,7 +101,9 @@ struct ServerListView: View {
             }
             .navigationTitle("My Servers")
             .onAppear(perform: {
-                serverService.refresh()
+                async {
+                    await serverService.refresh()
+                }
                 
                 // hide scroll indicators
                 UITableView.appearance().showsVerticalScrollIndicator = false
@@ -148,20 +157,8 @@ struct ServerListView: View {
         Button(action: {
             self.addServer()
         }) {
-            Image(systemName: "externaldrive.badge.plus")
-            Text("Add")
-        }
-    }
-    
-    private var refreshButton: some View {
-        Button(action: {
-            self.serverService.refresh()
-        }) {
-            if serverService.isSynching {
-                ProgressView().frame(width: 20, height: 16, alignment: .trailing)
-            } else {
-                Image(systemName: "arrow.clockwise")
-            }
+            Label("Add", systemImage: "externaldrive.badge.plus")
+                .labelStyle(.titleAndIcon)
         }
     }
     
@@ -169,17 +166,17 @@ struct ServerListView: View {
         Button(action: {
             self.activeSheet.kind = .settings
         }) {
-            Image(systemName: "gear")
+            Label("Settings", systemImage: "gear")
         }
     }
     
+    @ViewBuilder
     private var sheet: some View {
         switch activeSheet.kind {
-        case .none: return AnyView(EmptyView())
-        case .add: return AnyView(AddServerForm())
-        case .settings: return AnyView(SettingsView()
-                                        .environmentObject(serverService))
-        case .welcome: return AnyView(WelcomeScreen())
+        case .none: EmptyView()
+        case .add: AddServerForm()
+        case .settings: SettingsView().environmentObject(serverService)
+        case .welcome: WelcomeScreen()
         }
     }
 }

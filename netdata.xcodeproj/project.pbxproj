@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		5508041624D05ABF002FFAA5 /* ServerAlarms.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5508041524D05ABF002FFAA5 /* ServerAlarms.swift */; };
+		55096620267463F70091B8D3 /* UIColor+Random.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5509661F267463F70091B8D3 /* UIColor+Random.swift */; };
 		5514041925C68F4F0081E4A4 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 552B4E7724CD16C0008B9DA6 /* WidgetKit.framework */; };
 		5514041A25C68F4F0081E4A4 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 552B4E7924CD16C0008B9DA6 /* SwiftUI.framework */; };
 		5514041D25C68F4F0081E4A4 /* AlarmWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5514041C25C68F4F0081E4A4 /* AlarmWidget.swift */; };
@@ -19,8 +20,7 @@
 		5514044725C6906C0081E4A4 /* CloudModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 558CABAB24B99931002D115B /* CloudModel.swift */; };
 		5514044F25C690720081E4A4 /* ServerInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55BA430F24C332C900599345 /* ServerInfo.swift */; };
 		5514045725C6969C0081E4A4 /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 55D1C53724B969AC0087F8A2 /* CloudKit.framework */; };
-		5514047225C6AE940081E4A4 /* Agent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55BFBA2624CC4EA1004461D3 /* Agent.swift */; };
-		5514047325C6AE940081E4A4 /* NetDataAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55BFBA2424CC474A004461D3 /* NetDataAPI.swift */; };
+		5514047325C6AE940081E4A4 /* NetdataClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55BFBA2424CC474A004461D3 /* NetdataClient.swift */; };
 		5514047B25C6AF750081E4A4 /* ServerCharts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 559300E424D550A6006C6DB4 /* ServerCharts.swift */; };
 		5514048325C6AF830081E4A4 /* ServerData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55BA431124C3395400599345 /* ServerData.swift */; };
 		5514048B25C6AF860081E4A4 /* ServerAlarms.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5508041524D05ABF002FFAA5 /* ServerAlarms.swift */; };
@@ -29,7 +29,6 @@
 		552715552622EB2A00A57510 /* BuildFile in Frameworks */ = {isa = PBXBuildFile; productRef = 552715542622EB2A00A57510 /* SwiftPackageProductDependency */; };
 		552862E524CD018B008E2B0E /* ErrorMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 552862E424CD018B008E2B0E /* ErrorMessage.swift */; };
 		552C2C2624D6B9BB00D3DFBE /* CustomChartDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 552C2C2524D6B9BB00D3DFBE /* CustomChartDetailView.swift */; };
-		552C2C2824D6C84300D3DFBE /* SearchBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 552C2C2724D6C84300D3DFBE /* SearchBar.swift */; };
 		552E19D324CDB71500CDB97F /* EditServerForm.swift in Sources */ = {isa = PBXBuildFile; fileRef = 552E19D224CDB71500CDB97F /* EditServerForm.swift */; };
 		555401A324D850D100B1B727 /* CustomTextStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 555401A224D850D100B1B727 /* CustomTextStyle.swift */; };
 		556064BE25C7E8CA0018FA14 /* MediumWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 556064BD25C7E8CA0018FA14 /* MediumWidget.swift */; };
@@ -44,10 +43,10 @@
 		559843B224CEF7590034E92D /* ServerListRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 559843B124CEF7590034E92D /* ServerListRow.swift */; };
 		559843B424CEFAAC0034E92D /* ServerDetailViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 559843B324CEFAAC0034E92D /* ServerDetailViewModel.swift */; };
 		55A8FE6C25C7E4AD00E2C2F8 /* SmallWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55A8FE6B25C7E4AD00E2C2F8 /* SmallWidget.swift */; };
+		55B348552676137C0039471E /* PulsatingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55B348542676137C0039471E /* PulsatingView.swift */; };
 		55BA431024C332C900599345 /* ServerInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55BA430F24C332C900599345 /* ServerInfo.swift */; };
 		55BA431224C3395400599345 /* ServerData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55BA431124C3395400599345 /* ServerData.swift */; };
-		55BFBA2524CC474A004461D3 /* NetDataAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55BFBA2424CC474A004461D3 /* NetDataAPI.swift */; };
-		55BFBA2724CC4EA1004461D3 /* Agent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55BFBA2624CC4EA1004461D3 /* Agent.swift */; };
+		55BFBA2524CC474A004461D3 /* NetdataClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55BFBA2424CC474A004461D3 /* NetdataClient.swift */; };
 		55BFBA2924CC5875004461D3 /* ServerListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55BFBA2824CC5875004461D3 /* ServerListViewModel.swift */; };
 		55C638F924CBE6B800395B23 /* PercentageUsageData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55C638F824CBE6B800395B23 /* PercentageUsageData.swift */; };
 		55C638FB24CBEFCA00395B23 /* AbsoluteUsageData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55C638FA24CBEFCA00395B23 /* AbsoluteUsageData.swift */; };
@@ -121,6 +120,7 @@
 
 /* Begin PBXFileReference section */
 		5508041524D05ABF002FFAA5 /* ServerAlarms.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerAlarms.swift; sourceTree = "<group>"; };
+		5509661F267463F70091B8D3 /* UIColor+Random.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIColor+Random.swift"; sourceTree = "<group>"; };
 		5514041825C68F4F0081E4A4 /* AlarmWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = AlarmWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		5514041C25C68F4F0081E4A4 /* AlarmWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlarmWidget.swift; sourceTree = "<group>"; };
 		5514041E25C68F510081E4A4 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -132,7 +132,6 @@
 		552B4E7724CD16C0008B9DA6 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
 		552B4E7924CD16C0008B9DA6 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
 		552C2C2524D6B9BB00D3DFBE /* CustomChartDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomChartDetailView.swift; sourceTree = "<group>"; };
-		552C2C2724D6C84300D3DFBE /* SearchBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchBar.swift; sourceTree = "<group>"; };
 		552E19D224CDB71500CDB97F /* EditServerForm.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditServerForm.swift; sourceTree = "<group>"; };
 		555401A224D850D100B1B727 /* CustomTextStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomTextStyle.swift; sourceTree = "<group>"; };
 		556064BD25C7E8CA0018FA14 /* MediumWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediumWidget.swift; sourceTree = "<group>"; };
@@ -147,10 +146,10 @@
 		559843B124CEF7590034E92D /* ServerListRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerListRow.swift; sourceTree = "<group>"; };
 		559843B324CEFAAC0034E92D /* ServerDetailViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerDetailViewModel.swift; sourceTree = "<group>"; };
 		55A8FE6B25C7E4AD00E2C2F8 /* SmallWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SmallWidget.swift; sourceTree = "<group>"; };
+		55B348542676137C0039471E /* PulsatingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PulsatingView.swift; sourceTree = "<group>"; };
 		55BA430F24C332C900599345 /* ServerInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerInfo.swift; sourceTree = "<group>"; };
 		55BA431124C3395400599345 /* ServerData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerData.swift; sourceTree = "<group>"; };
-		55BFBA2424CC474A004461D3 /* NetDataAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetDataAPI.swift; sourceTree = "<group>"; };
-		55BFBA2624CC4EA1004461D3 /* Agent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Agent.swift; sourceTree = "<group>"; };
+		55BFBA2424CC474A004461D3 /* NetdataClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetdataClient.swift; sourceTree = "<group>"; };
 		55BFBA2824CC5875004461D3 /* ServerListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerListViewModel.swift; sourceTree = "<group>"; };
 		55C638F824CBE6B800395B23 /* PercentageUsageData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PercentageUsageData.swift; sourceTree = "<group>"; };
 		55C638FA24CBEFCA00395B23 /* AbsoluteUsageData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AbsoluteUsageData.swift; sourceTree = "<group>"; };
@@ -246,8 +245,8 @@
 				55C638FE24CC1A4D00395B23 /* BorderedBarButtonStyle.swift */,
 				555401A224D850D100B1B727 /* CustomTextStyle.swift */,
 				552862E424CD018B008E2B0E /* ErrorMessage.swift */,
-				552C2C2724D6C84300D3DFBE /* SearchBar.swift */,
 				55193D2924E14D9500FE1D55 /* ReadableGuidePadding.swift */,
+				55B348542676137C0039471E /* PulsatingView.swift */,
 			);
 			path = UI;
 			sourceTree = "<group>";
@@ -265,8 +264,7 @@
 		5508041424D04B3C002FFAA5 /* Network */ = {
 			isa = PBXGroup;
 			children = (
-				55BFBA2624CC4EA1004461D3 /* Agent.swift */,
-				55BFBA2424CC474A004461D3 /* NetDataAPI.swift */,
+				55BFBA2424CC474A004461D3 /* NetdataClient.swift */,
 			);
 			path = Network;
 			sourceTree = "<group>";
@@ -443,6 +441,7 @@
 			isa = PBXGroup;
 			children = (
 				55D3076E24D18F9600CF076B /* UserDefaults+Color.swift */,
+				5509661F267463F70091B8D3 /* UIColor+Random.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -644,14 +643,13 @@
 			files = (
 				5514048325C6AF830081E4A4 /* ServerData.swift in Sources */,
 				5514048B25C6AF860081E4A4 /* ServerAlarms.swift in Sources */,
-				5514047225C6AE940081E4A4 /* Agent.swift in Sources */,
 				5514042F25C6904A0081E4A4 /* ServerService.swift in Sources */,
 				5514044725C6906C0081E4A4 /* CloudModel.swift in Sources */,
 				55A8FE6C25C7E4AD00E2C2F8 /* SmallWidget.swift in Sources */,
 				5514044F25C690720081E4A4 /* ServerInfo.swift in Sources */,
 				5514041D25C68F4F0081E4A4 /* AlarmWidget.swift in Sources */,
 				5514043F25C690620081E4A4 /* NDServer.swift in Sources */,
-				5514047325C6AE940081E4A4 /* NetDataAPI.swift in Sources */,
+				5514047325C6AE940081E4A4 /* NetdataClient.swift in Sources */,
 				5514043725C6905A0081E4A4 /* CloudService.swift in Sources */,
 				556064BE25C7E8CA0018FA14 /* MediumWidget.swift in Sources */,
 				5514047B25C6AF750081E4A4 /* ServerCharts.swift in Sources */,
@@ -663,22 +661,21 @@
 			buildActionMask = 2147483647;
 			files = (
 				5508041624D05ABF002FFAA5 /* ServerAlarms.swift in Sources */,
+				55096620267463F70091B8D3 /* UIColor+Random.swift in Sources */,
 				55FC8F6B24BAD8F100CA8751 /* ServerDetailView.swift in Sources */,
 				55BFBA2924CC5875004461D3 /* ServerListViewModel.swift in Sources */,
 				55D3077424D19D1E00CF076B /* AlarmListRow.swift in Sources */,
 				558CABAC24B99931002D115B /* CloudModel.swift in Sources */,
 				55D3076F24D18F9600CF076B /* UserDefaults+Color.swift in Sources */,
 				558CABAF24B999F7002D115B /* ServerService.swift in Sources */,
-				55BFBA2524CC474A004461D3 /* NetDataAPI.swift in Sources */,
+				55BFBA2524CC474A004461D3 /* NetdataClient.swift in Sources */,
 				55D1C50224B95E6D0087F8A2 /* netdataApp.swift in Sources */,
 				55D1C53424B9636E0087F8A2 /* NDServer.swift in Sources */,
 				559300E724D58656006C6DB4 /* ChartsListView.swift in Sources */,
 				559843B424CEFAAC0034E92D /* ServerDetailViewModel.swift in Sources */,
 				55840BE6264406CB00CECD6A /* BottomBar.swift in Sources */,
 				552E19D324CDB71500CDB97F /* EditServerForm.swift in Sources */,
-				55BFBA2724CC4EA1004461D3 /* Agent.swift in Sources */,
 				552862E524CD018B008E2B0E /* ErrorMessage.swift in Sources */,
-				552C2C2824D6C84300D3DFBE /* SearchBar.swift in Sources */,
 				55BA431224C3395400599345 /* ServerData.swift in Sources */,
 				55C638F924CBE6B800395B23 /* PercentageUsageData.swift in Sources */,
 				55BA431024C332C900599345 /* ServerInfo.swift in Sources */,
@@ -695,6 +692,7 @@
 				55D3076C24D1825700CF076B /* FeedbackGenerator.swift in Sources */,
 				559843B224CEF7590034E92D /* ServerListRow.swift in Sources */,
 				55E91EBD24D99D6900218F57 /* WelcomeScreen.swift in Sources */,
+				55B348552676137C0039471E /* PulsatingView.swift in Sources */,
 				551420A924C3D6D200A22E9A /* Meter.swift in Sources */,
 				55C638FF24CC1A4D00395B23 /* BorderedBarButtonStyle.swift in Sources */,
 				558CABB724B9A435002D115B /* AddServerForm.swift in Sources */,
@@ -747,10 +745,10 @@
 				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
 				CODE_SIGN_ENTITLEMENTS = AlarmWidgetExtension.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 37;
+				CURRENT_PROJECT_VERSION = 36;
 				DEVELOPMENT_TEAM = H78GYE72WQ;
 				INFOPLIST_FILE = AlarmWidget/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -774,10 +772,10 @@
 				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
 				CODE_SIGN_ENTITLEMENTS = AlarmWidgetExtension.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 37;
+				CURRENT_PROJECT_VERSION = 36;
 				DEVELOPMENT_TEAM = H78GYE72WQ;
 				INFOPLIST_FILE = AlarmWidget/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -918,13 +916,12 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = netdata/netdata.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 37;
+				CURRENT_PROJECT_VERSION = 36;
 				DEVELOPMENT_ASSET_PATHS = "\"netdata/Preview Content\"";
 				DEVELOPMENT_TEAM = H78GYE72WQ;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = netdata/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
-				"IPHONEOS_DEPLOYMENT_TARGET[sdk=macosx*]" = 14.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -947,13 +944,12 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = netdata/netdata.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 37;
+				CURRENT_PROJECT_VERSION = 36;
 				DEVELOPMENT_ASSET_PATHS = "\"netdata/Preview Content\"";
 				DEVELOPMENT_TEAM = H78GYE72WQ;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = netdata/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
-				"IPHONEOS_DEPLOYMENT_TARGET[sdk=macosx*]" = 14.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

@@ -20,39 +20,31 @@ struct SettingsView: View {
         Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? NSLocalizedString("Error", comment: "")
     }
     
+    @ViewBuilder
     private func makeRow(image: String,
                          text: LocalizedStringKey,
                          link: URL? = nil,
-                         color: Color? = .accentColor) -> some View {
-        HStack {
-            Image(systemName: image)
-                .imageScale(.medium)
-                .foregroundColor(color)
-                .frame(width: 24)
-            Group {
-                if let link = link {
-                    Link(text, destination: link)
-                } else {
-                    Text(text)
-                }
+                         color: Color? = .primary) -> some View {
+        if let link = link {
+            Link(destination: link) {
+                Label(text, systemImage: image)
+                    .foregroundColor(.accentColor)
             }
-            .font(.body)
-            
-            Spacer()
+        } else {
+            Label(text, systemImage: image)
+                .foregroundColor(color)
         }
     }
     
+    @ViewBuilder
     private func makeDetailRow(image: String,
                                text: LocalizedStringKey,
                                detail: String,
-                               color: Color? = .accentColor) -> some View {
+                               color: Color? = .primary) -> some View {
         HStack {
-            Image(systemName: image)
-                .imageScale(.medium)
+            Label(text, systemImage: image)
                 .foregroundColor(color)
-                .frame(width: 24)
-            Text(text)
-                .font(.body)
+            
             Spacer()
             Text(detail)
                 .foregroundColor(.gray)
@@ -60,39 +52,24 @@ struct SettingsView: View {
         }
     }
     
-    private func makeContentRow(image: String,
-                                color: Color? = .accentColor,
-                                content: AnyView) -> some View {
-        HStack {
-            Image(systemName: image)
-                .imageScale(.medium)
-                .foregroundColor(color)
-                .frame(width: 24)
-            Spacer()
-            content
-        }
-    }
-    
     var body: some View {
         NavigationView {
             List {
                 Section(header: Text("Experience")) {
-                    makeContentRow(image: "paintbrush",
-                                   content: AnyView(ColorPicker("App Tint", selection: $userSettings.appTintColor, supportsOpacity: false)))
-                    makeContentRow(image: "waveform.path",
-                                   content: AnyView(
-                                    Toggle(isOn: $userSettings.hapticFeedback) {
-                                        Text("Haptic feedback")
-                                    }
-                                    .toggleStyle(SwitchToggleStyle(tint: .accentColor))
-                                   ))
+                    ColorPicker(selection: $userSettings.appTintColor, supportsOpacity: false) {
+                        Label("App Tint", systemImage: "paintbrush")
+                    }
+                    
+                    Toggle(isOn: $userSettings.hapticFeedback) {
+                        Label("Haptic feedback", systemImage: "waveform.path")
+                    }
+                    .toggleStyle(SwitchToggleStyle(tint: .accentColor))
                 }
                 
                 if userSettings.bookmarks.count > 0 {
-                    Section(header: Text("Pinned charts"),
-                            footer: Text("These charts will be shown below default charts for every server")) {
+                    Section(header: Text("Pinned charts")) {
                         ForEach(userSettings.bookmarks, id: \.self) { chart in
-                            Text(chart)
+                            Label(chart, systemImage: "pin")
                         }
                         .onDelete(perform: deleteBookmarks)
                     }
@@ -100,8 +77,8 @@ struct SettingsView: View {
                 
                 if userSettings.ignoredAlarms.count > 0 {
                     Section(header: Text("Hidden alarms")) {
-                        ForEach(userSettings.ignoredAlarms, id: \.self) { chart in
-                            Text(chart)
+                        ForEach(userSettings.ignoredAlarms, id: \.self) { alarm in
+                            Label(alarm, systemImage: "alarm")
                         }
                         .onDelete(perform: deleteIgnoredAlarms)
                     }
@@ -123,7 +100,7 @@ struct SettingsView: View {
                                   detail: "\(versionNumber) (\(buildNumber))")
                 }
             }
-            .listStyle(InsetGroupedListStyle())
+            .listStyle(.sidebar)
             .navigationBarItems(leading: dismissButton)
             .navigationBarTitle(Text("Settings"), displayMode: .inline)
         }

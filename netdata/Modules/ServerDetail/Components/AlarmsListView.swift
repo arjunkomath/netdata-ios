@@ -14,64 +14,82 @@ struct AlarmsListView: View {
     var serverUrl: String
     var basicAuthBase64: String
     
-    @StateObject var viewModel = ServerDetailViewModel()
+    @State private var loading = false
+    @State private var serverAlarms = ServerAlarms(status: false, alarms: [:])
     
     var body: some View {
-        NavigationView {
-            VStack {
-                if self.getActiveAlarms().isEmpty && viewModel.serverAlarms.status == true {
-                    VStack(spacing: 16) {
-                        Image(systemName: "hand.thumbsup.fill")
-                            .imageScale(.large)
-                            .foregroundColor(.green)
-                            .padding()
-                        
-                        Text("No alarms raised! Everything looks good.")
-                            .font(.headline)
-                    }
+        List {
+            if loading {
+                VStack(alignment: .center, spacing: 16) {
+                    ProgressView()
                 }
-                
-                List {
-                    ForEach(self.getActiveAlarms(), id: \.self) { key in
-                        AlarmListRow(alarm: viewModel.serverAlarms.alarms[key]!)
-                            .contextMenu {
-                                Button(action: {
-                                    withAnimation {
-                                        userSettings.ignoredAlarms.append(viewModel.serverAlarms.alarms[key]!.name)
-                                    }
-                                }, label: {
-                                    Label("Hide alarm", systemImage: "eye.slash.fill")
-                                })
+                .frame(minWidth: 0, maxWidth: .infinity)
+                .padding()
+            }
+            
+            if self.getActiveAlarms().isEmpty && serverAlarms.status == true {
+                VStack(alignment: .center, spacing: 16) {
+                    Image(systemName: "hand.thumbsup.fill")
+                        .imageScale(.large)
+                        .foregroundColor(.green)
+                    
+                    Text("No active alarms.")
+                        .font(.headline)
+                }
+                .frame(minWidth: 0, maxWidth: .infinity)
+                .padding()
+            }
+            
+            ForEach(self.getActiveAlarms(), id: \.self) { key in
+                AlarmListRow(alarm: serverAlarms.alarms[key]!)
+                    .contextMenu {
+                        Button(action: {
+                            withAnimation {
+                                userSettings.ignoredAlarms.append(serverAlarms.alarms[key]!.name)
                             }
+                        }, label: {
+                            Label("Hide alarm", systemImage: "eye.slash.fill")
+                        })
                     }
-                }
-                
-                if self.hiddenAlarmsCount() > 0 {
+            }
+            
+            if self.hiddenAlarmsCount() > 0 {
+                Section {
                     Text("\(self.hiddenAlarmsCount()) hidden alert(s)")
                         .font(.footnote)
                         .foregroundColor(.gray)
                 }
             }
-            .navigationTitle(Text("Active Alarms")).navigationBarTitleDisplayMode(.inline)
-            .navigationBarItems(leading: dismissButton)
-            .onAppear {
-                viewModel.fetchAlarms(baseUrl: serverUrl, basicAuthBase64: basicAuthBase64)
-            }
-            .onDisappear {
-                viewModel.destroyAlarmsData()
-            }
+        }
+        .navigationTitle(Text("Alarms"))
+        .refreshable {
+            await self.fetchAlarms()
+        }
+        .task {
+            await self.fetchAlarms()
+        }
+    }
+    
+    private func fetchAlarms() async {
+        loading = true
+        do {
+            serverAlarms = try await NetdataClient.shared.getAlarms(baseUrl: serverUrl, basicAuthBase64: basicAuthBase64)
+            loading = false
+        } catch {
+            loading = false
+            debugPrint("getAlarms", error)
         }
     }
     
     private func getActiveAlarms() -> [String] {
-        return viewModel.serverAlarms.alarms.keys.sorted().filter { key in
-            return viewModel.serverAlarms.alarms[key] != nil &&
-                !userSettings.ignoredAlarms.contains(viewModel.serverAlarms.alarms[key]!.name)
+        return serverAlarms.alarms.keys.sorted().filter { key in
+            return serverAlarms.alarms[key] != nil &&
+            !userSettings.ignoredAlarms.contains(serverAlarms.alarms[key]!.name)
         }
     }
     
     private func hiddenAlarmsCount() -> Int {
-        return viewModel.serverAlarms.alarms.keys.count - self.getActiveAlarms().count
+        return serverAlarms.alarms.keys.count - self.getActiveAlarms().count
     }
     
     private var dismissButton: some View {

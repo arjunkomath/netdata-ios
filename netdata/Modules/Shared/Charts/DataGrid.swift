@@ -40,7 +40,6 @@ struct DataGrid: View {
                     }
                 }
             }
-            .animation(nil)
         } else {
             LazyVGrid(columns: self.getGridColumns(), spacing: 8) {
                 ForEach((1...2), id: \.self) { _ in
@@ -50,7 +49,6 @@ struct DataGrid: View {
                         .redacted(reason: .placeholder)
                 }
             }
-            .animation(nil)
         }
     }
 
