@@ -21,12 +21,13 @@ struct CustomChartDetailView: View {
     
     var body: some View {
         List {
-            Section(header: Text("\(serverChart.name) (\(units()))").sectionHeaderStyle().padding(.top)) {
+            Section("\(serverChart.name) (\(units()))") {
                 DataGrid(labels: chartData.labels,
                          data: chartData.data,
                          dataType: self.getDataType(),
                          showArrows: false)
             }
+            .headerProminence(.increased)
             .readableGuidePadding()
             
             if userSettings.bookmarks.contains(serverChart.id) {

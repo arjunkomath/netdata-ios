@@ -56,23 +56,25 @@ struct ServerListView: View {
                         }
                     } else {
                         if !serverService.favouriteServers.isEmpty {
-                            Section(header: Text("Favourites").sectionHeaderStyle()) {
+                            Section("Favourites") {
                                 ForEach(serverService.favouriteServers) { server in
                                     ServerListRow(server: server)
                                 }
                                 .onDelete(perform: self.deleteFavouriteServer)
                             }
+                            .headerProminence(.increased)
                         }
                         
-                        Section(header: Text("Servers").sectionHeaderStyle()) {
+                        Section("Servers") {
                             ForEach(serverService.defaultServers) { server in
                                 ServerListRow(server: server)
                             }
                             .onDelete(perform: self.deleteServer)
                         }
+                        .headerProminence(.increased)
                     }
                 }
-                .listStyle(InsetGroupedListStyle())
+                .listStyle(.insetGrouped)
                 
                 BottomBar {
                     Menu {

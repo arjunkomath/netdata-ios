@@ -46,7 +46,10 @@ public class ServerService: ObservableObject, PublicCloudService {
         
         do {
             let status = try await container.accountStatus()
-            self.isCloudEnabled = status == .available
+            DispatchQueue.main.async {
+                self.isCloudEnabled = status == .available
+            }
+            self.setError(error: nil)
         } catch {
             self.setError(error: error)
         }

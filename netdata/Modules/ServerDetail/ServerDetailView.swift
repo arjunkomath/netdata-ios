@@ -18,7 +18,7 @@ struct ServerDetailView: View {
     var body: some View {
         VStack(spacing: 0) {
             List {
-                Section(header: makeSectionHeader(text: "CPU (%)")) {
+                Section("CPU (%)") {
                     HStack {
                         VStack {
                             Meter(progress: viewModel.getGaugeData(data: viewModel.cpuUsage.data))
@@ -41,17 +41,19 @@ struct ServerDetailView: View {
                                  showArrows: false)
                     }
                 }
+                .headerProminence(.increased)
                 .readableGuidePadding()
                 
-                Section(header: makeSectionHeader(text: "Load")) {
+                Section("Load") {
                     DataGrid(labels: viewModel.load.labels,
                              data: viewModel.load.data,
                              dataType: .absolute,
                              showArrows: false)
                 }
+                .headerProminence(.increased)
                 .readableGuidePadding()
                 
-                Section(header: makeSectionHeader(text: "Memory (MiB)")) {
+                Section("Memory (MiB)") {
                     HStack {
                         Meter(progress: viewModel.ramUsageGauge)
                             .redacted(reason: self.viewModel.ramUsage.labels.count < 1 ? .placeholder : .init())
@@ -64,9 +66,10 @@ struct ServerDetailView: View {
                                  showArrows: false)
                     }
                 }
+                .headerProminence(.increased)
                 .readableGuidePadding()
                 
-                Section(header: makeSectionHeader(text: "Disk")) {
+                Section("Disk") {
                     VStack(alignment: .leading, spacing: 4) {
                         Text("Space (GiB)")
                             .font(.subheadline)
@@ -96,9 +99,10 @@ struct ServerDetailView: View {
                                  showArrows: true)
                     }
                 }
+                .headerProminence(.increased)
                 .readableGuidePadding()
                 
-                Section(header: makeSectionHeader(text: "Network")) {
+                Section("Network") {
                     VStack(alignment: .leading, spacing: 4) {
                         Text("system.net (kilobits/s)")
                             .font(.subheadline)
@@ -132,10 +136,11 @@ struct ServerDetailView: View {
                                  showArrows: true)
                     }
                 }
+                .headerProminence(.increased)
                 .readableGuidePadding()
                 
                 if viewModel.bookmarkedChartData.count > 0 {
-                    Section(header: makeSectionHeader(text: "Pinned charts")) {
+                    Section("Pinned charts") {
                         ForEach(Array(viewModel.bookmarkedChartData.enumerated()), id: \.offset) { i, chart in
                             HStack {
                                 if self.getDataType(chart: viewModel.bookmarks[i]) == .percentage {
@@ -156,6 +161,7 @@ struct ServerDetailView: View {
                             }
                         }
                     }
+                    .headerProminence(.increased)
                     .readableGuidePadding()
                 }
             }
@@ -230,11 +236,6 @@ struct ServerDetailView: View {
         }
         
         return .absolute
-    }
-    
-    func makeSectionHeader(text: String) -> some View {
-        Text(text)
-            .sectionHeaderStyle()
     }
     
     @ViewBuilder
