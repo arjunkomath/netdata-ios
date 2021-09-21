@@ -57,7 +57,7 @@ struct AddServerForm: View {
                 }
             }
             .onSubmit {
-                async {
+                Task {
                     await self.addServer()
                 }
             }
@@ -102,7 +102,7 @@ struct AddServerForm: View {
     
     private var saveButton: some View {
         Button(action: {
-            async {
+            Task {
                 await addServer()
             }
         }) {

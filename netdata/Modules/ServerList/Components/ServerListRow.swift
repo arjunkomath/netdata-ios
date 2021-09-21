@@ -116,7 +116,7 @@ struct ServerListRow: View {
     private func getFavouriteButtons() -> some View {
         if server.isFavourite == 1 {
             Button(action: {
-                async { await updateServer(favourite: false) }
+                Task { await updateServer(favourite: false) }
             }) {
                 Text("Unfavourite")
                 Image(systemName: "star.slash")
@@ -124,7 +124,7 @@ struct ServerListRow: View {
             .tint(.red)
         } else {
             Button(action: {
-                async { await updateServer(favourite: true) }
+                Task { await updateServer(favourite: true) }
             }) {
                 Text("Favourite")
                 Image(systemName: "star.fill")

@@ -52,7 +52,7 @@ struct CustomChartDetailView: View {
         }
         .navigationBarTitle(serverChart.name, displayMode: .inline)
         .onReceive(timer) { _ in
-            async {
+            Task {
                 do {
                     chartData = try await NetdataClient.shared.getChartData(baseUrl: serverUrl, basicAuthBase64: basicAuthBase64, chart: serverChart.name)
                     isLive = true

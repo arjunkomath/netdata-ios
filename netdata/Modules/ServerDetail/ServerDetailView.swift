@@ -183,13 +183,11 @@ struct ServerDetailView: View {
                 .padding(.trailing)
             }
         }
-        .onAppear {
+        .task {
             viewModel.baseUrl = server.url
             viewModel.basicAuthBase64 = server.basicAuthBase64
             
-            async {
-                await self.viewModel.updateBookmarks(baseUrl: server.url, basicAuthBase64: server.basicAuthBase64)
-            }
+            await self.viewModel.updateBookmarks(baseUrl: server.url, basicAuthBase64: server.basicAuthBase64)
             
             // Start timer
             self.timer = Timer.publish(every: 1, on: .main, in: .common)
@@ -199,7 +197,7 @@ struct ServerDetailView: View {
             UITableView.appearance().showsVerticalScrollIndicator = false
         }
         .onReceive(timer) { _ in
-            async {
+            Task {
                 await viewModel.fetchCpu()
                 await viewModel.fetchLoad()
                 await viewModel.fetchRam()

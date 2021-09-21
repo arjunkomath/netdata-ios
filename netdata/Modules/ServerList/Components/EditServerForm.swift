@@ -52,7 +52,7 @@ struct EditServerForm: View {
                 }
             }
             .onSubmit {
-                async {
+                Task {
                     await self.updateServer()
                 }
             }
@@ -83,7 +83,7 @@ struct EditServerForm: View {
     
     private var saveButton: some View {
         Button(action: {
-            async {
+            Task {
                 await updateServer()
             }
         }) {
@@ -108,9 +108,11 @@ struct EditServerForm: View {
             return
         }
         
-        async {
-            await viewModel.updateServer(editingServer: editingServer!)
-            self.presentationMode.wrappedValue.dismiss()
+        Task {
+            if let editingServer = editingServer {
+                await viewModel.updateServer(editingServer: editingServer)
+                self.presentationMode.wrappedValue.dismiss()
+            }
         }
     }
     

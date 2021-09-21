@@ -102,10 +102,8 @@ struct ServerListView: View {
                 }
             }
             .navigationTitle("My Servers")
-            .onAppear(perform: {
-                async {
-                    await serverService.refresh()
-                }
+            .task {
+                await serverService.refresh()
                 
                 // hide scroll indicators
                 UITableView.appearance().showsVerticalScrollIndicator = false
@@ -115,7 +113,7 @@ struct ServerListView: View {
                     userSettings.HasLaunchedOnce = true
                     self.activeSheet.kind = .welcome
                 }
-            })
+            }
             
             VStack {
                 if serverService.defaultServers.isEmpty && serverService.favouriteServers.isEmpty {

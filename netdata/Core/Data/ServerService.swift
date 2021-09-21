@@ -92,7 +92,7 @@ public class ServerService: ObservableObject, PublicCloudService {
     
     private func addOperation(operation: CKModifyRecordsOperation, fetch: Bool) {
         operation.modifyRecordsResultBlock = { result in
-            async {
+            Task {
                 switch result {
                 case .success():
                     if fetch {
@@ -136,8 +136,8 @@ public class ServerService: ObservableObject, PublicCloudService {
     }
     
     private func setError(error: Error?) {
-        if error != nil {
-            self.reportError(error!)
+        if let error = error {
+            self.reportError(error)
         }
         
         DispatchQueue.main.async {

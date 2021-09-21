@@ -31,7 +31,7 @@ struct Provider: TimelineProvider {
             let fetchDate = Date()
             
             // I have no clue if this is the right way to do it ¯\_(ツ)_/¯
-            async {
+            Task {
                 let (favouriteServers, _) = await ServerService.shared.fetchServers()
                 
                 // show placeholder when there are no favourite servers
@@ -39,7 +39,7 @@ struct Provider: TimelineProvider {
                     let timeline = Timeline(entries: [AlarmsEntry(serverCount: 0, count: 0, criticalCount: 0, alarms: [:], date: fetchDate)], policy: .atEnd)
                     completion(timeline)
                 } else {
-                    async {
+                    Task {
                         var totalAlarmsCount = 0
                         var criticalAlarmsCount = 0
                         
