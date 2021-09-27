@@ -39,33 +39,26 @@ struct Provider: TimelineProvider {
                     let timeline = Timeline(entries: [AlarmsEntry(serverCount: 0, count: 0, criticalCount: 0, alarms: [:], date: fetchDate)], policy: .atEnd)
                     completion(timeline)
                 } else {
-                    Task {
-                        var totalAlarmsCount = 0
-                        var criticalAlarmsCount = 0
-                        
-                        for server in favouriteServers {
-                            debugPrint(server)
-                            do {
-                                let serverAlarm = try await NetdataClient.shared.getAlarms(baseUrl: server.url, basicAuthBase64: server.basicAuthBase64)
-                                
-                                totalAlarmsCount += serverAlarm.alarms.count
-                                criticalAlarmsCount += serverAlarm.getCriticalAlarmsCount()
-                                
-                                var alarms : [String: Color] = [:]
-                                
-                                alarms[server.name] = serverAlarm.getCriticalAlarmsCount() > 0 ? Color.red : serverAlarm.alarms.count > 0 ? Color.orange : Color.green;
-                                
-                                let entry = AlarmsEntry(serverCount: favouriteServers.count, count: totalAlarmsCount, criticalCount: criticalAlarmsCount, alarms: alarms, date: fetchDate)
-                                
-                                let timeline = Timeline(entries: [entry], policy: .after(refreshDate))
-                                completion(timeline)
-                            } catch {
-                                debugPrint("Fetch Alarms failed", error)
-                                let timeline = Timeline(entries: [AlarmsEntry(serverCount: 0, count: 0, criticalCount: 0, alarms: [:], date: fetchDate)], policy: .atEnd)
-                                completion(timeline)
-                            }
+                    var totalAlarmsCount = 0
+                    var criticalAlarmsCount = 0
+                    var alarms : [String: Color] = [:]
+                    
+                    for server in favouriteServers {
+                        do {
+                            let serverAlarm = try await NetdataClient.shared.getAlarms(baseUrl: server.url, basicAuthBase64: server.basicAuthBase64)
+                            
+                            totalAlarmsCount += serverAlarm.alarms.count
+                            criticalAlarmsCount += serverAlarm.getCriticalAlarmsCount()
+                            alarms[server.name] = serverAlarm.getCriticalAlarmsCount() > 0 ? Color.red : serverAlarm.alarms.count > 0 ? Color.orange : Color.green;
+                        } catch {
+                            debugPrint("Fetch Alarms failed", server.name, error)
                         }
                     }
+                    
+                    let entry = AlarmsEntry(serverCount: favouriteServers.count, count: totalAlarmsCount, criticalCount: criticalAlarmsCount, alarms: alarms, date: fetchDate)
+                    
+                    let timeline = Timeline(entries: [entry], policy: .after(refreshDate))
+                    completion(timeline)
                 }
             }
         }
