@@ -9,7 +9,7 @@ import Foundation
 import Combine
 import SwiftUI
 
-final class ServerDetailViewModel: ObservableObject {
+@MainActor class ServerDetailViewModel: ObservableObject {
     
     // MARK:- Real time data
     @Published var cpuUsage: ServerData = ServerData(labels: [], data: [])
@@ -37,7 +37,7 @@ final class ServerDetailViewModel: ObservableObject {
 
     var baseUrl = ""
     var basicAuthBase64 = ""
-        
+    
     func fetchCpu() async {
         do {
             let data = try await NetdataClient.shared.getChartData(baseUrl: baseUrl, basicAuthBase64: basicAuthBase64, chart: "system.cpu")
