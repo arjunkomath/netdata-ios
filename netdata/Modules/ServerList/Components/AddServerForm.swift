@@ -122,7 +122,7 @@ struct AddServerForm: View {
     }
     
     func addServer() async {
-        if viewModel.validateForm() == false {
+        if await viewModel.validateForm() == false {
             FeedbackGenerator.shared.triggerNotification(type: .error)
             return
         }

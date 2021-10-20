@@ -11,7 +11,7 @@ import Combine
 import WidgetKit
 import os.log
 
-public class ServerService: ObservableObject, PublicCloudService {
+@MainActor class ServerService: ObservableObject, PublicCloudService {
     
     public static var cancellable = Set<AnyCancellable>()
     

@@ -9,8 +9,7 @@ import Foundation
 import Combine
 import SwiftUI
 
-final class ServerListViewModel: ObservableObject {
-        
+@MainActor final class ServerListViewModel: ObservableObject {
     @Published var name = ""
     @Published var description = ""
     @Published var url = ""
@@ -28,7 +27,7 @@ final class ServerListViewModel: ObservableObject {
     @Published var validationErrorMessage = ""
     
     func fetchAlarms(server: NDServer) async -> ServerAlarms? {
-            return try? await NetdataClient.shared.getAlarms(baseUrl: server.url, basicAuthBase64: server.basicAuthBase64)
+        return try? await NetdataClient.shared.getAlarms(baseUrl: server.url, basicAuthBase64: server.basicAuthBase64)
     }
     
     func addServer() async {
@@ -106,7 +105,7 @@ final class ServerListViewModel: ObservableObject {
         }
     }
     
-    func validateForm() -> Bool {
+    func validateForm() async -> Bool {
         if (name.isEmpty || description.isEmpty || url.isEmpty) {
             validationError = true
             validationErrorMessage = "Please fill all the fields"
