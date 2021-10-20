@@ -11,7 +11,7 @@ import Combine
 enum NetDataEndpoint: String {
     case info = "/api/v1/info"
     case charts = "/api/v1/charts"
-    case data = "/api/v1/data?chart="
+    case data = "/api/v1/data?after=-10&points=10&chart="
     case alarms = "/api/v1/alarms"
 }
 
