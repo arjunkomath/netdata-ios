@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import StoreKit
 
 struct SettingsView: View {
     @EnvironmentObject private var serverService: ServerService
@@ -95,6 +96,14 @@ struct SettingsView: View {
                             link: URL(string: "https://github.com/arjunkomath/netdata-ios")!)
                     makeRow(image: "ant", text: "Report an issue",
                             link: URL(string: "https://github.com/arjunkomath/netdata-ios/issues")!)
+                    
+                    Button(action: {
+                        if let windowScene = UIApplication.shared.windows.first?.windowScene { SKStoreReviewController.requestReview(in: windowScene) }
+                    }) {
+                        Label("Write a review", systemImage: "square.and.pencil")
+                            .foregroundColor(.accentColor)
+                    }
+                    
                     makeDetailRow(image: "tag",
                                   text: "App version",
                                   detail: "\(versionNumber) (\(buildNumber))")

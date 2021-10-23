@@ -83,7 +83,6 @@ struct ServerListView: View {
                     } label: {
                         Label("Support", systemImage: "lifepreserver.fill")
                             .padding(.leading)
-                            .labelStyle(.iconOnly)
                     }
                     
                     Spacer()
