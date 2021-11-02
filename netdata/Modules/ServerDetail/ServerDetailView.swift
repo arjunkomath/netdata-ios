@@ -19,51 +19,72 @@ struct ServerDetailView: View {
         VStack(spacing: 0) {
             List {
                 Section("CPU (%)") {
-                    HStack {
-                        VStack {
-                            Meter(progress: viewModel.getGaugeData(data: viewModel.cpuUsage.data))
-                                .redacted(reason: viewModel.cpuUsage.labels.count < 1 ? .placeholder : .init())
-                            
-                            if (server.serverInfo != nil && viewModel.cpuUsage.labels.count > 0) {
-                                Spacer()
+                    switch (viewModel.dataMode) {
+                    case .now:
+                        HStack {
+                            VStack {
+                                Meter(progress: viewModel.getGaugeData(data: viewModel.cpuUsage.data))
+                                    .redacted(reason: viewModel.cpuUsage.labels.count < 1 ? .placeholder : .init())
                                 
-                                AbsoluteUsageData(stringValue: server.serverInfo?.cores_total,
-                                                  title: "cores",
-                                                  showArrows: false)
+                                if (server.serverInfo != nil && viewModel.cpuUsage.labels.count > 0) {
+                                    Spacer()
+                                    
+                                    AbsoluteUsageData(stringValue: server.serverInfo?.cores_total,
+                                                      title: "cores",
+                                                      showArrows: false)
+                                }
                             }
+                            
+                            self.getiPadSpacer()
+                            
+                            DataGrid(labels: viewModel.cpuUsage.labels,
+                                     data: viewModel.cpuUsage.data,
+                                     dataType: .percentage,
+                                     showArrows: false)
                         }
                         
-                        self.getiPadSpacer()
-                        
-                        DataGrid(labels: viewModel.cpuUsage.labels,
-                                 data: viewModel.cpuUsage.data,
-                                 dataType: .percentage,
-                                 showArrows: false)
+                    case .fifteenMins:
+                        LineChart(data: viewModel.cpuUsageData, title: "\(Int(viewModel.cpuUsageData.last ?? 0))%")
+                            .frame(height: 200)
+                            .padding(.bottom, 8)
+                            .listRowInsets(.init())
                     }
                 }
                 .headerProminence(.increased)
                 .readableGuidePadding()
                 
                 Section("Load") {
-                    DataGrid(labels: viewModel.load.labels,
-                             data: viewModel.load.data,
-                             dataType: .absolute,
-                             showArrows: false)
+                    switch (viewModel.dataMode) {
+                    case .now, .fifteenMins:
+                        DataGrid(labels: viewModel.load.labels,
+                                 data: viewModel.load.data,
+                                 dataType: .absolute,
+                                 showArrows: false)
+                    }
                 }
                 .headerProminence(.increased)
                 .readableGuidePadding()
                 
                 Section("Memory (MiB)") {
-                    HStack {
-                        Meter(progress: viewModel.ramUsageGauge)
-                            .redacted(reason: self.viewModel.ramUsage.labels.count < 1 ? .placeholder : .init())
+                    switch (viewModel.dataMode) {
+                    case .now:
+                        HStack {
+                            Meter(progress: viewModel.ramUsageGauge)
+                                .redacted(reason: self.viewModel.ramUsage.labels.count < 1 ? .placeholder : .init())
+                            
+                            self.getiPadSpacer()
+                            
+                            DataGrid(labels: viewModel.ramUsage.labels,
+                                     data: viewModel.ramUsage.data,
+                                     dataType: .absolute,
+                                     showArrows: false)
+                        }
                         
-                        self.getiPadSpacer()
-                        
-                        DataGrid(labels: viewModel.ramUsage.labels,
-                                 data: viewModel.ramUsage.data,
-                                 dataType: .absolute,
-                                 showArrows: false)
+                    case .fifteenMins:
+                        LineChart(data: viewModel.ramChartData, title: "\(Int(viewModel.ramChartData.last ?? 0))%")
+                            .frame(height: 200)
+                            .padding(.bottom, 8)
+                            .listRowInsets(.init())
                     }
                 }
                 .headerProminence(.increased)
@@ -221,6 +242,14 @@ struct ServerDetailView: View {
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
                 PulsatingView(live: viewModel.isLive)
+            }
+            
+            ToolbarItem(placement: .principal) {
+                Picker("Data mode", selection: $viewModel.dataMode) {
+                    Text("Now").tag(DataMode.now)
+                    Text("15M").tag(DataMode.fifteenMins)
+                }
+                .pickerStyle(.segmented)
             }
         }
     }

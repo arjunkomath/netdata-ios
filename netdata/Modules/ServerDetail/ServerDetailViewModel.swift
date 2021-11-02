@@ -9,6 +9,11 @@ import Foundation
 import Combine
 import SwiftUI
 
+enum DataMode {
+    case now
+    case fifteenMins
+}
+
 @MainActor class ServerDetailViewModel: ObservableObject {
     
     // MARK:- Real time data
@@ -17,6 +22,7 @@ import SwiftUI
     @Published var load: ServerData = ServerData(labels: [], data: [])
     @Published var ramUsage: ServerData = ServerData(labels: [], data: [])
     @Published var ramUsageGauge : CGFloat = 0
+    @Published var ramChartData: [Double] = []
     
     // MARK:- Disk
     @Published var diskSpaceUsage: ServerData = ServerData(labels: [], data: [])
@@ -32,9 +38,10 @@ import SwiftUI
     @Published var bookmarks: [ServerChart] = []
     @Published var bookmarkedChartData: [ServerData] = []
     
-    // MARK:- Real-time status
+    // MARK:- Data mode
     @Published var isLive: Bool = false
-
+    @Published var dataMode: DataMode = .now
+    
     var baseUrl = ""
     var basicAuthBase64 = ""
     
@@ -66,6 +73,7 @@ import SwiftUI
             
             self.ramUsage = data
             self.ramUsageGauge = CGFloat(self.ramUsage.data.first![2]! / (self.ramUsage.data.first![1]! + self.ramUsage.data.first![2]! + self.ramUsage.data.first![3]!))
+            self.ramChartData = Array(self.ramUsage.data).reversed().map({ d in (d[2]! / (d[1]! + d[2]! + d[3]!) * 100) })
         } catch {
             debugPrint("Failed to fetch chart data")
         }

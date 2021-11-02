@@ -30,6 +30,7 @@
 		552862E524CD018B008E2B0E /* ErrorMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 552862E424CD018B008E2B0E /* ErrorMessage.swift */; };
 		552C2C2624D6B9BB00D3DFBE /* CustomChartDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 552C2C2524D6B9BB00D3DFBE /* CustomChartDetailView.swift */; };
 		552E19D324CDB71500CDB97F /* EditServerForm.swift in Sources */ = {isa = PBXBuildFile; fileRef = 552E19D224CDB71500CDB97F /* EditServerForm.swift */; };
+		5548A9BC273147FD003ACBBD /* LineChart.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5548A9BB273147FD003ACBBD /* LineChart.swift */; };
 		555401A324D850D100B1B727 /* CustomTextStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 555401A224D850D100B1B727 /* CustomTextStyle.swift */; };
 		556064BE25C7E8CA0018FA14 /* MediumWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 556064BD25C7E8CA0018FA14 /* MediumWidget.swift */; };
 		55840BE6264406CB00CECD6A /* BottomBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55840BE5264406CB00CECD6A /* BottomBar.swift */; };
@@ -133,6 +134,7 @@
 		552B4E7924CD16C0008B9DA6 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
 		552C2C2524D6B9BB00D3DFBE /* CustomChartDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomChartDetailView.swift; sourceTree = "<group>"; };
 		552E19D224CDB71500CDB97F /* EditServerForm.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditServerForm.swift; sourceTree = "<group>"; };
+		5548A9BB273147FD003ACBBD /* LineChart.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LineChart.swift; sourceTree = "<group>"; };
 		555401A224D850D100B1B727 /* CustomTextStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomTextStyle.swift; sourceTree = "<group>"; };
 		556064BD25C7E8CA0018FA14 /* MediumWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediumWidget.swift; sourceTree = "<group>"; };
 		55840BE5264406CB00CECD6A /* BottomBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BottomBar.swift; sourceTree = "<group>"; };
@@ -220,6 +222,7 @@
 		5508041024D049B8002FFAA5 /* Core */ = {
 			isa = PBXGroup;
 			children = (
+				5548A9BA273147EC003ACBBD /* UI */,
 				55D3076D24D18F7000CF076B /* Extensions */,
 				55D3076A24D1823500CF076B /* UX */,
 				5508041424D04B3C002FFAA5 /* Network */,
@@ -290,6 +293,15 @@
 				55C638FC24CBFBA400395B23 /* DataGrid.swift */,
 			);
 			path = Charts;
+			sourceTree = "<group>";
+		};
+		5548A9BA273147EC003ACBBD /* UI */ = {
+			isa = PBXGroup;
+			children = (
+				55840BE5264406CB00CECD6A /* BottomBar.swift */,
+				5548A9BB273147FD003ACBBD /* LineChart.swift */,
+			);
+			path = UI;
 			sourceTree = "<group>";
 		};
 		558CABAA24B99923002D115B /* Protocols */ = {
@@ -432,7 +444,6 @@
 			isa = PBXGroup;
 			children = (
 				55D3076B24D1825700CF076B /* FeedbackGenerator.swift */,
-				55840BE5264406CB00CECD6A /* BottomBar.swift */,
 			);
 			path = UX;
 			sourceTree = "<group>";
@@ -665,6 +676,7 @@
 				55FC8F6B24BAD8F100CA8751 /* ServerDetailView.swift in Sources */,
 				55BFBA2924CC5875004461D3 /* ServerListViewModel.swift in Sources */,
 				55D3077424D19D1E00CF076B /* AlarmListRow.swift in Sources */,
+				5548A9BC273147FD003ACBBD /* LineChart.swift in Sources */,
 				558CABAC24B99931002D115B /* CloudModel.swift in Sources */,
 				55D3076F24D18F9600CF076B /* UserDefaults+Color.swift in Sources */,
 				558CABAF24B999F7002D115B /* ServerService.swift in Sources */,
