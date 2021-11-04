@@ -42,6 +42,13 @@ class UserSettings: ObservableObject {
         }
     }
     
+    // BETA feature
+    @Published var enableCharts: Bool {
+        didSet {
+            UserDefaults.standard.set(enableCharts, forKey: "enableCharts")
+        }
+    }
+    
     // MARK: - Charts
     
     @Published var bookmarks: [String] {
@@ -66,6 +73,8 @@ class UserSettings: ObservableObject {
         self.appTintColor = UserDefaults.standard.colorForKey(key: "appTintColor") != nil ?
             Color(UserDefaults.standard.colorForKey(key: "appTintColor")!) : Color.blue
         self.hapticFeedback = UserDefaults.standard.object(forKey: "hapticFeedback") as? Bool ?? true
+        // Beta features
+        self.enableCharts = UserDefaults.standard.object(forKey: "enableCharts") as? Bool ?? false
         
         // Charts
         self.bookmarks = NSUbiquitousKeyValueStore.default.array(forKey: "bookmarks") as? [String] ?? []

@@ -22,8 +22,7 @@ enum DataMode {
     @Published var load: ServerData = ServerData(labels: [], data: [])
     @Published var ramUsage: ServerData = ServerData(labels: [], data: [])
     @Published var ramUsageGauge : CGFloat = 0
-    @Published var ramChartData: [Double] = []
-    
+
     // MARK:- Disk
     @Published var diskSpaceUsage: ServerData = ServerData(labels: [], data: [])
     @Published var diskSpaceUsageGauge : CGFloat = 0
@@ -41,6 +40,17 @@ enum DataMode {
     // MARK:- Data mode
     @Published var isLive: Bool = false
     @Published var dataMode: DataMode = .now
+    
+    // MARK:- Charts
+    @Published var ramChartData: [Double] = []
+    @Published var ramMax: Double = 0
+    
+    @Published var load1ChartData: [Double] = []
+    @Published var load5ChartData: [Double] = []
+    @Published var load15ChartData: [Double] = []
+    
+    @Published var diskChartData: [Double] = []
+    @Published var diskMax: Double = 0
     
     var baseUrl = ""
     var basicAuthBase64 = ""
@@ -62,6 +72,10 @@ enum DataMode {
     func fetchLoad() async {
         do {
             self.load = try await NetdataClient.shared.getChartData(baseUrl: baseUrl, basicAuthBase64: basicAuthBase64, chart: "system.load")
+            
+            self.load1ChartData = Array(self.load.data).reversed().map({ $0[1]! })
+            self.load5ChartData = Array(self.load.data).reversed().map({ $0[2]! })
+            self.load15ChartData = Array(self.load.data).reversed().map({ $0[3]! })
         } catch {
             debugPrint("Failed to fetch chart data")
         }
@@ -73,7 +87,9 @@ enum DataMode {
             
             self.ramUsage = data
             self.ramUsageGauge = CGFloat(self.ramUsage.data.first![2]! / (self.ramUsage.data.first![1]! + self.ramUsage.data.first![2]! + self.ramUsage.data.first![3]!))
-            self.ramChartData = Array(self.ramUsage.data).reversed().map({ d in (d[2]! / (d[1]! + d[2]! + d[3]!) * 100) })
+            
+            self.ramChartData = Array(self.ramUsage.data).reversed().map({ $0[2]! })
+            self.ramMax = self.ramUsage.data.first![1]! + self.ramUsage.data.first![2]! + self.ramUsage.data.first![3]!
         } catch {
             debugPrint("Failed to fetch chart data")
         }
@@ -103,6 +119,9 @@ enum DataMode {
             
             self.diskSpaceUsage = data
             self.diskSpaceUsageGauge = CGFloat(self.diskSpaceUsage.data.first![2]! / (self.diskSpaceUsage.data.first![1]! + self.diskSpaceUsage.data.first![2]!))
+            
+            self.diskChartData = Array(self.diskSpaceUsage.data).reversed().map({ $0[2]! })
+            self.diskMax = self.diskSpaceUsage.data.first![1]! + self.diskSpaceUsage.data.first![2]!
         } catch {
             debugPrint("Failed to fetch chart data")
         }

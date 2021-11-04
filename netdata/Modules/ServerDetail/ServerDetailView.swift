@@ -11,6 +11,7 @@ import Combine
 struct ServerDetailView: View {
     var server: NDServer;
     
+    @ObservedObject var userSettings = UserSettings()
     @StateObject var viewModel = ServerDetailViewModel()
     
     @State var timer: Timer.TimerPublisher = Timer.publish(every: 1, on: .main, in: .common)
@@ -18,6 +19,14 @@ struct ServerDetailView: View {
     var body: some View {
         VStack(spacing: 0) {
             List {
+                if viewModel.dataMode == .fifteenMins {
+                    Section {
+                        InfoMessage(message: "Charts are still in beta")
+                        
+                        Link("Report an issue", destination: URL(string: "https://github.com/arjunkomath/netdata-ios/issues")!)
+                    }
+                }
+                
                 Section("CPU (%)") {
                     switch (viewModel.dataMode) {
                     case .now:
@@ -44,9 +53,9 @@ struct ServerDetailView: View {
                         }
                         
                     case .fifteenMins:
-                        LineChart(data: viewModel.cpuUsageData, title: "\(Int(viewModel.cpuUsageData.last ?? 0))%")
-                            .frame(height: 200)
-                            .padding(.bottom, 8)
+                        ChartView(datas: [viewModel.cpuUsageData])
+                            .frame(height: 240)
+                            .padding()
                             .listRowInsets(.init())
                     }
                 }
@@ -55,11 +64,17 @@ struct ServerDetailView: View {
                 
                 Section("Load") {
                     switch (viewModel.dataMode) {
-                    case .now, .fifteenMins:
+                    case .now:
                         DataGrid(labels: viewModel.load.labels,
                                  data: viewModel.load.data,
                                  dataType: .absolute,
                                  showArrows: false)
+                        
+                    case .fifteenMins:
+                        ChartView(datas: [viewModel.load1ChartData, viewModel.load5ChartData, viewModel.load15ChartData], max: 1)
+                            .frame(height: 250)
+                            .padding()
+                            .listRowInsets(.init())
                     }
                 }
                 .headerProminence(.increased)
@@ -81,9 +96,9 @@ struct ServerDetailView: View {
                         }
                         
                     case .fifteenMins:
-                        LineChart(data: viewModel.ramChartData, title: "\(Int(viewModel.ramChartData.last ?? 0))%")
-                            .frame(height: 200)
-                            .padding(.bottom, 8)
+                        ChartView(datas: [viewModel.ramChartData], max: viewModel.ramMax)
+                            .frame(height: 240)
+                            .padding()
                             .listRowInsets(.init())
                     }
                 }
@@ -91,33 +106,43 @@ struct ServerDetailView: View {
                 .readableGuidePadding()
                 
                 Section("Disk") {
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text("Space (GiB)")
-                            .font(.subheadline)
-                            .padding(.vertical, 4)
-                        
-                        HStack {
-                            Meter(progress: viewModel.diskSpaceUsageGauge)
-                                .redacted(reason: viewModel.diskSpaceUsage.labels.count < 1 ? .placeholder : .init())
+                    switch (viewModel.dataMode) {
+                    case .now:
+                        Group {
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text("Space (GiB)")
+                                    .font(.subheadline)
+                                    .padding(.vertical, 4)
+                                
+                                HStack {
+                                    Meter(progress: viewModel.diskSpaceUsageGauge)
+                                        .redacted(reason: viewModel.diskSpaceUsage.labels.count < 1 ? .placeholder : .init())
+                                    
+                                    self.getiPadSpacer()
+                                    
+                                    DataGrid(labels: viewModel.diskSpaceUsage.labels,
+                                             data: viewModel.diskSpaceUsage.data,
+                                             dataType: .absolute,
+                                             showArrows: false)
+                                }
+                            }
                             
-                            self.getiPadSpacer()
-                            
-                            DataGrid(labels: viewModel.diskSpaceUsage.labels,
-                                     data: viewModel.diskSpaceUsage.data,
-                                     dataType: .absolute,
-                                     showArrows: false)
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text("I/O (KiB/s)")
+                                    .font(.subheadline)
+                                    .padding(.vertical, 4)
+                                
+                                DataGrid(labels: viewModel.diskIO.labels,
+                                         data: viewModel.diskIO.data,
+                                         dataType: .absolute,
+                                         showArrows: true)
+                            }
                         }
-                    }
-                    
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text("I/O (KiB/s)")
-                            .font(.subheadline)
-                            .padding(.vertical, 4)
-                        
-                        DataGrid(labels: viewModel.diskIO.labels,
-                                 data: viewModel.diskIO.data,
-                                 dataType: .absolute,
-                                 showArrows: true)
+                    case .fifteenMins:
+                        ChartView(datas: [viewModel.diskChartData], max: viewModel.diskMax)
+                            .frame(height: 240)
+                            .padding()
+                            .listRowInsets(.init())
                     }
                 }
                 .headerProminence(.increased)
@@ -160,7 +185,7 @@ struct ServerDetailView: View {
                 .headerProminence(.increased)
                 .readableGuidePadding()
                 
-                if viewModel.bookmarkedChartData.count > 0 {
+                if viewModel.bookmarkedChartData.count > 0 && viewModel.dataMode == .now {
                     Section("Pinned charts") {
                         ForEach(Array(viewModel.bookmarkedChartData.enumerated()), id: \.offset) { i, chart in
                             HStack {
@@ -245,11 +270,13 @@ struct ServerDetailView: View {
             }
             
             ToolbarItem(placement: .principal) {
-                Picker("Data mode", selection: $viewModel.dataMode) {
-                    Text("Now").tag(DataMode.now)
-                    Text("15M").tag(DataMode.fifteenMins)
+                if userSettings.enableCharts {
+                    Picker("Data mode", selection: $viewModel.dataMode) {
+                        Text("Now").tag(DataMode.now)
+                        Text("15 Mins").tag(DataMode.fifteenMins)
+                    }
+                    .pickerStyle(.segmented)
                 }
-                .pickerStyle(.segmented)
             }
         }
     }
