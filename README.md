@@ -1,10 +1,11 @@
 # Netdata client for iOS, iPadOS & macOS
-<!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
 [![All Contributors](https://img.shields.io/badge/all_contributors-1-orange.svg?style=flat-square)](#contributors-)
-<!-- ALL-CONTRIBUTORS-BADGE:END -->
 ![Xcode build](https://github.com/arjunkomath/netdata-ios/workflows/Xcode%20build/badge.svg)
 
 ### A beautiful and minimal client for Netdata that allows you to monitor cloud infrastructure in real-time.
+
+[![DigitalOcean Referral Badge](https://web-platforms.sfo2.cdn.digitaloceanspaces.com/WWW/Badge%201.svg)](https://www.digitalocean.com/?refcode=aed42342d15d&utm_campaign=Referral_Invite&utm_medium=Referral_Program&utm_source=badge)
+
 
 ## ⚠️⚠️⚠️ This app does NOT work with Netdata Cloud ⚠️⚠️⚠️
 
