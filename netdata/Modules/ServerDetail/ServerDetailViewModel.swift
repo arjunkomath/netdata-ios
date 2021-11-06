@@ -9,6 +9,11 @@ import Foundation
 import Combine
 import SwiftUI
 
+enum DataMode {
+    case now
+    case fifteenMins
+}
+
 @MainActor class ServerDetailViewModel: ObservableObject {
     
     // MARK:- Real time data
@@ -17,7 +22,7 @@ import SwiftUI
     @Published var load: ServerData = ServerData(labels: [], data: [])
     @Published var ramUsage: ServerData = ServerData(labels: [], data: [])
     @Published var ramUsageGauge : CGFloat = 0
-    
+
     // MARK:- Disk
     @Published var diskSpaceUsage: ServerData = ServerData(labels: [], data: [])
     @Published var diskSpaceUsageGauge : CGFloat = 0
@@ -32,9 +37,21 @@ import SwiftUI
     @Published var bookmarks: [ServerChart] = []
     @Published var bookmarkedChartData: [ServerData] = []
     
-    // MARK:- Real-time status
+    // MARK:- Data mode
     @Published var isLive: Bool = false
-
+    @Published var dataMode: DataMode = .now
+    
+    // MARK:- Charts
+    @Published var ramChartData: [Double] = []
+    @Published var ramMax: Double = 0
+    
+    @Published var load1ChartData: [Double] = []
+    @Published var load5ChartData: [Double] = []
+    @Published var load15ChartData: [Double] = []
+    
+    @Published var diskChartData: [Double] = []
+    @Published var diskMax: Double = 0
+    
     var baseUrl = ""
     var basicAuthBase64 = ""
     
@@ -55,6 +72,10 @@ import SwiftUI
     func fetchLoad() async {
         do {
             self.load = try await NetdataClient.shared.getChartData(baseUrl: baseUrl, basicAuthBase64: basicAuthBase64, chart: "system.load")
+            
+            self.load1ChartData = Array(self.load.data).reversed().map({ $0[1]! })
+            self.load5ChartData = Array(self.load.data).reversed().map({ $0[2]! })
+            self.load15ChartData = Array(self.load.data).reversed().map({ $0[3]! })
         } catch {
             debugPrint("Failed to fetch chart data")
         }
@@ -66,6 +87,9 @@ import SwiftUI
             
             self.ramUsage = data
             self.ramUsageGauge = CGFloat(self.ramUsage.data.first![2]! / (self.ramUsage.data.first![1]! + self.ramUsage.data.first![2]! + self.ramUsage.data.first![3]!))
+            
+            self.ramChartData = Array(self.ramUsage.data).reversed().map({ $0[2]! })
+            self.ramMax = self.ramUsage.data.first![1]! + self.ramUsage.data.first![2]! + self.ramUsage.data.first![3]!
         } catch {
             debugPrint("Failed to fetch chart data")
         }
@@ -95,6 +119,9 @@ import SwiftUI
             
             self.diskSpaceUsage = data
             self.diskSpaceUsageGauge = CGFloat(self.diskSpaceUsage.data.first![2]! / (self.diskSpaceUsage.data.first![1]! + self.diskSpaceUsage.data.first![2]!))
+            
+            self.diskChartData = Array(self.diskSpaceUsage.data).reversed().map({ $0[2]! })
+            self.diskMax = self.diskSpaceUsage.data.first![1]! + self.diskSpaceUsage.data.first![2]!
         } catch {
             debugPrint("Failed to fetch chart data")
         }

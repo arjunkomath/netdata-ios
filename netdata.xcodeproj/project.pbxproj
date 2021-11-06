@@ -30,6 +30,8 @@
 		552862E524CD018B008E2B0E /* ErrorMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 552862E424CD018B008E2B0E /* ErrorMessage.swift */; };
 		552C2C2624D6B9BB00D3DFBE /* CustomChartDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 552C2C2524D6B9BB00D3DFBE /* CustomChartDetailView.swift */; };
 		552E19D324CDB71500CDB97F /* EditServerForm.swift in Sources */ = {isa = PBXBuildFile; fileRef = 552E19D224CDB71500CDB97F /* EditServerForm.swift */; };
+		553DF8B12733DEA00067047A /* InfoMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 553DF8B02733DEA00067047A /* InfoMessage.swift */; };
+		5548A9BC273147FD003ACBBD /* ChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5548A9BB273147FD003ACBBD /* ChartView.swift */; };
 		555401A324D850D100B1B727 /* CustomTextStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 555401A224D850D100B1B727 /* CustomTextStyle.swift */; };
 		556064BE25C7E8CA0018FA14 /* MediumWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 556064BD25C7E8CA0018FA14 /* MediumWidget.swift */; };
 		55840BE6264406CB00CECD6A /* BottomBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55840BE5264406CB00CECD6A /* BottomBar.swift */; };
@@ -133,6 +135,8 @@
 		552B4E7924CD16C0008B9DA6 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
 		552C2C2524D6B9BB00D3DFBE /* CustomChartDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomChartDetailView.swift; sourceTree = "<group>"; };
 		552E19D224CDB71500CDB97F /* EditServerForm.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditServerForm.swift; sourceTree = "<group>"; };
+		553DF8B02733DEA00067047A /* InfoMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InfoMessage.swift; sourceTree = "<group>"; };
+		5548A9BB273147FD003ACBBD /* ChartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChartView.swift; sourceTree = "<group>"; };
 		555401A224D850D100B1B727 /* CustomTextStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomTextStyle.swift; sourceTree = "<group>"; };
 		556064BD25C7E8CA0018FA14 /* MediumWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediumWidget.swift; sourceTree = "<group>"; };
 		55840BE5264406CB00CECD6A /* BottomBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BottomBar.swift; sourceTree = "<group>"; };
@@ -242,6 +246,9 @@
 		5508041224D04A79002FFAA5 /* UI */ = {
 			isa = PBXGroup;
 			children = (
+				55840BE5264406CB00CECD6A /* BottomBar.swift */,
+				553DF8B02733DEA00067047A /* InfoMessage.swift */,
+				5548A9BB273147FD003ACBBD /* ChartView.swift */,
 				55C638FE24CC1A4D00395B23 /* BorderedBarButtonStyle.swift */,
 				555401A224D850D100B1B727 /* CustomTextStyle.swift */,
 				552862E424CD018B008E2B0E /* ErrorMessage.swift */,
@@ -432,7 +439,6 @@
 			isa = PBXGroup;
 			children = (
 				55D3076B24D1825700CF076B /* FeedbackGenerator.swift */,
-				55840BE5264406CB00CECD6A /* BottomBar.swift */,
 			);
 			path = UX;
 			sourceTree = "<group>";
@@ -665,6 +671,8 @@
 				55FC8F6B24BAD8F100CA8751 /* ServerDetailView.swift in Sources */,
 				55BFBA2924CC5875004461D3 /* ServerListViewModel.swift in Sources */,
 				55D3077424D19D1E00CF076B /* AlarmListRow.swift in Sources */,
+				553DF8B12733DEA00067047A /* InfoMessage.swift in Sources */,
+				5548A9BC273147FD003ACBBD /* ChartView.swift in Sources */,
 				558CABAC24B99931002D115B /* CloudModel.swift in Sources */,
 				55D3076F24D18F9600CF076B /* UserDefaults+Color.swift in Sources */,
 				558CABAF24B999F7002D115B /* ServerService.swift in Sources */,
@@ -972,7 +980,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = H78GYE72WQ;
 				INFOPLIST_FILE = netdataTests/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -994,7 +1002,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = H78GYE72WQ;
 				INFOPLIST_FILE = netdataTests/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

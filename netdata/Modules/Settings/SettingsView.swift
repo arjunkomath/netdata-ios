@@ -65,6 +65,11 @@ struct SettingsView: View {
                         Label("Haptic feedback", systemImage: "waveform.path")
                     }
                     .toggleStyle(SwitchToggleStyle(tint: .accentColor))
+                    
+                    Toggle(isOn: $userSettings.enableCharts) {
+                        Label("👋 Try new Charts (Beta)", systemImage: "chart.xyaxis.line")
+                    }
+                    .toggleStyle(SwitchToggleStyle(tint: .accentColor))
                 }
                 
                 if userSettings.bookmarks.count > 0 {
