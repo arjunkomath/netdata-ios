@@ -61,10 +61,12 @@ struct AlarmsListView: View {
                 }
             }
         }
-        .navigationTitle(Text("Alarms"))
-        .refreshable {
-            await self.fetchAlarms()
+        .ifNotMacCatalyst { view in
+            view.refreshable {
+                await self.fetchAlarms()
+            }
         }
+        .navigationTitle(Text("Alarms"))
         .task {
             await self.fetchAlarms()
         }

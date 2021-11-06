@@ -34,6 +34,7 @@
 		5548A9BC273147FD003ACBBD /* ChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5548A9BB273147FD003ACBBD /* ChartView.swift */; };
 		555401A324D850D100B1B727 /* CustomTextStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 555401A224D850D100B1B727 /* CustomTextStyle.swift */; };
 		556064BE25C7E8CA0018FA14 /* MediumWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 556064BD25C7E8CA0018FA14 /* MediumWidget.swift */; };
+		556BF0E527363CAB0023C0E9 /* UIDevice+View.swift in Sources */ = {isa = PBXBuildFile; fileRef = 556BF0E427363CAB0023C0E9 /* UIDevice+View.swift */; };
 		55840BE6264406CB00CECD6A /* BottomBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55840BE5264406CB00CECD6A /* BottomBar.swift */; };
 		558CABAC24B99931002D115B /* CloudModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 558CABAB24B99931002D115B /* CloudModel.swift */; };
 		558CABAF24B999F7002D115B /* ServerService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 558CABAE24B999F7002D115B /* ServerService.swift */; };
@@ -139,6 +140,7 @@
 		5548A9BB273147FD003ACBBD /* ChartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChartView.swift; sourceTree = "<group>"; };
 		555401A224D850D100B1B727 /* CustomTextStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomTextStyle.swift; sourceTree = "<group>"; };
 		556064BD25C7E8CA0018FA14 /* MediumWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediumWidget.swift; sourceTree = "<group>"; };
+		556BF0E427363CAB0023C0E9 /* UIDevice+View.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIDevice+View.swift"; sourceTree = "<group>"; };
 		55840BE5264406CB00CECD6A /* BottomBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BottomBar.swift; sourceTree = "<group>"; };
 		558CABAB24B99931002D115B /* CloudModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudModel.swift; sourceTree = "<group>"; };
 		558CABAE24B999F7002D115B /* ServerService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerService.swift; sourceTree = "<group>"; };
@@ -448,6 +450,7 @@
 			children = (
 				55D3076E24D18F9600CF076B /* UserDefaults+Color.swift */,
 				5509661F267463F70091B8D3 /* UIColor+Random.swift */,
+				556BF0E427363CAB0023C0E9 /* UIDevice+View.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -671,6 +674,7 @@
 				55FC8F6B24BAD8F100CA8751 /* ServerDetailView.swift in Sources */,
 				55BFBA2924CC5875004461D3 /* ServerListViewModel.swift in Sources */,
 				55D3077424D19D1E00CF076B /* AlarmListRow.swift in Sources */,
+				556BF0E527363CAB0023C0E9 /* UIDevice+View.swift in Sources */,
 				553DF8B12733DEA00067047A /* InfoMessage.swift in Sources */,
 				5548A9BC273147FD003ACBBD /* ChartView.swift in Sources */,
 				558CABAC24B99931002D115B /* CloudModel.swift in Sources */,
@@ -753,7 +757,7 @@
 				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
 				CODE_SIGN_ENTITLEMENTS = AlarmWidgetExtension.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 43;
+				CURRENT_PROJECT_VERSION = 44;
 				DEVELOPMENT_TEAM = H78GYE72WQ;
 				INFOPLIST_FILE = AlarmWidget/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
@@ -780,7 +784,7 @@
 				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
 				CODE_SIGN_ENTITLEMENTS = AlarmWidgetExtension.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 43;
+				CURRENT_PROJECT_VERSION = 44;
 				DEVELOPMENT_TEAM = H78GYE72WQ;
 				INFOPLIST_FILE = AlarmWidget/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
@@ -924,7 +928,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = netdata/netdata.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 43;
+				CURRENT_PROJECT_VERSION = 44;
 				DEVELOPMENT_ASSET_PATHS = "\"netdata/Preview Content\"";
 				DEVELOPMENT_TEAM = H78GYE72WQ;
 				ENABLE_PREVIEWS = YES;
@@ -952,7 +956,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = netdata/netdata.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 43;
+				CURRENT_PROJECT_VERSION = 44;
 				DEVELOPMENT_ASSET_PATHS = "\"netdata/Preview Content\"";
 				DEVELOPMENT_TEAM = H78GYE72WQ;
 				ENABLE_PREVIEWS = YES;

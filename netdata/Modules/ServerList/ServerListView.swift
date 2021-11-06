@@ -91,8 +91,10 @@ struct ServerListView: View {
                         .padding(.trailing)
                 }
             }
-            .refreshable {
-                await serverService.refresh()
+            .ifNotMacCatalyst { view in
+                view.refreshable {
+                    await serverService.refresh()
+                }
             }
             .sheet(isPresented: self.$activeSheet.showSheet, content: { self.sheet })
             .toolbar {
