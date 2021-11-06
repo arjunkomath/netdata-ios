@@ -25,6 +25,7 @@ struct ServerDetailView: View {
                         
                         Link("Report an issue", destination: URL(string: "https://github.com/arjunkomath/netdata-ios/issues")!)
                     }
+                    .readableGuidePadding()
                 }
                 
                 Section("CPU (%)") {
@@ -148,42 +149,44 @@ struct ServerDetailView: View {
                 .headerProminence(.increased)
                 .readableGuidePadding()
                 
-                Section("Network") {
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text("system.net (kilobits/s)")
-                            .font(.subheadline)
-                            .padding(.vertical, 4)
+                if viewModel.dataMode == .now {
+                    Section("Network") {
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text("system.net (kilobits/s)")
+                                .font(.subheadline)
+                                .padding(.vertical, 4)
+                            
+                            DataGrid(labels: viewModel.network.labels,
+                                     data: viewModel.network.data,
+                                     dataType: .absolute,
+                                     showArrows: true)
+                        }
                         
-                        DataGrid(labels: viewModel.network.labels,
-                                 data: viewModel.network.data,
-                                 dataType: .absolute,
-                                 showArrows: true)
-                    }
-                    
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text("system.ip (megabits/s)")
-                            .font(.subheadline)
-                            .padding(.vertical, 4)
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text("system.ip (megabits/s)")
+                                .font(.subheadline)
+                                .padding(.vertical, 4)
+                            
+                            DataGrid(labels: viewModel.networkIPv4.labels,
+                                     data: viewModel.networkIPv4.data,
+                                     dataType: .absolute,
+                                     showArrows: true)
+                        }
                         
-                        DataGrid(labels: viewModel.networkIPv4.labels,
-                                 data: viewModel.networkIPv4.data,
-                                 dataType: .absolute,
-                                 showArrows: true)
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text("system.ipv6 (kilobits/s)")
+                                .font(.subheadline)
+                                .padding(.vertical, 4)
+                            
+                            DataGrid(labels: viewModel.networkIPv6.labels,
+                                     data: viewModel.networkIPv6.data,
+                                     dataType: .absolute,
+                                     showArrows: true)
+                        }
                     }
-                    
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text("system.ipv6 (kilobits/s)")
-                            .font(.subheadline)
-                            .padding(.vertical, 4)
-                        
-                        DataGrid(labels: viewModel.networkIPv6.labels,
-                                 data: viewModel.networkIPv6.data,
-                                 dataType: .absolute,
-                                 showArrows: true)
-                    }
+                    .headerProminence(.increased)
+                    .readableGuidePadding()
                 }
-                .headerProminence(.increased)
-                .readableGuidePadding()
                 
                 if viewModel.bookmarkedChartData.count > 0 && viewModel.dataMode == .now {
                     Section("Pinned charts") {
