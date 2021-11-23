@@ -127,8 +127,9 @@ struct AddServerForm: View {
             return
         }
         
-        await viewModel.addServer()
-        self.presentationMode.wrappedValue.dismiss()
+        if await viewModel.addServer() == true {
+            self.presentationMode.wrappedValue.dismiss()
+        }
     }
     
     func makeSectionHeader(text: String) -> some View {

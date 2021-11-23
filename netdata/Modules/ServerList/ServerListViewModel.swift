@@ -30,7 +30,7 @@ import SwiftUI
         return try? await NetdataClient.shared.getAlarms(baseUrl: server.url, basicAuthBase64: server.basicAuthBase64)
     }
     
-    func addServer() async {
+    func addServer() async -> Bool {
         validatingUrl = true
         
         var basicAuthBase64: String = ""
@@ -50,22 +50,24 @@ import SwiftUI
                                   isFavourite: self.isFavourite)
             
             await ServerService.shared.add(server: server)
+            return true
         } catch {
             self.validatingUrl = false
             self.validationError = true
             
             guard let apiError = error as? APIError, apiError != .somethingWentWrong else {
                 self.validationErrorMessage = "Invalid server URL! Please ensure Netdata has been installed on the server."
-                return
+                return false
             }
             
             if apiError == APIError.authenticationFailed {
                 self.validationErrorMessage = "Authentication Failed"
             }
+            return false
         }
     }
     
-    func updateServer(editingServer: NDServer) async {
+    func updateServer(editingServer: NDServer) async -> Bool {
         validatingUrl = true
         
         var basicAuthBase64: String = ""
@@ -88,7 +90,9 @@ import SwiftUI
                 server.record = record
                 
                 ServerService.shared.edit(server: server)
+                return true
             }
+            return false
         } catch {
             FeedbackGenerator.shared.triggerNotification(type: .error)
             self.validatingUrl = false
@@ -96,12 +100,13 @@ import SwiftUI
             
             guard let apiError = error as? APIError, apiError != .somethingWentWrong else {
                 self.validationErrorMessage = "Invalid server URL! Please ensure Netdata has been installed on the server."
-                return
+                return false
             }
             
             if apiError == APIError.authenticationFailed {
                 self.validationErrorMessage = "Authentication Failed"
             }
+            return false
         }
     }
     

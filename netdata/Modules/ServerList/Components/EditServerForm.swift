@@ -110,8 +110,9 @@ struct EditServerForm: View {
         
         Task {
             if let editingServer = editingServer {
-                await viewModel.updateServer(editingServer: editingServer)
-                self.presentationMode.wrappedValue.dismiss()
+                if await viewModel.updateServer(editingServer: editingServer) == true {
+                    self.presentationMode.wrappedValue.dismiss()
+                }
             }
         }
     }
