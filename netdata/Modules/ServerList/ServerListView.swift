@@ -31,13 +31,12 @@ struct ServerListView: View {
         NavigationView {
             VStack(spacing: 0) {
                 List {
-                    if self.serverService.mostRecentError != nil {
-                        if !self.serverService.isCloudEnabled && !serverService.isSynching {
-                            ErrorMessage(message: "iCloud not enabled, you need an iCloud account to add servers")
-                        }
-                        else {
-                            ErrorMessage(message: self.serverService.mostRecentError!.localizedDescription)
-                        }
+                    if !self.serverService.isCloudEnabled && !serverService.isSynching {
+                        ErrorMessage(message: "iCloud not enabled, you need an iCloud account to view / add servers")
+                    }
+                    
+                    if let error = self.serverService.mostRecentError {
+                        ErrorMessage(message: error.localizedDescription)
                     }
                     
                     if serverService.isSynching && serverService.defaultServers.isEmpty && serverService.favouriteServers.isEmpty {
