@@ -22,7 +22,7 @@ enum DataMode {
     @Published var load: ServerData = ServerData(labels: [], data: [])
     @Published var ramUsage: ServerData = ServerData(labels: [], data: [])
     @Published var ramUsageGauge : CGFloat = 0
-
+    
     // MARK:- Disk
     @Published var diskSpaceUsage: ServerData = ServerData(labels: [], data: [])
     @Published var diskSpaceUsageGauge : CGFloat = 0
@@ -73,9 +73,9 @@ enum DataMode {
         do {
             self.load = try await NetdataClient.shared.getChartData(baseUrl: baseUrl, basicAuthBase64: basicAuthBase64, chart: "system.load")
             
-            self.load1ChartData = Array(self.load.data).reversed().map({ $0[1]! })
-            self.load5ChartData = Array(self.load.data).reversed().map({ $0[2]! })
-            self.load15ChartData = Array(self.load.data).reversed().map({ $0[3]! })
+            self.load1ChartData = Array(self.load.data).reversed().map({ $0[1] ?? 0 })
+            self.load5ChartData = Array(self.load.data).reversed().map({ $0[2] ?? 0  })
+            self.load15ChartData = Array(self.load.data).reversed().map({ $0[3] ?? 0 })
         } catch {
             debugPrint("Failed to fetch chart data")
         }
@@ -84,12 +84,16 @@ enum DataMode {
     func fetchRam() async {
         do {
             let data = try await NetdataClient.shared.getChartData(baseUrl: baseUrl, basicAuthBase64: basicAuthBase64, chart: "system.ram")
-            
             self.ramUsage = data
-            self.ramUsageGauge = CGFloat(self.ramUsage.data.first![2]! / (self.ramUsage.data.first![1]! + self.ramUsage.data.first![2]! + self.ramUsage.data.first![3]!))
             
-            self.ramChartData = Array(self.ramUsage.data).reversed().map({ $0[2]! })
-            self.ramMax = self.ramUsage.data.first![1]! + self.ramUsage.data.first![2]! + self.ramUsage.data.first![3]!
+            if let dataPoint = self.ramUsage.data.first {
+                if let free = dataPoint[1], let used = dataPoint[2], let cached = dataPoint[3] {
+                    self.ramUsageGauge = CGFloat(used / (free + used + cached))
+                    
+                    self.ramChartData = Array(self.ramUsage.data).reversed().map({ $0[2] ?? 0 })
+                    self.ramMax = free + used + cached
+                }
+            }
         } catch {
             debugPrint("Failed to fetch chart data")
         }
@@ -116,12 +120,16 @@ enum DataMode {
     func fetchDiskSpace() async {
         do {
             let data = try await NetdataClient.shared.getChartData(baseUrl: baseUrl, basicAuthBase64: basicAuthBase64, chart: "disk_space._")
-            
             self.diskSpaceUsage = data
-            self.diskSpaceUsageGauge = CGFloat(self.diskSpaceUsage.data.first![2]! / (self.diskSpaceUsage.data.first![1]! + self.diskSpaceUsage.data.first![2]!))
             
-            self.diskChartData = Array(self.diskSpaceUsage.data).reversed().map({ $0[2]! })
-            self.diskMax = self.diskSpaceUsage.data.first![1]! + self.diskSpaceUsage.data.first![2]!
+            if let dataPoint = self.diskSpaceUsage.data.first {
+                if let avail = dataPoint[1], let used = dataPoint[2] {
+                    self.diskSpaceUsageGauge = CGFloat(used / (avail + used))
+                    
+                    self.diskChartData = Array(self.diskSpaceUsage.data).reversed().map({ $0[2] ?? 0 })
+                    self.diskMax = avail + used
+                }
+            }
         } catch {
             debugPrint("Failed to fetch chart data")
         }
