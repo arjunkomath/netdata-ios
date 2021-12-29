@@ -21,8 +21,6 @@ struct ServerDetailView: View {
             List {
                 if viewModel.dataMode == .fifteenMins {
                     Section {
-                        InfoMessage(message: "Charts are still in beta")
-                        
                         Link("Report an issue", destination: URL(string: "https://github.com/arjunkomath/netdata-ios/issues")!)
                     }
                     .readableGuidePadding()

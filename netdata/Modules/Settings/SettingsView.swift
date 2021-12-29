@@ -67,7 +67,7 @@ struct SettingsView: View {
                     .toggleStyle(SwitchToggleStyle(tint: .accentColor))
                     
                     Toggle(isOn: $userSettings.enableCharts) {
-                        Label("👋 Try new Charts (Beta)", systemImage: "chart.xyaxis.line")
+                        Label("👋 Try new Charts", systemImage: "chart.xyaxis.line")
                     }
                     .toggleStyle(SwitchToggleStyle(tint: .accentColor))
                 }

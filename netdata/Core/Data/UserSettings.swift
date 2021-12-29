@@ -42,7 +42,6 @@ class UserSettings: ObservableObject {
         }
     }
     
-    // BETA feature
     @Published var enableCharts: Bool {
         didSet {
             UserDefaults.standard.set(enableCharts, forKey: "enableCharts")
@@ -73,7 +72,8 @@ class UserSettings: ObservableObject {
         self.appTintColor = UserDefaults.standard.colorForKey(key: "appTintColor") != nil ?
             Color(UserDefaults.standard.colorForKey(key: "appTintColor")!) : Color.blue
         self.hapticFeedback = UserDefaults.standard.object(forKey: "hapticFeedback") as? Bool ?? true
-        // Beta features
+        
+        // Features
         self.enableCharts = UserDefaults.standard.object(forKey: "enableCharts") as? Bool ?? false
         
         // Charts
