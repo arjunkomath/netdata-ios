@@ -38,7 +38,6 @@ struct ChartListRow_Previews: PreviewProvider {
                                         family: "fragments",
                                         context: "ipv4.sockstat_frag_mem",
                                         title: "IPv4 FRAG Sockets Memory (ipv4.sockstat_frag_mem)",
-                                        enabled: true,
                                         units: "GiB"),
         serverUrl: "",
         basicAuthBase64: "")
