@@ -14,7 +14,6 @@ public struct ServerChart: Encodable, Decodable, Identifiable {
     var family: String;
     var context: String;
     var title: String;
-    var enabled: Bool;
     var units: String;
 }
 
@@ -26,7 +25,7 @@ public struct ServerCharts: Encodable, Decodable {
     public var activeCharts: [ServerChart] {
         return charts.keys.sorted()
             .filter {
-                charts[$0] != nil && charts[$0]!.enabled
+                charts[$0] != nil
             }
             .map {
                 charts[$0]!

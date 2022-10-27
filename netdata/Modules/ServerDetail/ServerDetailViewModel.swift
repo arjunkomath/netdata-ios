@@ -147,8 +147,6 @@ enum DataMode {
                 self.bookmarks = bookmarks
                     .compactMap { chart in
                         charts.charts[chart]
-                    }.filter { chart in
-                        chart.enabled
                     }
                 
                 self.bookmarkedChartData = Array(repeating: ServerData(labels: [], data: []), count: self.bookmarks.count)
