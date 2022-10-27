@@ -42,6 +42,7 @@ struct CustomChartDetailView: View {
             } else {
                 Button(action: {
                     withAnimation {
+                        // Fix warning https://developer.apple.com/forums/thread/711899
                         userSettings.bookmarks.insert(serverChart.id, at: 0)
                     }
                 }, label: {
