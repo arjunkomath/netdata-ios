@@ -256,7 +256,7 @@ struct ServerDetailView: View {
                     do {
                         viewModel.bookmarkedChartData[index] = try await NetdataClient.shared.getChartData(baseUrl: server.url, basicAuthBase64: server.basicAuthBase64, chart: bookmark.id)
                     } catch {
-                        debugPrint("Failed to fetch chart data")
+                        debugPrint("[\(bookmark.id)] Failed to fetch chart data")
                     }
                 }
             }
