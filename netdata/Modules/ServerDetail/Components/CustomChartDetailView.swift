@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import AlertToast
 
 struct CustomChartDetailView: View {
     var serverChart: ServerChart
@@ -14,6 +15,9 @@ struct CustomChartDetailView: View {
     
     @State private var chartData = ServerData(labels: [], data: [])
     @State private var isLive = false
+    
+    @State private var showAddedToast = false
+    @State private var showRemovedToast = false
     
     @ObservedObject var userSettings = UserSettings()
     
@@ -32,19 +36,17 @@ struct CustomChartDetailView: View {
             
             if userSettings.bookmarks.contains(serverChart.id) {
                 Button(action: {
-                    withAnimation {
-                        userSettings.bookmarks = userSettings.bookmarks.filter { $0 != serverChart.id }
-                    }
+                    userSettings.bookmarks = userSettings.bookmarks.filter { $0 != serverChart.id }
+                    showRemovedToast.toggle()
                 }, label: {
                     Label("Remove pin", systemImage: "pin")
                 })
                 .readableGuidePadding()
             } else {
                 Button(action: {
-                    withAnimation {
-                        // Fix warning https://developer.apple.com/forums/thread/711899
-                        userSettings.bookmarks.insert(serverChart.id, at: 0)
-                    }
+                    // Fix warning https://developer.apple.com/forums/thread/711899
+                    userSettings.bookmarks.insert(serverChart.id, at: 0)
+                    showAddedToast.toggle()
                 }, label: {
                     Label("Pin chart", systemImage: "pin.fill")
                 })
@@ -70,6 +72,12 @@ struct CustomChartDetailView: View {
             ToolbarItem(placement: .navigationBarTrailing) {
                 PulsatingView(live: isLive)
             }
+        }
+        .toast(isPresenting: $showAddedToast) {
+            AlertToast(displayMode: .banner(.pop), type: .complete(.green), title: "Chart Added")
+        }
+        .toast(isPresenting: $showRemovedToast) {
+            AlertToast(displayMode: .banner(.pop), type: .complete(.green), title: "Chart Removed")
         }
     }
     
