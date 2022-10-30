@@ -67,6 +67,7 @@
 		55D3076F24D18F9600CF076B /* UserDefaults+Color.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55D3076E24D18F9600CF076B /* UserDefaults+Color.swift */; };
 		55D3077224D197A600CF076B /* AlarmsListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55D3077124D197A600CF076B /* AlarmsListView.swift */; };
 		55D3077424D19D1E00CF076B /* AlarmListRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55D3077324D19D1E00CF076B /* AlarmListRow.swift */; };
+		55D82951290E2032009569BD /* AlertToast in Frameworks */ = {isa = PBXBuildFile; productRef = 55D82950290E2032009569BD /* AlertToast */; };
 		55E91EBD24D99D6900218F57 /* WelcomeScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55E91EBC24D99D6900218F57 /* WelcomeScreen.swift */; };
 		55EE682A24CD962100546B1A /* UserSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55EE682924CD962100546B1A /* UserSettings.swift */; };
 		55FC8F6B24BAD8F100CA8751 /* ServerDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55FC8F6A24BAD8F100CA8751 /* ServerDetailView.swift */; };
@@ -201,6 +202,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				55D82951290E2032009569BD /* AlertToast in Frameworks */,
 				552715552622EB2A00A57510 /* Bugsnag in Frameworks */,
 				55D1C53824B969AC0087F8A2 /* CloudKit.framework in Frameworks */,
 			);
@@ -521,6 +523,7 @@
 			name = netdata;
 			packageProductDependencies = (
 				552715542622EB2A00A57510 /* Bugsnag */,
+				55D82950290E2032009569BD /* AlertToast */,
 			);
 			productName = netdata;
 			productReference = 55D1C4FE24B95E6D0087F8A2 /* netdata.app */;
@@ -598,6 +601,7 @@
 			mainGroup = 55D1C4F524B95E6D0087F8A2;
 			packageReferences = (
 				552715532622EB2A00A57510 /* XCRemoteSwiftPackageReference "bugsnag-cocoa" */,
+				55D8294F290E2032009569BD /* XCRemoteSwiftPackageReference "AlertToast" */,
 			);
 			productRefGroup = 55D1C4FF24B95E6D0087F8A2 /* Products */;
 			projectDirPath = "";
@@ -757,7 +761,7 @@
 				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
 				CODE_SIGN_ENTITLEMENTS = AlarmWidgetExtension.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 48;
+				CURRENT_PROJECT_VERSION = 49;
 				DEVELOPMENT_TEAM = H78GYE72WQ;
 				INFOPLIST_FILE = AlarmWidget/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
@@ -766,7 +770,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.11.7;
+				MARKETING_VERSION = 1.11.8;
 				PRODUCT_BUNDLE_IDENTIFIER = com.techulus.netdata.AlarmWidget;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -784,7 +788,7 @@
 				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
 				CODE_SIGN_ENTITLEMENTS = AlarmWidgetExtension.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 48;
+				CURRENT_PROJECT_VERSION = 49;
 				DEVELOPMENT_TEAM = H78GYE72WQ;
 				INFOPLIST_FILE = AlarmWidget/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
@@ -793,7 +797,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.11.7;
+				MARKETING_VERSION = 1.11.8;
 				PRODUCT_BUNDLE_IDENTIFIER = com.techulus.netdata.AlarmWidget;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -928,7 +932,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = netdata/netdata.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 48;
+				CURRENT_PROJECT_VERSION = 49;
 				DEVELOPMENT_ASSET_PATHS = "\"netdata/Preview Content\"";
 				DEVELOPMENT_TEAM = H78GYE72WQ;
 				ENABLE_PREVIEWS = YES;
@@ -938,7 +942,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.11.7;
+				MARKETING_VERSION = 1.11.8;
 				PRODUCT_BUNDLE_IDENTIFIER = com.techulus.netdata;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTS_MACCATALYST = YES;
@@ -956,7 +960,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = netdata/netdata.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 48;
+				CURRENT_PROJECT_VERSION = 49;
 				DEVELOPMENT_ASSET_PATHS = "\"netdata/Preview Content\"";
 				DEVELOPMENT_TEAM = H78GYE72WQ;
 				ENABLE_PREVIEWS = YES;
@@ -966,7 +970,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.11.7;
+				MARKETING_VERSION = 1.11.8;
 				PRODUCT_BUNDLE_IDENTIFIER = com.techulus.netdata;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTS_MACCATALYST = YES;
@@ -1119,6 +1123,14 @@
 				minimumVersion = 6.8.3;
 			};
 		};
+		55D8294F290E2032009569BD /* XCRemoteSwiftPackageReference "AlertToast" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/elai950/AlertToast.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -1126,6 +1138,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 552715532622EB2A00A57510 /* XCRemoteSwiftPackageReference "bugsnag-cocoa" */;
 			productName = Bugsnag;
+		};
+		55D82950290E2032009569BD /* AlertToast */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 55D8294F290E2032009569BD /* XCRemoteSwiftPackageReference "AlertToast" */;
+			productName = AlertToast;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

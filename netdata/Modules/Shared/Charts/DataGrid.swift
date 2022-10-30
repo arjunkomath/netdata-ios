@@ -18,25 +18,27 @@ struct DataGrid: View {
     var data: [[Double?]]
     var dataType: GridDataType
     var showArrows: Bool
-
+    
     var body: some View {
         if labels.count > 1 && self.data.count > 0 {
             LazyVGrid(columns: self.getGridColumns(), alignment: .leading, spacing: 8) {
-                ForEach(1..<self.labels.count) { i in
-                    if self.dataType == .percentage {
-                        PercentageUsageData(usage: CGFloat(self.data.first![i] ?? 0),
-                                            title: self.labels[i])
-                    }
-                    if self.dataType == .absolute {
-                        AbsoluteUsageData(usage: CGFloat(self.data.first![i] ?? 0),
-                                          title: self.labels[i],
-                                          showArrows: self.showArrows)
-                    }
-                    if self.dataType == .secondsToHours {
-                        AbsoluteUsageData(usage: CGFloat(self.data.first![i] ?? 0),
-                                          title: self.labels[i],
-                                          showArrows: self.showArrows,
-                                          convertSecondsToHours: true)
+                ForEach(Array(labels.enumerated()), id: \.offset) { i, label in
+                    if (i > 0) { // First label is time, hence ignored
+                        if dataType == .percentage {
+                            PercentageUsageData(usage: CGFloat(self.data[0][i] ?? 0),
+                                                title: label)
+                        }
+                        if dataType == .absolute {
+                            AbsoluteUsageData(usage: CGFloat(self.data[0][i] ?? 0),
+                                              title: label,
+                                              showArrows: showArrows)
+                        }
+                        if dataType == .secondsToHours {
+                            AbsoluteUsageData(usage: CGFloat(self.data[0][i] ?? 0),
+                                              title: label,
+                                              showArrows: showArrows,
+                                              convertSecondsToHours: true)
+                        }
                     }
                 }
             }
@@ -46,28 +48,28 @@ struct DataGrid: View {
                     AbsoluteUsageData(usage: 0.1,
                                       title: "loading",
                                       showArrows: false)
-                        .redacted(reason: .placeholder)
+                    .redacted(reason: .placeholder)
                 }
             }
         }
     }
-
+    
     func getGridColumns() -> [GridItem] {
-        #if targetEnvironment(macCatalyst)
+#if targetEnvironment(macCatalyst)
         return [GridItem(.adaptive(minimum: 120))]
-        #else
+#else
         var columnWidth: CGFloat = self.dataType == GridDataType.percentage ? 65 : 80
-
+        
         if UIDevice.current.userInterfaceIdiom == .pad {
             columnWidth = 120
         }
-
+        
         if self.showArrows {
             columnWidth = 120
         }
-
+        
         return [GridItem(.adaptive(minimum: columnWidth))]
-        #endif
+#endif
     }
 }
 

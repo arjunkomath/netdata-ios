@@ -11,7 +11,8 @@ import Combine
 enum NetDataEndpoint: String {
     case info = "/api/v1/info"
     case charts = "/api/v1/charts"
-    case data = "/api/v1/data?after=-900&points=900&chart="
+    case data = "/api/v1/data?after=-10&points=10&chart="
+    case dataFor15Mins = "/api/v1/data?after=-900&points=900&chart="
     case alarms = "/api/v1/alarms"
 }
 
@@ -49,6 +50,12 @@ public class NetdataClient {
     
     func getChartData(baseUrl: String, basicAuthBase64: String = "", chart: String) async throws -> ServerData {
         let requestUrl = URL(string: baseUrl)!.appendingPathComponent(NetDataEndpoint.data.rawValue + chart)
+        
+        return try await run(requestUrl: requestUrl, basicAuthBase64: basicAuthBase64)
+    }
+    
+    func getChartDataWithHistory(baseUrl: String, basicAuthBase64: String = "", chart: String) async throws -> ServerData {
+        let requestUrl = URL(string: baseUrl)!.appendingPathComponent(NetDataEndpoint.dataFor15Mins.rawValue + chart)
         
         return try await run(requestUrl: requestUrl, basicAuthBase64: basicAuthBase64)
     }

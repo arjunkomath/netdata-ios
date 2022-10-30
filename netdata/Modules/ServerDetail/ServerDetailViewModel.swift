@@ -57,33 +57,39 @@ enum DataMode {
     
     func fetchCpu() async {
         do {
-            let data = try await NetdataClient.shared.getChartData(baseUrl: baseUrl, basicAuthBase64: basicAuthBase64, chart: "system.cpu")
+            let data = self.dataMode == .now ?
+            try await NetdataClient.shared.getChartData(baseUrl: baseUrl, basicAuthBase64: basicAuthBase64, chart: "system.cpu") :
+            try await NetdataClient.shared.getChartDataWithHistory(baseUrl: baseUrl, basicAuthBase64: basicAuthBase64, chart: "system.cpu")
             
             self.cpuUsage = data
             self.cpuUsageData = Array(self.cpuUsage.data).reversed().map({ d in Array(d[1..<d.count]).reduce(0, { acc, val in acc + (val ?? 0) }) })
             
             self.isLive = true
         } catch {
-            debugPrint("Failed to fetch chart data")
+            debugPrint("[fetchCpu] Failed to fetch chart data")
             self.isLive = false
         }
     }
     
     func fetchLoad() async {
         do {
-            self.load = try await NetdataClient.shared.getChartData(baseUrl: baseUrl, basicAuthBase64: basicAuthBase64, chart: "system.load")
+            self.load = self.dataMode == .now ?
+            try await NetdataClient.shared.getChartData(baseUrl: baseUrl, basicAuthBase64: basicAuthBase64, chart: "system.load") :
+            try await NetdataClient.shared.getChartDataWithHistory(baseUrl: baseUrl, basicAuthBase64: basicAuthBase64, chart: "system.load")
             
             self.load1ChartData = Array(self.load.data).reversed().map({ $0[1] ?? 0 })
             self.load5ChartData = Array(self.load.data).reversed().map({ $0[2] ?? 0  })
             self.load15ChartData = Array(self.load.data).reversed().map({ $0[3] ?? 0 })
         } catch {
-            debugPrint("Failed to fetch chart data")
+            debugPrint("[fetchLoad] Failed to fetch chart data: \(error)")
         }
     }
     
     func fetchRam() async {
         do {
-            let data = try await NetdataClient.shared.getChartData(baseUrl: baseUrl, basicAuthBase64: basicAuthBase64, chart: "system.ram")
+            let data = self.dataMode == .now ?
+            try await NetdataClient.shared.getChartData(baseUrl: baseUrl, basicAuthBase64: basicAuthBase64, chart: "system.ram") :
+            try await NetdataClient.shared.getChartDataWithHistory(baseUrl: baseUrl, basicAuthBase64: basicAuthBase64, chart: "system.ram")
             self.ramUsage = data
             
             if let dataPoint = self.ramUsage.data.first {
@@ -95,15 +101,17 @@ enum DataMode {
                 }
             }
         } catch {
-            debugPrint("Failed to fetch chart data")
+            debugPrint("[fetchRam] Failed to fetch chart data")
         }
     }
     
     func fetchDiskIo() async {
         do {
-            self.diskIO = try await NetdataClient.shared.getChartData(baseUrl: baseUrl, basicAuthBase64: basicAuthBase64, chart: "system.io")
+            self.diskIO = self.dataMode == .now ?
+            try await NetdataClient.shared.getChartData(baseUrl: baseUrl, basicAuthBase64: basicAuthBase64, chart: "system.io") :
+            try await NetdataClient.shared.getChartDataWithHistory(baseUrl: baseUrl, basicAuthBase64: basicAuthBase64, chart: "system.io")
         } catch {
-            debugPrint("Failed to fetch chart data")
+            debugPrint("[fetchDiskIo] Failed to fetch chart data")
         }
     }
     
@@ -113,7 +121,7 @@ enum DataMode {
             self.networkIPv4 = try await NetdataClient.shared.getChartData(baseUrl: baseUrl, basicAuthBase64: basicAuthBase64, chart: "system.ip")
             self.networkIPv6 = try await NetdataClient.shared.getChartData(baseUrl: baseUrl, basicAuthBase64: basicAuthBase64, chart: "system.ipv6")
         } catch {
-            debugPrint("Failed to fetch chart data")
+            debugPrint("[fetchNetwork] Failed to fetch chart data")
         }
     }
     
@@ -131,7 +139,7 @@ enum DataMode {
                 }
             }
         } catch {
-            debugPrint("Failed to fetch chart data")
+            debugPrint("[fetchDiskSpace] Failed to fetch chart data")
         }
     }
     
