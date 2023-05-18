@@ -4,10 +4,7 @@
 
 ### A beautiful and minimal client for Netdata that allows you to monitor cloud infrastructure in real-time.
 
-[![DigitalOcean Referral Badge](https://web-platforms.sfo2.cdn.digitaloceanspaces.com/WWW/Badge%201.svg)](https://www.digitalocean.com/?refcode=aed42342d15d&utm_campaign=Referral_Invite&utm_medium=Referral_Program&utm_source=badge)
-
-
-## ⚠️⚠️⚠️ This app does NOT work with Netdata Cloud ⚠️⚠️⚠️
+## ⚠️⚠️⚠️ FYI, This app does NOT work with Netdata Cloud ⚠️⚠️⚠️
 
 ## [Download on the App Store](https://apps.apple.com/us/app/netdata-server-monitoring/id1525322870)
 
