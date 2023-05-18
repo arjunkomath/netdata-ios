@@ -66,7 +66,7 @@ enum DataMode {
             
             self.isLive = true
         } catch {
-            debugPrint("[fetchCpu] Failed to fetch chart data")
+            debugPrint("[fetchCpu] Failed to fetch chart data: \(error)")
             self.isLive = false
         }
     }

@@ -11,8 +11,7 @@ import Combine
 enum NetDataEndpoint: String {
     case info = "/api/v1/info"
     case charts = "/api/v1/charts"
-    case data = "/api/v1/data?after=-10&points=10&chart="
-    case dataFor15Mins = "/api/v1/data?after=-900&points=900&chart="
+    case data = "/api/v1/data"
     case alarms = "/api/v1/alarms"
 }
 
@@ -20,6 +19,7 @@ enum APIError: Error {
     case userIsOffline
     case authenticationFailed
     case somethingWentWrong
+    case invalidRequest
 }
 
 @available(iOS 15.0, *)
@@ -49,15 +49,35 @@ public class NetdataClient {
     }
     
     func getChartData(baseUrl: String, basicAuthBase64: String = "", chart: String) async throws -> ServerData {
-        let requestUrl = URL(string: baseUrl)!.appendingPathComponent(NetDataEndpoint.data.rawValue + chart)
+        // after=-10&points=10
+        var request = URLComponents(string: baseUrl + NetDataEndpoint.data.rawValue)!
+        request.queryItems = [
+            URLQueryItem(name: "after", value: "-10"),
+            URLQueryItem(name: "points", value: "10"),
+            URLQueryItem(name: "chart", value: chart)
+        ];
         
-        return try await run(requestUrl: requestUrl, basicAuthBase64: basicAuthBase64)
+        if let url = request.url {
+            return try await run(requestUrl: url, basicAuthBase64: basicAuthBase64)
+        }
+        
+        throw APIError.invalidRequest
     }
     
     func getChartDataWithHistory(baseUrl: String, basicAuthBase64: String = "", chart: String) async throws -> ServerData {
-        let requestUrl = URL(string: baseUrl)!.appendingPathComponent(NetDataEndpoint.dataFor15Mins.rawValue + chart)
+        // after=-900&points=900
+        var request = URLComponents(string: baseUrl + NetDataEndpoint.data.rawValue)!
+        request.queryItems = [
+            URLQueryItem(name: "after", value: "-900"),
+            URLQueryItem(name: "points", value: "900"),
+            URLQueryItem(name: "chart", value: chart)
+        ];
         
-        return try await run(requestUrl: requestUrl, basicAuthBase64: basicAuthBase64)
+        if let url = request.url {
+            return try await run(requestUrl: url, basicAuthBase64: basicAuthBase64)
+        }
+        
+        throw APIError.invalidRequest
     }
     
     private func run<T: Decodable>(requestUrl: URL, basicAuthBase64: String) async throws -> T {
@@ -67,9 +87,13 @@ public class NetdataClient {
             request.setValue("Basic \(basicAuthBase64)", forHTTPHeaderField: "Authorization")
         }
         
-        let (data, _) = try await session.data(for: request)
-        let decoder = JSONDecoder()
-        let response = try decoder.decode(T.self, from: data)
-        return response
+        do {
+            let (jsonData, _) = try await session.data(for: request)
+            let response = try JSONDecoder().decode(T.self, from: jsonData)
+            return response
+        } catch {
+            print("Decoding error: \(error)")
+            throw error
+        }
     }
 }
