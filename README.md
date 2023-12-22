@@ -1,6 +1,5 @@
 # Netdata client for iOS, iPadOS & macOS
 [![All Contributors](https://img.shields.io/badge/all_contributors-1-orange.svg?style=flat-square)](#contributors-)
-![Xcode build](https://github.com/arjunkomath/netdata-ios/workflows/Xcode%20build/badge.svg)
 
 ### A beautiful and minimal client for Netdata that allows you to monitor cloud infrastructure in real-time.
 
