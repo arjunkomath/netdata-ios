@@ -13,7 +13,7 @@
 		5514041A25C68F4F0081E4A4 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 552B4E7924CD16C0008B9DA6 /* SwiftUI.framework */; };
 		5514041D25C68F4F0081E4A4 /* AlarmWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5514041C25C68F4F0081E4A4 /* AlarmWidget.swift */; };
 		5514041F25C68F510081E4A4 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5514041E25C68F510081E4A4 /* Assets.xcassets */; };
-		5514042325C68F510081E4A4 /* AlarmWidgetExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 5514041825C68F4F0081E4A4 /* AlarmWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		5514042325C68F510081E4A4 /* AlarmWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 5514041825C68F4F0081E4A4 /* AlarmWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		5514042F25C6904A0081E4A4 /* ServerService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 558CABAE24B999F7002D115B /* ServerService.swift */; };
 		5514043725C6905A0081E4A4 /* CloudService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 558CABB024B99B42002D115B /* CloudService.swift */; };
 		5514043F25C690620081E4A4 /* NDServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55D1C53324B9636E0087F8A2 /* NDServer.swift */; };
@@ -82,15 +82,15 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		552B4E8424CD16C2008B9DA6 /* Embed App Extensions */ = {
+		552B4E8424CD16C2008B9DA6 /* Embed Foundation Extensions */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = "";
 			dstSubfolderSpec = 13;
 			files = (
-				5514042325C68F510081E4A4 /* AlarmWidgetExtension.appex in Embed App Extensions */,
+				5514042325C68F510081E4A4 /* AlarmWidgetExtension.appex in Embed Foundation Extensions */,
 			);
-			name = "Embed App Extensions";
+			name = "Embed Foundation Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		5538039C254510DF003A9BFE /* Embed App Clips */ = {
@@ -149,10 +149,6 @@
 		55D1C50524B95E6F0087F8A2 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		55D1C50824B95E6F0087F8A2 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		55D1C50A24B95E6F0087F8A2 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		55D1C51324B95E6F0087F8A2 /* netdataTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = netdataTests.swift; sourceTree = "<group>"; };
-		55D1C51524B95E6F0087F8A2 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		55D1C51E24B95E6F0087F8A2 /* netdataUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = netdataUITests.swift; sourceTree = "<group>"; };
-		55D1C52024B95E6F0087F8A2 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		55D1C52D24B95F580087F8A2 /* ServerListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerListView.swift; sourceTree = "<group>"; };
 		55D1C53324B9636E0087F8A2 /* NDServer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NDServer.swift; sourceTree = "<group>"; };
 		55D1C53524B969A50087F8A2 /* netdata.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = netdata.entitlements; sourceTree = "<group>"; };
@@ -311,8 +307,6 @@
 			children = (
 				5514042425C68F510081E4A4 /* AlarmWidgetExtension.entitlements */,
 				55D1C50024B95E6D0087F8A2 /* netdata */,
-				55D1C51224B95E6F0087F8A2 /* netdataTests */,
-				55D1C51D24B95E6F0087F8A2 /* netdataUITests */,
 				5514041B25C68F4F0081E4A4 /* AlarmWidget */,
 				55D1C4FF24B95E6D0087F8A2 /* Products */,
 				55D1C53624B969AC0087F8A2 /* Frameworks */,
@@ -349,24 +343,6 @@
 				55D1C50824B95E6F0087F8A2 /* Preview Assets.xcassets */,
 			);
 			path = "Preview Content";
-			sourceTree = "<group>";
-		};
-		55D1C51224B95E6F0087F8A2 /* netdataTests */ = {
-			isa = PBXGroup;
-			children = (
-				55D1C51324B95E6F0087F8A2 /* netdataTests.swift */,
-				55D1C51524B95E6F0087F8A2 /* Info.plist */,
-			);
-			path = netdataTests;
-			sourceTree = "<group>";
-		};
-		55D1C51D24B95E6F0087F8A2 /* netdataUITests */ = {
-			isa = PBXGroup;
-			children = (
-				55D1C51E24B95E6F0087F8A2 /* netdataUITests.swift */,
-				55D1C52024B95E6F0087F8A2 /* Info.plist */,
-			);
-			path = netdataUITests;
 			sourceTree = "<group>";
 		};
 		55D1C52C24B95F030087F8A2 /* Modules */ = {
@@ -476,7 +452,7 @@
 				55D1C4FA24B95E6D0087F8A2 /* Sources */,
 				55D1C4FB24B95E6D0087F8A2 /* Frameworks */,
 				55D1C4FC24B95E6D0087F8A2 /* Resources */,
-				552B4E8424CD16C2008B9DA6 /* Embed App Extensions */,
+				552B4E8424CD16C2008B9DA6 /* Embed Foundation Extensions */,
 				5538039C254510DF003A9BFE /* Embed App Clips */,
 			);
 			buildRules = (
@@ -498,8 +474,9 @@
 		55D1C4F624B95E6D0087F8A2 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
+				BuildIndependentTargetsInParallel = YES;
 				LastSwiftUpdateCheck = 1240;
-				LastUpgradeCheck = 1200;
+				LastUpgradeCheck = 1510;
 				TargetAttributes = {
 					5514041725C68F4F0081E4A4 = {
 						CreatedOnToolsVersion = 12.4;
@@ -650,7 +627,8 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.techulus.netdata.AlarmWidget;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
-				SUPPORTS_MACCATALYST = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2,6";
@@ -677,7 +655,8 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.techulus.netdata.AlarmWidget;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
-				SUPPORTS_MACCATALYST = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2,6";
@@ -688,6 +667,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -749,6 +729,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -822,7 +803,8 @@
 				MARKETING_VERSION = 2;
 				PRODUCT_BUNDLE_IDENTIFIER = com.techulus.netdata;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SUPPORTS_MACCATALYST = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2,6";
@@ -851,7 +833,8 @@
 				MARKETING_VERSION = 2;
 				PRODUCT_BUNDLE_IDENTIFIER = com.techulus.netdata;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SUPPORTS_MACCATALYST = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2,6";
