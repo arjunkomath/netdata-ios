@@ -7,11 +7,6 @@
 
 import SwiftUI
 
-#if DEBUG
-#else
-import Bugsnag
-#endif
-
 @main
 struct netdataApp: App {
     @ObservedObject var userSettings = UserSettings()
@@ -27,33 +22,19 @@ struct netdataApp: App {
     
     var body: some Scene {
         WindowGroup {
-            ServerListView()
-                .environmentObject(ServerService.shared)
-                .onAppear {
-                    self.setupAppearance()
-                }
+            NavigationStack {
+                ServerListView()
+            }
+            .navigationViewStyle(.stack)
+            .environmentObject(ServerService.shared)
+            .onAppear {
+                self.setupAppearance()
+            }
         }
-    }
-    
-    init() {
-        #if DEBUG
-        #else
-        Bugsnag.start()
-        #endif
     }
     
     private func setupAppearance() {
         // app tint color
         self.window?.tintColor = UIColor(userSettings.appTintColor)
-        
-        // rounded title font
-        let descriptor = UIFontDescriptor
-            .preferredFontDescriptor(withTextStyle: .largeTitle)
-            .withSymbolicTraits(.traitBold)?
-            .withDesign(UIFontDescriptor.SystemDesign.rounded)
-        
-        UINavigationBar.appearance().largeTitleTextAttributes = [
-            NSAttributedString.Key.font:UIFont.init(descriptor: descriptor!, size: 34)
-        ]
     }
 }

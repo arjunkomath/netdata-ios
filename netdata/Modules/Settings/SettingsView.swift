@@ -9,8 +9,11 @@ import SwiftUI
 import StoreKit
 
 struct SettingsView: View {
+    @Environment(\.dismiss) var dismiss
+    @Environment(\.requestReview) var requestReview
+    
     @EnvironmentObject private var serverService: ServerService
-    @Environment(\.presentationMode) private var presentationMode
+    
     @ObservedObject var userSettings = UserSettings()
     
     private var versionNumber: String {
@@ -103,7 +106,7 @@ struct SettingsView: View {
                             link: URL(string: "https://github.com/arjunkomath/netdata-ios/issues")!)
                     
                     Button(action: {
-                        if let windowScene = UIApplication.shared.windows.first?.windowScene { SKStoreReviewController.requestReview(in: windowScene) }
+                        requestReview()
                     }) {
                         Label("Write a review", systemImage: "square.and.pencil")
                             .foregroundColor(.accentColor)
@@ -115,15 +118,20 @@ struct SettingsView: View {
                 }
             }
             .listStyle(.sidebar)
-            .navigationBarItems(leading: dismissButton)
-            .navigationBarTitle(Text("Settings"), displayMode: .inline)
+            .navigationTitle("Settings")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .navigation) {
+                    dismissButton
+                }
+            }
         }
         .navigationViewStyle(StackNavigationViewStyle())
     }
     
     private var dismissButton: some View {
         Button(action: {
-            self.presentationMode.wrappedValue.dismiss()
+            dismiss()
         }) {
             Image(systemName: "xmark")
                 .imageScale(.small)

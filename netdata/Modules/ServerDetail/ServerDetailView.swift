@@ -213,22 +213,6 @@ struct ServerDetailView: View {
                 }
             }
             .listStyle(InsetGroupedListStyle())
-            
-            BottomBar {
-                NavigationLink(destination: ChartsListView(serverUrl: server.url, basicAuthBase64: server.basicAuthBase64)) {
-                    Label("Charts", systemImage: "chart.pie")
-                        .labelStyle(.titleAndIcon)
-                }
-                .padding(.leading)
-                
-                Spacer()
-                
-                NavigationLink(destination: AlarmsListView(serverUrl: server.url, basicAuthBase64: server.basicAuthBase64)) {
-                    Label("Alarms", systemImage: "alarm")
-                        .labelStyle(.titleAndIcon)
-                }
-                .padding(.trailing)
-            }
         }
         .task {
             viewModel.baseUrl = server.url
@@ -239,9 +223,6 @@ struct ServerDetailView: View {
             // Start timer
             self.timer = Timer.publish(every: 1, on: .main, in: .common)
             _ = self.timer.connect()
-            
-            // hide scroll indicators
-            UITableView.appearance().showsVerticalScrollIndicator = false
         }
         .onReceive(timer) { _ in
             Task {
@@ -266,7 +247,7 @@ struct ServerDetailView: View {
         }
         .navigationBarTitle(server.name)
         .toolbar {
-            ToolbarItem(placement: .navigationBarTrailing) {
+            ToolbarItem(placement: .navigation) {
                 PulsatingView(live: viewModel.isLive)
             }
             
@@ -278,6 +259,26 @@ struct ServerDetailView: View {
                     }
                     .pickerStyle(.segmented)
                 }
+            }
+            
+            ToolbarItemGroup(placement: .bottomBar) {
+                NavigationLink(destination: ChartsListView(serverUrl: server.url, basicAuthBase64: server.basicAuthBase64)) {
+                    HStack {
+                        Image(systemName: "chart.pie")
+                        Text("Charts")
+                    }
+                }
+                .padding(.leading)
+                
+                Spacer()
+                
+                NavigationLink(destination: AlarmsListView(serverUrl: server.url, basicAuthBase64: server.basicAuthBase64)) {
+                    HStack {
+                        Image(systemName: "alarm")
+                        Text("Alarms")
+                    }
+                }
+                .padding(.trailing)
             }
         }
     }

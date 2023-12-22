@@ -63,7 +63,16 @@ struct AddServerForm: View {
             }
             .submitLabel(.done)
             .navigationBarTitle("Add Server", displayMode: .inline)
-            .navigationBarItems(leading: dismissButton, trailing: saveButton)
+            .toolbar {
+                ToolbarItemGroup(placement: .bottomBar) {
+                    saveButton
+                    Spacer()
+                }
+                
+                ToolbarItem(placement: .navigation) {
+                    dismissButton
+                }
+            }
         }
     }
     
@@ -106,16 +115,13 @@ struct AddServerForm: View {
                 await addServer()
             }
         }) {
-            if (viewModel.validatingUrl) {
-                ProgressView()
-            } else {
+            HStack {
+                Image(systemName: "plus.circle.fill")
                 Text("Add")
-                    .font(.subheadline)
-                    .bold()
-                    .foregroundColor(.accentColor)
+                    .fontWeight(.bold)
             }
         }
-        .buttonStyle(BorderedBarButtonStyle())
+        .disabled(viewModel.validatingUrl)
         .alert(isPresented: $viewModel.invalidUrlAlert) {
             Alert(title: Text("Oops!"), message: Text("You've entered an invalid URL"), dismissButton: .default(Text("OK")))
         }

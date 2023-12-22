@@ -23,118 +23,98 @@ final class ServerListActiveSheet: ObservableObject {
 }
 
 struct ServerListView: View {
-    @EnvironmentObject private var serverService: ServerService
+    @EnvironmentObject var serverService: ServerService
+    
     @ObservedObject var userSettings = UserSettings()
     @ObservedObject var activeSheet = ServerListActiveSheet()
     
     var body: some View {
-        NavigationView {
-            VStack(spacing: 0) {
-                List {
-                    if !self.serverService.isCloudEnabled && !serverService.isSynching {
-                        ErrorMessage(message: "iCloud not enabled, you need an iCloud account to view / add servers")
-                    }
-                    
-                    if let error = self.serverService.mostRecentError {
-                        ErrorMessage(message: error.localizedDescription)
-                    }
-                    
-                    if serverService.isSynching && serverService.defaultServers.isEmpty && serverService.favouriteServers.isEmpty {
-                        ForEach((1...4), id: \.self) { _ in
-                            Group {
-                                VStack(alignment: .leading, spacing: 5) {
-                                    Text("name")
-                                        .font(.headline)
-                                    Text("description")
-                                        .font(.subheadline)
-                                        .foregroundColor(.gray)
-                                }
-                                .redacted(reason: .placeholder)
+        VStack(spacing: 0) {
+            List {
+                if !self.serverService.isCloudEnabled && !serverService.isSynching {
+                    ErrorMessage(message: "iCloud not enabled, you need an iCloud account to view / add servers")
+                }
+                
+                if let error = self.serverService.mostRecentError {
+                    ErrorMessage(message: error.localizedDescription)
+                }
+                
+                if serverService.isSynching && serverService.defaultServers.isEmpty && serverService.favouriteServers.isEmpty {
+                    ForEach((1...4), id: \.self) { _ in
+                        Group {
+                            VStack(alignment: .leading, spacing: 5) {
+                                Text("name")
+                                    .font(.headline)
+                                Text("description")
+                                    .font(.subheadline)
+                                    .foregroundColor(.gray)
                             }
-                            .padding(8)
+                            .redacted(reason: .placeholder)
                         }
-                    } else {
-                        if !serverService.favouriteServers.isEmpty {
-                            Section("Favourites") {
-                                ForEach(serverService.favouriteServers) { server in
-                                    ServerListRow(server: server)
-                                }
-                                .onDelete(perform: self.deleteFavouriteServer)
-                            }
-                            .headerProminence(.increased)
-                        }
-                        
-                        Section("Servers") {
-                            ForEach(serverService.defaultServers) { server in
+                        .padding(8)
+                    }
+                } else {
+                    if !serverService.favouriteServers.isEmpty {
+                        Section("Favourites") {
+                            ForEach(serverService.favouriteServers) { server in
                                 ServerListRow(server: server)
                             }
-                            .onDelete(perform: self.deleteServer)
+                            .onDelete(perform: self.deleteFavouriteServer)
                         }
                         .headerProminence(.increased)
                     }
-                }
-                .listStyle(.insetGrouped)
-                
-                BottomBar {
-                    Menu {
-                        Link("Report an issue", destination: URL(string: "https://github.com/arjunkomath/netdata-ios/issues")!)
-                        Link("Q&A", destination: URL(string: "https://github.com/arjunkomath/netdata-ios/discussions/categories/q-a")!)
-                    } label: {
-                        Label("Support", systemImage: "lifepreserver.fill")
-                            .padding(.leading)
+                    
+                    Section("Servers") {
+                        ForEach(serverService.defaultServers) { server in
+                            ServerListRow(server: server)
+                        }
+                        .onDelete(perform: self.deleteServer)
                     }
-                    
-                    Spacer()
-                    
-                    addButton
-                        .padding(.trailing)
+                    .headerProminence(.increased)
                 }
             }
-            .ifNotMacCatalyst { view in
-                view.refreshable {
-                    await serverService.refresh()
-                }
-            }
+            .listStyle(.insetGrouped)
             .sheet(isPresented: self.$activeSheet.showSheet, content: { self.sheet })
-            .toolbar {
-                ToolbarItemGroup(placement: .navigationBarLeading) {
-                    settingsButton
-                }
+        }
+        .task {
+            await serverService.refresh()
+            
+            // show welcome screen
+            if !userSettings.HasLaunchedOnce {
+                userSettings.HasLaunchedOnce = true
+                self.activeSheet.kind = .welcome
             }
-            .navigationTitle("My Servers")
-            .task {
+        }
+        .ifNotMacCatalyst { view in
+            view.refreshable {
                 await serverService.refresh()
-                
-                // hide scroll indicators
-                UITableView.appearance().showsVerticalScrollIndicator = false
-                
-                // show welcome screen
-                if !userSettings.HasLaunchedOnce {
-                    userSettings.HasLaunchedOnce = true
-                    self.activeSheet.kind = .welcome
+            }
+        }
+        .toolbar {
+            ToolbarItemGroup(placement: .navigation) {
+                Button(action: {
+                    self.activeSheet.kind = .settings
+                }) {
+                    Label("Settings", systemImage: "gearshape")
                 }
             }
             
-            VStack {
-                if serverService.defaultServers.isEmpty && serverService.favouriteServers.isEmpty {
-                    Image(systemName: "tray")
-                        .imageScale(.large)
-                        .frame(width: 48, height: 48)
-                    
-                    Button(action: {
-                        self.addServer()
-                    }) {
-                        Text("Add Netdata server")
+            ToolbarItemGroup(placement: .bottomBar) {
+                Button(action: {
+                    self.addServer()
+                }) {
+                    HStack {
+                        Image(systemName: "externaldrive.badge.plus")
+                        Text("Add")
                     }
-                    .buttonStyle(BorderedBarButtonStyle())
-                } else {
-                    Image(systemName: "tray")
-                        .imageScale(.large)
-                        .frame(width: 48, height: 48)
-                    Text("Select a server")
                 }
+                
+                Spacer()
+                
+                SupportOptions()
             }
         }
+        .navigationTitle("My Servers")
     }
     
     func addServer() {
@@ -151,23 +131,6 @@ struct ServerListView: View {
     
     func deleteFavouriteServer(at offsets: IndexSet) {
         self.serverService.delete(server: serverService.favouriteServers[offsets.first!])
-    }
-    
-    private var addButton: some View {
-        Button(action: {
-            self.addServer()
-        }) {
-            Label("Add", systemImage: "externaldrive.badge.plus")
-                .labelStyle(.titleAndIcon)
-        }
-    }
-    
-    private var settingsButton: some View {
-        Button(action: {
-            self.activeSheet.kind = .settings
-        }) {
-            Label("Settings", systemImage: "gear")
-        }
     }
     
     @ViewBuilder

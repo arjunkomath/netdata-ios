@@ -12,12 +12,8 @@ import WidgetKit
 import os.log
 
 @MainActor class ServerService: ObservableObject, PublicCloudService {
-    
-    public static var cancellable = Set<AnyCancellable>()
-    
     // MARK: - Vars
     public static let shared = ServerService()
-    public static var userCloudKitId: CKRecord.ID?
     
     @Published public var favouriteServers: [NDServer] = []
     @Published public var defaultServers: [NDServer] = []
@@ -29,12 +25,6 @@ import os.log
         container.accountStatus { (status, error) in
             DispatchQueue.main.async {
                 self.isCloudEnabled = status == .available
-            }
-        }
-        
-        container.fetchUserRecordID { (id, error) in
-            if (id != nil) {
-                Self.userCloudKitId = id
             }
         }
     }
