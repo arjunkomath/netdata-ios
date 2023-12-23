@@ -11,8 +11,8 @@ import Combine
 import WidgetKit
 import os.log
 
-@MainActor class ServerService: ObservableObject, PublicCloudService {
-    // MARK: - Vars
+@MainActor
+class ServerService: ObservableObject, PublicCloudService {
     public static let shared = ServerService()
     
     @Published public var favouriteServers: [NDServer] = []
@@ -114,7 +114,7 @@ import os.log
             self.favouriteServers = nativeRecords.filter { $0.isFavourite == 1 }
             self.defaultServers = nativeRecords.filter { $0.isFavourite != 1 }
             self.isSynching = false
-
+            
             return (self.favouriteServers, self.defaultServers)
         } catch {
             self.favouriteServers = []

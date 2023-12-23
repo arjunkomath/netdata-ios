@@ -7,74 +7,53 @@
 
 import SwiftUI
 
-final class ServerListActiveSheet: ObservableObject {
-    enum Kind {
-        case add
-        case settings
-        case welcome
-        case none
-    }
-    
-    @Published var kind: Kind = .none {
-        didSet { showSheet = kind != .none }
-    }
-    
-    @Published var showSheet: Bool = false
-}
-
 struct ServerListView: View {
     @EnvironmentObject var serverService: ServerService
     
     @ObservedObject var userSettings = UserSettings()
-    @ObservedObject var activeSheet = ServerListActiveSheet()
+    
+    @State private var showAddServer = false
+    @State private var showWelcome = false
+    @State private var showSettings = false
     
     var body: some View {
-        VStack(spacing: 0) {
-            List {
-                if !self.serverService.isCloudEnabled && !serverService.isSynching {
-                    ErrorMessage(message: "iCloud not enabled, you need an iCloud account to view / add servers")
-                }
-                
-                if let error = self.serverService.mostRecentError {
-                    ErrorMessage(message: error.localizedDescription)
-                }
-                
-                if serverService.isSynching && serverService.defaultServers.isEmpty && serverService.favouriteServers.isEmpty {
-                    ForEach((1...4), id: \.self) { _ in
-                        Group {
-                            VStack(alignment: .leading, spacing: 5) {
-                                Text("name")
-                                    .font(.headline)
-                                Text("description")
-                                    .font(.subheadline)
-                                    .foregroundColor(.gray)
+        GeometryReader { geometry in
+            ScrollView {
+                VStack(alignment: .leading) {
+                    RedactedView(loading: serverService.isSynching) {
+                        if !self.serverService.isCloudEnabled && !serverService.isSynching {
+                            ErrorMessage(message: "iCloud not enabled, you need an iCloud account to view / add servers")
+                        }
+                        
+                        if let error = self.serverService.mostRecentError {
+                            ErrorMessage(message: error.localizedDescription)
+                        }
+                        
+                        if serverService.favouriteServers.isEmpty == false {
+                            Label("Favourites", systemImage: "star.fill")
+                                .font(.headline)
+                            LazyVGrid(columns: gridLayout(for: geometry.size.width), alignment: .leading, spacing: 8) {
+                                ForEach(serverService.favouriteServers, id: \.id) { server in
+                                    ServerListRow(server: server)
+                                }
                             }
-                            .redacted(reason: .placeholder)
+                            .padding(.bottom, 16)
                         }
-                        .padding(8)
-                    }
-                } else {
-                    if !serverService.favouriteServers.isEmpty {
-                        Section("Favourites") {
-                            ForEach(serverService.favouriteServers) { server in
-                                ServerListRow(server: server)
+                        
+                        if serverService.defaultServers.isEmpty == false {
+                            Label("All Servers", systemImage: "folder.fill")
+                                .font(.headline)
+                            LazyVGrid(columns: gridLayout(for: geometry.size.width), alignment: .leading, spacing: 8) {
+                                ForEach(serverService.defaultServers, id: \.id) { server in
+                                    ServerListRow(server: server)
+                                }
                             }
-                            .onDelete(perform: self.deleteFavouriteServer)
+                            .padding(.bottom, 16)
                         }
-                        .headerProminence(.increased)
                     }
-                    
-                    Section("Servers") {
-                        ForEach(serverService.defaultServers) { server in
-                            ServerListRow(server: server)
-                        }
-                        .onDelete(perform: self.deleteServer)
-                    }
-                    .headerProminence(.increased)
                 }
+                .padding(.horizontal, 16)
             }
-            .listStyle(.insetGrouped)
-            .sheet(isPresented: self.$activeSheet.showSheet, content: { self.sheet })
         }
         .task {
             await serverService.refresh()
@@ -82,30 +61,36 @@ struct ServerListView: View {
             // show welcome screen
             if !userSettings.HasLaunchedOnce {
                 userSettings.HasLaunchedOnce = true
-                self.activeSheet.kind = .welcome
+                showWelcome = true
             }
         }
-        .ifNotMacCatalyst { view in
-            view.refreshable {
-                await serverService.refresh()
-            }
+        .refreshable {
+            await serverService.refresh()
         }
         .toolbar {
-            ToolbarItemGroup(placement: .navigation) {
+            ToolbarItem(placement: .navigation) {
                 Button(action: {
-                    self.activeSheet.kind = .settings
+                    showSettings = true
                 }) {
                     Label("Settings", systemImage: "gearshape")
+                }
+                .sheet(isPresented: $showSettings) {
+                    SettingsView()
                 }
             }
             
             ToolbarItemGroup(placement: .bottomBar) {
-                Button(action: {
-                    self.addServer()
-                }) {
-                    HStack {
-                        Image(systemName: "externaldrive.badge.plus")
-                        Text("Add")
+                if self.serverService.isCloudEnabled {
+                    Button(action: {
+                        showAddServer = true
+                    }) {
+                        HStack {
+                            Image(systemName: "externaldrive.badge.plus")
+                            Text("Add")
+                        }
+                    }
+                    .sheet(isPresented: $showAddServer) {
+                        AddServerForm()
                     }
                 }
                 
@@ -115,14 +100,9 @@ struct ServerListView: View {
             }
         }
         .navigationTitle("My Servers")
-    }
-    
-    func addServer() {
-        if !self.serverService.isCloudEnabled {
-            return
+        .sheet(isPresented: $showWelcome) {
+            WelcomeScreen()
         }
-        
-        self.activeSheet.kind = .add
     }
     
     func deleteServer(at offsets: IndexSet) {
@@ -133,13 +113,8 @@ struct ServerListView: View {
         self.serverService.delete(server: serverService.favouriteServers[offsets.first!])
     }
     
-    @ViewBuilder
-    private var sheet: some View {
-        switch activeSheet.kind {
-        case .none: EmptyView()
-        case .add: AddServerForm()
-        case .settings: SettingsView().environmentObject(serverService)
-        case .welcome: WelcomeScreen()
-        }
+    private func gridLayout(for width: CGFloat) -> [GridItem] {
+        let numberOfColumns = min(Int(width / 180), 6)
+        return Array(repeating: .init(.flexible()), count: max(numberOfColumns, 1)) // Ensuring at least one column
     }
 }
