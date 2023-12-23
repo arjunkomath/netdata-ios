@@ -7,26 +7,14 @@
 
 import SwiftUI
 
-final class ServerListActiveSheet: ObservableObject {
-    enum Kind {
-        case add
-        case settings
-        case welcome
-        case none
-    }
-    
-    @Published var kind: Kind = .none {
-        didSet { showSheet = kind != .none }
-    }
-    
-    @Published var showSheet: Bool = false
-}
-
 struct ServerListView: View {
     @EnvironmentObject var serverService: ServerService
     
     @ObservedObject var userSettings = UserSettings()
-    @ObservedObject var activeSheet = ServerListActiveSheet()
+    
+    @State private var showAddServer = false
+    @State private var showWelcome = false
+    @State private var showSettings = false
     
     var body: some View {
         VStack(spacing: 0) {
@@ -74,7 +62,6 @@ struct ServerListView: View {
                 }
             }
             .listStyle(.insetGrouped)
-            .sheet(isPresented: self.$activeSheet.showSheet, content: { self.sheet })
         }
         .task {
             await serverService.refresh()
@@ -82,7 +69,7 @@ struct ServerListView: View {
             // show welcome screen
             if !userSettings.HasLaunchedOnce {
                 userSettings.HasLaunchedOnce = true
-                self.activeSheet.kind = .welcome
+                showWelcome = true
             }
         }
         .ifNotMacCatalyst { view in
@@ -91,21 +78,29 @@ struct ServerListView: View {
             }
         }
         .toolbar {
-            ToolbarItemGroup(placement: .navigation) {
+            ToolbarItem(placement: .navigation) {
                 Button(action: {
-                    self.activeSheet.kind = .settings
+                    showSettings = true
                 }) {
                     Label("Settings", systemImage: "gearshape")
+                }
+                .sheet(isPresented: $showSettings) {
+                    SettingsView()
                 }
             }
             
             ToolbarItemGroup(placement: .bottomBar) {
-                Button(action: {
-                    self.addServer()
-                }) {
-                    HStack {
-                        Image(systemName: "externaldrive.badge.plus")
-                        Text("Add")
+                if self.serverService.isCloudEnabled {
+                    Button(action: {
+                        showAddServer = true
+                    }) {
+                        HStack {
+                            Image(systemName: "externaldrive.badge.plus")
+                            Text("Add")
+                        }
+                    }
+                    .sheet(isPresented: $showAddServer) {
+                        AddServerForm()
                     }
                 }
                 
@@ -115,14 +110,9 @@ struct ServerListView: View {
             }
         }
         .navigationTitle("My Servers")
-    }
-    
-    func addServer() {
-        if !self.serverService.isCloudEnabled {
-            return
+        .sheet(isPresented: $showWelcome) {
+            WelcomeScreen()
         }
-        
-        self.activeSheet.kind = .add
     }
     
     func deleteServer(at offsets: IndexSet) {
@@ -131,15 +121,5 @@ struct ServerListView: View {
     
     func deleteFavouriteServer(at offsets: IndexSet) {
         self.serverService.delete(server: serverService.favouriteServers[offsets.first!])
-    }
-    
-    @ViewBuilder
-    private var sheet: some View {
-        switch activeSheet.kind {
-        case .none: EmptyView()
-        case .add: AddServerForm()
-        case .settings: SettingsView().environmentObject(serverService)
-        case .welcome: WelcomeScreen()
-        }
     }
 }
