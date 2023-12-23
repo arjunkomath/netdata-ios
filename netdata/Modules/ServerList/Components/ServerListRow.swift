@@ -32,11 +32,9 @@ struct ServerListRow: View {
                         .font(.system(size: 20, weight: .semibold, design: .rounded))
                         .foregroundColor(self.isOffline() ? .red : .primary)
                     
-                    if fetchingAlarm {
-                        ProgressView()
-                            .frame(width: 6, height: 6, alignment: .leading)
-                            .padding(.leading, 1)
-                    } else {
+                    Spacer()
+                    
+                    RedactedView(loading: fetchingAlarm) {
                         Circle()
                             .fill(self.getAlarmStatusColor())
                             .frame(width: 12, height: 12, alignment: .leading)
@@ -46,23 +44,17 @@ struct ServerListRow: View {
                         Image(systemName: "lock.shield")
                             .foregroundColor(.accentColor)
                     }
+                    
+                    Image(systemName: "chevron.right")
                 }
                 
                 Text(server.description)
                     .font(.subheadline)
                     .foregroundColor(.gray)
-                
-                if server.serverInfo != nil {
-                    VStack(alignment: .leading) {
-                        Text("\(server.serverInfo!.os_name) \(server.serverInfo!.os_version)")
-                        
-                        Text("\(server.serverInfo!.kernel_name) \(server.serverInfo!.architecture)")
-                    }
-                    .font(.footnote)
-                    .foregroundColor(.gray)
-                }
             }
-            .padding(4)
+            .padding(12)
+            .background(Color(UIColor.secondarySystemBackground))
+            .cornerRadius(10)
         }
         .task {
             if let alarms = await viewModel.fetchAlarms(server: server) {
@@ -93,12 +85,6 @@ struct ServerListRow: View {
             }) {
                 Label("Delete", systemImage: "trash")
             }
-        }
-        .swipeActions(edge: .leading, allowsFullSwipe: true) {
-            self.getFavouriteButtons()
-        }
-        .swipeActions(edge: .trailing, allowsFullSwipe: true) {
-            editServerButton
         }
     }
     

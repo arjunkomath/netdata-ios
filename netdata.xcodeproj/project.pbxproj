@@ -33,7 +33,6 @@
 		5548A9BC273147FD003ACBBD /* ChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5548A9BB273147FD003ACBBD /* ChartView.swift */; };
 		555401A324D850D100B1B727 /* CustomTextStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 555401A224D850D100B1B727 /* CustomTextStyle.swift */; };
 		556064BE25C7E8CA0018FA14 /* MediumWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 556064BD25C7E8CA0018FA14 /* MediumWidget.swift */; };
-		556BF0E527363CAB0023C0E9 /* UIDevice+View.swift in Sources */ = {isa = PBXBuildFile; fileRef = 556BF0E427363CAB0023C0E9 /* UIDevice+View.swift */; };
 		558CABAC24B99931002D115B /* CloudModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 558CABAB24B99931002D115B /* CloudModel.swift */; };
 		558CABAF24B999F7002D115B /* ServerService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 558CABAE24B999F7002D115B /* ServerService.swift */; };
 		558CABB124B99B42002D115B /* CloudService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 558CABB024B99B42002D115B /* CloudService.swift */; };
@@ -43,6 +42,8 @@
 		559300E924D587C0006C6DB4 /* ChartListRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 559300E824D587C0006C6DB4 /* ChartListRow.swift */; };
 		559843B224CEF7590034E92D /* ServerListRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 559843B124CEF7590034E92D /* ServerListRow.swift */; };
 		559843B424CEFAAC0034E92D /* ServerDetailViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 559843B324CEFAAC0034E92D /* ServerDetailViewModel.swift */; };
+		55A3A0ED2B367FEC00E4DB07 /* RedactedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55A3A0EC2B367FEC00E4DB07 /* RedactedView.swift */; };
+		55A3A0EF2B368DC200E4DB07 /* ServerDetailItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55A3A0EE2B368DC200E4DB07 /* ServerDetailItem.swift */; };
 		55A8FE6C25C7E4AD00E2C2F8 /* SmallWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55A8FE6B25C7E4AD00E2C2F8 /* SmallWidget.swift */; };
 		55B348552676137C0039471E /* PulsatingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55B348542676137C0039471E /* PulsatingView.swift */; };
 		55BA431024C332C900599345 /* ServerInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55BA430F24C332C900599345 /* ServerInfo.swift */; };
@@ -124,7 +125,6 @@
 		5548A9BB273147FD003ACBBD /* ChartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChartView.swift; sourceTree = "<group>"; };
 		555401A224D850D100B1B727 /* CustomTextStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomTextStyle.swift; sourceTree = "<group>"; };
 		556064BD25C7E8CA0018FA14 /* MediumWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediumWidget.swift; sourceTree = "<group>"; };
-		556BF0E427363CAB0023C0E9 /* UIDevice+View.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIDevice+View.swift"; sourceTree = "<group>"; };
 		558CABAB24B99931002D115B /* CloudModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudModel.swift; sourceTree = "<group>"; };
 		558CABAE24B999F7002D115B /* ServerService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerService.swift; sourceTree = "<group>"; };
 		558CABB024B99B42002D115B /* CloudService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudService.swift; sourceTree = "<group>"; };
@@ -134,6 +134,8 @@
 		559300E824D587C0006C6DB4 /* ChartListRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChartListRow.swift; sourceTree = "<group>"; };
 		559843B124CEF7590034E92D /* ServerListRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerListRow.swift; sourceTree = "<group>"; };
 		559843B324CEFAAC0034E92D /* ServerDetailViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerDetailViewModel.swift; sourceTree = "<group>"; };
+		55A3A0EC2B367FEC00E4DB07 /* RedactedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RedactedView.swift; sourceTree = "<group>"; };
+		55A3A0EE2B368DC200E4DB07 /* ServerDetailItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerDetailItem.swift; sourceTree = "<group>"; };
 		55A8FE6B25C7E4AD00E2C2F8 /* SmallWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SmallWidget.swift; sourceTree = "<group>"; };
 		55B348542676137C0039471E /* PulsatingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PulsatingView.swift; sourceTree = "<group>"; };
 		55BA430F24C332C900599345 /* ServerInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerInfo.swift; sourceTree = "<group>"; };
@@ -220,6 +222,7 @@
 				55193D2924E14D9500FE1D55 /* ReadableGuidePadding.swift */,
 				55B348542676137C0039471E /* PulsatingView.swift */,
 				55F1B1F02B35951200A97F3B /* SupportOptions.swift */,
+				55A3A0EC2B367FEC00E4DB07 /* RedactedView.swift */,
 			);
 			path = UI;
 			sourceTree = "<group>";
@@ -392,7 +395,6 @@
 			children = (
 				55D3076E24D18F9600CF076B /* UserDefaults+Color.swift */,
 				5509661F267463F70091B8D3 /* UIColor+Random.swift */,
-				556BF0E427363CAB0023C0E9 /* UIDevice+View.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -405,6 +407,7 @@
 				559300E624D58656006C6DB4 /* ChartsListView.swift */,
 				559300E824D587C0006C6DB4 /* ChartListRow.swift */,
 				552C2C2524D6B9BB00D3DFBE /* CustomChartDetailView.swift */,
+				55A3A0EE2B368DC200E4DB07 /* ServerDetailItem.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -558,9 +561,9 @@
 				55FC8F6B24BAD8F100CA8751 /* ServerDetailView.swift in Sources */,
 				55BFBA2924CC5875004461D3 /* ServerListViewModel.swift in Sources */,
 				55D3077424D19D1E00CF076B /* AlarmListRow.swift in Sources */,
-				556BF0E527363CAB0023C0E9 /* UIDevice+View.swift in Sources */,
 				553DF8B12733DEA00067047A /* InfoMessage.swift in Sources */,
 				5548A9BC273147FD003ACBBD /* ChartView.swift in Sources */,
+				55A3A0EF2B368DC200E4DB07 /* ServerDetailItem.swift in Sources */,
 				558CABAC24B99931002D115B /* CloudModel.swift in Sources */,
 				55D3076F24D18F9600CF076B /* UserDefaults+Color.swift in Sources */,
 				558CABAF24B999F7002D115B /* ServerService.swift in Sources */,
@@ -574,6 +577,7 @@
 				55BA431224C3395400599345 /* ServerData.swift in Sources */,
 				55C638F924CBE6B800395B23 /* PercentageUsageData.swift in Sources */,
 				55BA431024C332C900599345 /* ServerInfo.swift in Sources */,
+				55A3A0ED2B367FEC00E4DB07 /* RedactedView.swift in Sources */,
 				555401A324D850D100B1B727 /* CustomTextStyle.swift in Sources */,
 				55C638FD24CBFBA400395B23 /* DataGrid.swift in Sources */,
 				559300E924D587C0006C6DB4 /* ChartListRow.swift in Sources */,

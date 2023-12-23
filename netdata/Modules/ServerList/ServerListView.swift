@@ -17,51 +17,43 @@ struct ServerListView: View {
     @State private var showSettings = false
     
     var body: some View {
-        VStack(spacing: 0) {
-            List {
-                if !self.serverService.isCloudEnabled && !serverService.isSynching {
-                    ErrorMessage(message: "iCloud not enabled, you need an iCloud account to view / add servers")
-                }
-                
-                if let error = self.serverService.mostRecentError {
-                    ErrorMessage(message: error.localizedDescription)
-                }
-                
-                if serverService.isSynching && serverService.defaultServers.isEmpty && serverService.favouriteServers.isEmpty {
-                    ForEach((1...4), id: \.self) { _ in
-                        Group {
-                            VStack(alignment: .leading, spacing: 5) {
-                                Text("name")
-                                    .font(.headline)
-                                Text("description")
-                                    .font(.subheadline)
-                                    .foregroundColor(.gray)
+        GeometryReader { geometry in
+            ScrollView {
+                VStack(alignment: .leading) {
+                    RedactedView(loading: serverService.isSynching) {
+                        if !self.serverService.isCloudEnabled && !serverService.isSynching {
+                            ErrorMessage(message: "iCloud not enabled, you need an iCloud account to view / add servers")
+                        }
+                        
+                        if let error = self.serverService.mostRecentError {
+                            ErrorMessage(message: error.localizedDescription)
+                        }
+                        
+                        if serverService.favouriteServers.isEmpty == false {
+                            Label("Favourites", systemImage: "star.fill")
+                                .font(.headline)
+                            LazyVGrid(columns: gridLayout(for: geometry.size.width), alignment: .leading, spacing: 8) {
+                                ForEach(serverService.favouriteServers, id: \.id) { server in
+                                    ServerListRow(server: server)
+                                }
                             }
-                            .redacted(reason: .placeholder)
+                            .padding(.bottom, 16)
                         }
-                        .padding(8)
-                    }
-                } else {
-                    if !serverService.favouriteServers.isEmpty {
-                        Section("Favourites") {
-                            ForEach(serverService.favouriteServers) { server in
-                                ServerListRow(server: server)
+                        
+                        if serverService.defaultServers.isEmpty == false {
+                            Label("All Servers", systemImage: "folder.fill")
+                                .font(.headline)
+                            LazyVGrid(columns: gridLayout(for: geometry.size.width), alignment: .leading, spacing: 8) {
+                                ForEach(serverService.defaultServers, id: \.id) { server in
+                                    ServerListRow(server: server)
+                                }
                             }
-                            .onDelete(perform: self.deleteFavouriteServer)
+                            .padding(.bottom, 16)
                         }
-                        .headerProminence(.increased)
                     }
-                    
-                    Section("Servers") {
-                        ForEach(serverService.defaultServers) { server in
-                            ServerListRow(server: server)
-                        }
-                        .onDelete(perform: self.deleteServer)
-                    }
-                    .headerProminence(.increased)
                 }
+                .padding(.horizontal, 16)
             }
-            .listStyle(.insetGrouped)
         }
         .task {
             await serverService.refresh()
@@ -72,10 +64,8 @@ struct ServerListView: View {
                 showWelcome = true
             }
         }
-        .ifNotMacCatalyst { view in
-            view.refreshable {
-                await serverService.refresh()
-            }
+        .refreshable {
+            await serverService.refresh()
         }
         .toolbar {
             ToolbarItem(placement: .navigation) {
@@ -121,5 +111,10 @@ struct ServerListView: View {
     
     func deleteFavouriteServer(at offsets: IndexSet) {
         self.serverService.delete(server: serverService.favouriteServers[offsets.first!])
+    }
+    
+    private func gridLayout(for width: CGFloat) -> [GridItem] {
+        let numberOfColumns = min(Int(width / 180), 6)
+        return Array(repeating: .init(.flexible()), count: max(numberOfColumns, 1)) // Ensuring at least one column
     }
 }

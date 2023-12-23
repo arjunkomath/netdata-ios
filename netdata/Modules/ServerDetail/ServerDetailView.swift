@@ -17,202 +17,164 @@ struct ServerDetailView: View {
     @State var timer: Timer.TimerPublisher = Timer.publish(every: 1, on: .main, in: .common)
     
     var body: some View {
-        VStack(spacing: 0) {
-            List {
-                if viewModel.dataMode == .fifteenMins {
-                    Section {
-                        Link("Report an issue", destination: URL(string: "https://github.com/arjunkomath/netdata-ios/issues")!)
-                    }
-                    .readableGuidePadding()
-                }
-                
-                Section("CPU (%)") {
-                    switch (viewModel.dataMode) {
-                    case .now:
-                        HStack {
-                            VStack {
-                                Meter(progress: viewModel.getGaugeData(data: viewModel.cpuUsage.data))
-                                    .redacted(reason: viewModel.cpuUsage.labels.count < 1 ? .placeholder : .init())
-                                
-                                if (server.serverInfo != nil && viewModel.cpuUsage.labels.count > 0) {
-                                    Spacer()
+        GeometryReader { geometry in
+            ScrollView {
+                LazyVGrid(columns: gridLayout(for: geometry.size.width), alignment: .leading, spacing: 12) {
+                    RedactedView(loading: viewModel.cpuUsage.labels.count < 1) {
+                        ServerDetailItem(label: "CPU Usage (%)") {
+                            switch (viewModel.dataMode) {
+                            case .now:
+                                VStack {
+                                    Meter(progress: viewModel.getGaugeData(data: viewModel.cpuUsage.data))
+                                        .redacted(reason: viewModel.cpuUsage.labels.count < 1 ? .placeholder : .init())
                                     
-                                    AbsoluteUsageData(stringValue: server.serverInfo?.cores_total,
-                                                      title: "cores",
-                                                      showArrows: false)
+                                    if (server.serverInfo != nil && viewModel.cpuUsage.labels.count > 0) {
+                                        Spacer()
+                                        
+                                        AbsoluteUsageData(stringValue: server.serverInfo?.cores_total,
+                                                          title: "cores",
+                                                          showArrows: false)
+                                    }
+                                }
+                                DataGrid(labels: viewModel.cpuUsage.labels,
+                                         data: viewModel.cpuUsage.data,
+                                         dataType: .percentage,
+                                         showArrows: false)
+                                
+                            case .fifteenMins:
+                                ChartView(datas: [viewModel.cpuUsageData])
+                                    .frame(height: 240)
+                                    .padding()
+                                    .listRowInsets(.init())
+                            }
+                        }
+                    }
+                    
+                    VStack(alignment: .leading, spacing: 12) {
+                        RedactedView(loading: viewModel.ramUsage.labels.count < 1) {
+                            ServerDetailItem(label: "Memory (MiB)") {
+                                switch (viewModel.dataMode) {
+                                case .now:
+                                    Meter(progress: viewModel.ramUsageGauge)
+                                        .redacted(reason: self.viewModel.ramUsage.labels.count < 1 ? .placeholder : .init())
+                                    DataGrid(labels: viewModel.ramUsage.labels,
+                                             data: viewModel.ramUsage.data,
+                                             dataType: .absolute,
+                                             showArrows: false)
+                                    
+                                case .fifteenMins:
+                                    ChartView(datas: [viewModel.ramChartData], max: viewModel.ramMax)
+                                        .frame(height: 240)
+                                        .padding()
+                                        .listRowInsets(.init())
                                 }
                             }
-                            
-                            self.getiPadSpacer()
-                            
-                            DataGrid(labels: viewModel.cpuUsage.labels,
-                                     data: viewModel.cpuUsage.data,
-                                     dataType: .percentage,
-                                     showArrows: false)
                         }
                         
-                    case .fifteenMins:
-                        ChartView(datas: [viewModel.cpuUsageData])
-                            .frame(height: 240)
-                            .padding()
-                            .listRowInsets(.init())
-                    }
-                }
-                .headerProminence(.increased)
-                .readableGuidePadding()
-                
-                Section("Load") {
-                    switch (viewModel.dataMode) {
-                    case .now:
-                        DataGrid(labels: viewModel.load.labels,
-                                 data: viewModel.load.data,
-                                 dataType: .absolute,
-                                 showArrows: false)
-                        
-                    case .fifteenMins:
-                        ChartView(datas: [viewModel.load1ChartData, viewModel.load5ChartData, viewModel.load15ChartData], max: 1)
-                            .frame(height: 250)
-                            .padding()
-                            .listRowInsets(.init())
-                    }
-                }
-                .headerProminence(.increased)
-                .readableGuidePadding()
-                
-                Section("Memory (MiB)") {
-                    switch (viewModel.dataMode) {
-                    case .now:
-                        HStack {
-                            Meter(progress: viewModel.ramUsageGauge)
-                                .redacted(reason: self.viewModel.ramUsage.labels.count < 1 ? .placeholder : .init())
-                            
-                            self.getiPadSpacer()
-                            
-                            DataGrid(labels: viewModel.ramUsage.labels,
-                                     data: viewModel.ramUsage.data,
-                                     dataType: .absolute,
-                                     showArrows: false)
-                        }
-                        
-                    case .fifteenMins:
-                        ChartView(datas: [viewModel.ramChartData], max: viewModel.ramMax)
-                            .frame(height: 240)
-                            .padding()
-                            .listRowInsets(.init())
-                    }
-                }
-                .headerProminence(.increased)
-                .readableGuidePadding()
-                
-                Section("Disk") {
-                    switch (viewModel.dataMode) {
-                    case .now:
-                        Group {
-                            VStack(alignment: .leading, spacing: 4) {
-                                Text("Space (GiB)")
-                                    .font(.subheadline)
-                                    .padding(.vertical, 4)
-                                
-                                HStack {
+                        RedactedView(loading: viewModel.diskSpaceUsage.labels.count < 1) {
+                            ServerDetailItem(label: "Space (GiB)") {
+                                switch (viewModel.dataMode) {
+                                case .now:
                                     Meter(progress: viewModel.diskSpaceUsageGauge)
                                         .redacted(reason: viewModel.diskSpaceUsage.labels.count < 1 ? .placeholder : .init())
-                                    
-                                    self.getiPadSpacer()
                                     
                                     DataGrid(labels: viewModel.diskSpaceUsage.labels,
                                              data: viewModel.diskSpaceUsage.data,
                                              dataType: .absolute,
                                              showArrows: false)
+                                case .fifteenMins:
+                                    ChartView(datas: [viewModel.diskChartData], max: viewModel.diskMax)
+                                        .frame(height: 240)
+                                        .padding()
+                                        .listRowInsets(.init())
                                 }
                             }
-                            
-                            VStack(alignment: .leading, spacing: 4) {
-                                Text("I/O (KiB/s)")
-                                    .font(.subheadline)
-                                    .padding(.vertical, 4)
-                                
+                        }
+                    }
+                    
+                    VStack(alignment: .leading, spacing: 12) {
+                        RedactedView(loading: viewModel.load.labels.count < 1) {
+                            ServerDetailItem(label: "Load") {
+                                switch (viewModel.dataMode) {
+                                case .now:
+                                    DataGrid(labels: viewModel.load.labels,
+                                             data: viewModel.load.data,
+                                             dataType: .absolute,
+                                             showArrows: false)
+                                    
+                                case .fifteenMins:
+                                    ChartView(datas: [viewModel.load1ChartData, viewModel.load5ChartData, viewModel.load15ChartData], max: 1)
+                                        .frame(height: 250)
+                                        .padding()
+                                        .listRowInsets(.init())
+                                }
+                            }
+                        }
+                        
+                        RedactedView(loading: viewModel.diskIO.labels.count < 1) {
+                            ServerDetailItem(label: "I/O (KiB/s)") {
                                 DataGrid(labels: viewModel.diskIO.labels,
                                          data: viewModel.diskIO.data,
                                          dataType: .absolute,
                                          showArrows: true)
                             }
                         }
-                    case .fifteenMins:
-                        ChartView(datas: [viewModel.diskChartData], max: viewModel.diskMax)
-                            .frame(height: 240)
-                            .padding()
-                            .listRowInsets(.init())
                     }
-                }
-                .headerProminence(.increased)
-                .readableGuidePadding()
-                
-                if viewModel.dataMode == .now {
-                    Section("Network") {
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text("system.net (kilobits/s)")
-                                .font(.subheadline)
-                                .padding(.vertical, 4)
-                            
+                    
+                    RedactedView(loading: viewModel.network.labels.count < 1) {
+                        ServerDetailItem(label: "system.net (kilobits/s)") {
                             DataGrid(labels: viewModel.network.labels,
                                      data: viewModel.network.data,
                                      dataType: .absolute,
                                      showArrows: true)
                         }
-                        
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text("system.ip (megabits/s)")
-                                .font(.subheadline)
-                                .padding(.vertical, 4)
-                            
+                    }
+                    
+                    RedactedView(loading: viewModel.networkIPv4.labels.count < 1) {
+                        ServerDetailItem(label: "system.ip (megabits/s)") {
                             DataGrid(labels: viewModel.networkIPv4.labels,
                                      data: viewModel.networkIPv4.data,
                                      dataType: .absolute,
                                      showArrows: true)
                         }
-                        
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text("system.ipv6 (kilobits/s)")
-                                .font(.subheadline)
-                                .padding(.vertical, 4)
-                            
+                    }
+                    
+                    RedactedView(loading: viewModel.networkIPv6.labels.count < 1) {
+                        ServerDetailItem(label: "system.ipv6 (kilobits/s)") {
                             DataGrid(labels: viewModel.networkIPv6.labels,
                                      data: viewModel.networkIPv6.data,
                                      dataType: .absolute,
                                      showArrows: true)
                         }
                     }
-                    .headerProminence(.increased)
-                    .readableGuidePadding()
                 }
+                .padding(16)
                 
                 if viewModel.bookmarkedChartData.count > 0 && viewModel.dataMode == .now {
-                    Section("Pinned charts") {
-                        ForEach(Array(viewModel.bookmarkedChartData.enumerated()), id: \.offset) { i, chart in
-                            HStack {
-                                if self.getDataType(chart: viewModel.bookmarks[i]) == .percentage {
-                                    Meter(progress: viewModel.getGaugeData(data: chart.data))
-                                        .redacted(reason: chart.labels.count < 1 ? .placeholder : .init())
-                                }
-                                
-                                VStack(alignment: .leading, spacing: 4) {
-                                    Text(viewModel.bookmarks[i].id)
-                                        .font(.subheadline)
-                                        .padding(.vertical, 4)
-                                    
-                                    DataGrid(labels: chart.labels,
-                                             data: chart.data,
-                                             dataType: self.getDataType(chart: viewModel.bookmarks[i]),
-                                             showArrows: false)
+                    VStack(alignment: .leading, spacing: 12) {
+                        Label("Pinned Charts", systemImage: "pin.circle.fill")
+                        
+                        LazyVGrid(columns: gridLayout(for: geometry.size.width), alignment: .leading, spacing: 12) {
+                            ForEach(Array(viewModel.bookmarkedChartData.enumerated()), id: \.offset) { i, chart in
+                                RedactedView(loading: chart.data.count == 0) {
+                                    ServerDetailItem(label: viewModel.bookmarks[i].id) {
+                                        if self.getDataType(chart: viewModel.bookmarks[i]) == .percentage {
+                                            Meter(progress: viewModel.getGaugeData(data: chart.data))
+                                                .redacted(reason: chart.labels.count < 1 ? .placeholder : .init())
+                                        }
+                                        
+                                        DataGrid(labels: chart.labels,
+                                                 data: chart.data,
+                                                 dataType: self.getDataType(chart: viewModel.bookmarks[i]),
+                                                 showArrows: false)
+                                    }
                                 }
                             }
                         }
                     }
-                    .headerProminence(.increased)
-                    .readableGuidePadding()
+                    .padding(16)
                 }
             }
-            .listStyle(InsetGroupedListStyle())
         }
         .task {
             viewModel.baseUrl = server.url
@@ -268,7 +230,6 @@ struct ServerDetailView: View {
                         Text("Charts")
                     }
                 }
-                .padding(.leading)
                 
                 Spacer()
                 
@@ -278,7 +239,6 @@ struct ServerDetailView: View {
                         Text("Alarms")
                     }
                 }
-                .padding(.trailing)
             }
         }
     }
@@ -294,13 +254,9 @@ struct ServerDetailView: View {
         return .absolute
     }
     
-    @ViewBuilder
-    func getiPadSpacer() -> some View {
-#if targetEnvironment(macCatalyst)
-        Spacer(minLength: 36)
-#else
-        UIDevice.current.userInterfaceIdiom == .pad ? Spacer(minLength: 36) : nil
-#endif
+    private func gridLayout(for width: CGFloat) -> [GridItem] {
+        let numberOfColumns = min(Int(width / 360), 3)
+        return Array(repeating: .init(.flexible(), alignment: .topLeading), count: max(numberOfColumns, 1)) // Ensuring at least one column
     }
 }
 
