@@ -29,6 +29,7 @@ struct ServerListRow: View {
                     }
                     
                     Text(server.name)
+                        .lineLimit(1)
                         .font(.system(size: 20, weight: .semibold, design: .rounded))
                         .foregroundColor(self.isOffline() ? .red : .primary)
                     
@@ -49,6 +50,7 @@ struct ServerListRow: View {
                 }
                 
                 Text(server.description)
+                    .lineLimit(1)
                     .font(.subheadline)
                     .foregroundColor(.gray)
             }
