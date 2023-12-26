@@ -68,7 +68,6 @@ struct AddServerForm: View {
                     saveButton
                     Spacer()
                 }
-                
                 ToolbarItem(placement: .navigation) {
                     dismissButton
                 }
@@ -121,6 +120,7 @@ struct AddServerForm: View {
                     .fontWeight(.bold)
             }
         }
+        .buttonStyle(BorderedBarButtonStyle())
         .disabled(viewModel.validatingUrl)
         .alert(isPresented: $viewModel.invalidUrlAlert) {
             Alert(title: Text("Oops!"), message: Text("You've entered an invalid URL"), dismissButton: .default(Text("OK")))

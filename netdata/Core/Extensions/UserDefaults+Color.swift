@@ -10,18 +10,17 @@ import SwiftUI
 
 extension UserDefaults {
     func colorForKey(key: String) -> UIColor? {
-        var colorReturnded: UIColor?
+        var colorReturned: UIColor?
         if let colorData = data(forKey: key) {
             do {
-                if let color = try NSKeyedUnarchiver.unarchiveTopLevelObjectWithData(colorData) as? UIColor {
-                    colorReturnded = color
-                }
+                colorReturned = try NSKeyedUnarchiver.unarchivedObject(ofClass: UIColor.self, from: colorData)
             } catch {
-                print("Error UserDefaults")
+                print("Error UserDefaults:", error)
             }
         }
-        return colorReturnded
+        return colorReturned
     }
+    
     
     func setColor(color: Color?, forKey key: String) {
         var colorData: NSData?

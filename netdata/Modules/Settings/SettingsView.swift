@@ -7,14 +7,21 @@
 
 import SwiftUI
 import StoreKit
+import FirebaseAuth
 
 struct SettingsView: View {
     @Environment(\.dismiss) var dismiss
     @Environment(\.requestReview) var requestReview
+    @Environment(\.scenePhase) private var scenePhase
     
     @EnvironmentObject private var serverService: ServerService
+    @EnvironmentObject private var userService: UserService
     
     @ObservedObject var userSettings = UserSettings()
+    
+    @State private var showPushPermissionAlert = false
+    @State private var hasPushPermission = false
+    @State private var alertNotifications = false
     
     private var versionNumber: String {
         Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? NSLocalizedString("Error", comment: "")
@@ -75,6 +82,65 @@ struct SettingsView: View {
                     .toggleStyle(SwitchToggleStyle(tint: .accentColor))
                 }
                 
+                if userService.userData != nil {
+                    Section(header: Text("Alert Notifications (beta)"),
+                            footer: Text("Get instant push notifications for alerts from your Netdata instance. Requires access to the terminal where Netdata Agent is running to configure custom notifications.")) {
+                        Toggle(isOn: $alertNotifications) {
+                            Label("Enable alerts", systemImage: "bell")
+                        }
+                        .toggleStyle(SwitchToggleStyle(tint: .accentColor))
+                        .onChange(of: alertNotifications) { enabled in
+                            Task {
+                                do {
+                                    if enabled && !hasPushPermission {
+                                        let authOptions: UNAuthorizationOptions = [.alert, .badge, .sound]
+                                        let result = try await UNUserNotificationCenter.current().requestAuthorization(
+                                            options: authOptions
+                                        )
+                                        
+                                        if (!result) {
+                                            alertNotifications = false
+                                            showPushPermissionAlert = true
+                                        }
+                                    }
+                                    
+                                    await userService.toggleAlerts(enabled: enabled)
+                                } catch {
+                                    print("Failed to fetch push permission", error)
+                                }
+                            }
+                        }
+                        .onChange(of: scenePhase) { newScenePhase in
+                            switch newScenePhase {
+                            case .active:
+                                print("App is in the foreground")
+                                Task {
+                                    let settings = await UNUserNotificationCenter.current().notificationSettings()
+                                    hasPushPermission = settings.authorizationStatus == .authorized
+                                }
+                            case .inactive:
+                                print("App is inactive")
+                            case .background:
+                                print("App is in the background")
+                            @unknown default:
+                                print("Unknown scene phase")
+                            }
+                        }
+                        
+                        if alertNotifications {
+                            Button(action: {
+                                UIPasteboard.general.string = userService.userData?.api_key
+                            }) {
+                                Label("Copy API key", systemImage: "doc.on.doc")
+                                    .foregroundColor(.accentColor)
+                            }
+                        }
+                        
+                        makeRow(image: "server.rack", text: "View configuration guide",
+                                link: URL(string: "https://learn.netdata.cloud/docs/alerting/notifications/agent-dispatched-notifications/custom")!)
+                    }
+                }
+                
                 if userSettings.bookmarks.count > 0 {
                     Section(header: Text("Pinned charts")) {
                         ForEach(userSettings.bookmarks, id: \.self) { chart in
@@ -95,8 +161,11 @@ struct SettingsView: View {
                 
                 Section(header: Text("Data")) {
                     makeRow(image: self.serverService.isCloudEnabled ? "icloud.fill" : "icloud.slash",
-                            text: "iCloud sync \(self.serverService.isCloudEnabled ? "enabled" : "disabled")",
+                            text: "iCloud Sync \(self.serverService.isCloudEnabled ? "Active" : "Failed")",
                             color: self.serverService.isCloudEnabled ? .green : .red)
+                    makeRow(image: "server.rack",
+                            text: "DB Sync \(Auth.auth().currentUser != nil ? "Active" : "Failed")",
+                            color: Auth.auth().currentUser != nil ? .green : .red)
                 }
                 
                 Section(header: Text("About")) {
@@ -117,6 +186,11 @@ struct SettingsView: View {
                                   detail: "\(versionNumber) (\(buildNumber))")
                 }
             }
+            .task {
+                let settings = await UNUserNotificationCenter.current().notificationSettings()
+                hasPushPermission = settings.authorizationStatus == .authorized
+                alertNotifications = hasPushPermission && (userService.userData?.enable_alert_notifications ?? false)
+            }
             .listStyle(.sidebar)
             .navigationTitle("Settings")
             .navigationBarTitleDisplayMode(.inline)
@@ -124,6 +198,16 @@ struct SettingsView: View {
                 ToolbarItem(placement: .navigation) {
                     dismissButton
                 }
+            }
+            .alert(isPresented: $showPushPermissionAlert) {
+                Alert(title: Text("Enable push notifications"),
+                      message: Text("You will receive instant push notifications for alerts from your Netdata instance."),
+                      primaryButton: .default(Text("Open Settings")) {
+                    Task {
+                        await UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!)
+                    }
+                },
+                      secondaryButton: .cancel())
             }
         }
         .navigationViewStyle(StackNavigationViewStyle())

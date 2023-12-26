@@ -58,7 +58,15 @@ struct EditServerForm: View {
             }
             .submitLabel(.done)
             .navigationBarTitle("Edit Server", displayMode: .inline)
-            .navigationBarItems(leading: dismissButton, trailing: saveButton)
+            .toolbar {
+                ToolbarItem(placement: .navigation) {
+                    dismissButton
+                }
+                ToolbarItemGroup(placement: .bottomBar) {
+                    saveButton
+                    Spacer()
+                }
+            }
             .task {
                 if let server = self.editingServer {
                     viewModel.name = server.name
@@ -87,16 +95,14 @@ struct EditServerForm: View {
                 await updateServer()
             }
         }) {
-            if (viewModel.validatingUrl) {
-                ProgressView()
-            } else {
+            HStack {
+                Image(systemName: "checkmark.circle.fill")
                 Text("Save")
-                    .font(.subheadline)
-                    .bold()
-                    .foregroundColor(.accentColor)
+                    .fontWeight(.bold)
             }
         }
         .buttonStyle(BorderedBarButtonStyle())
+        .disabled(viewModel.validatingUrl)
         .alert(isPresented: $viewModel.invalidUrlAlert) {
             Alert(title: Text("Oops!"), message: Text("You've entered an invalid URL"), dismissButton: .default(Text("OK")))
         }
