@@ -21,10 +21,6 @@ class UserService: ObservableObject, PublicCloudService {
     @Published var userData: UserData?
     
     init() {
-        Task {
-            await signInUser()
-        }
-        
         Auth.auth().addStateDidChangeListener { (_, user) in
             if let user = user {
                 print("AuthService: User found, fetching data")
@@ -61,6 +57,10 @@ class UserService: ObservableObject, PublicCloudService {
                             self.userData = data
                         }
                     }
+            } else {
+                Task {
+                    await self.signInUser()
+                }
             }
         }
     }

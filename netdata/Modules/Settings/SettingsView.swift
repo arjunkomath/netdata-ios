@@ -7,6 +7,7 @@
 
 import SwiftUI
 import StoreKit
+import FirebaseAuth
 
 struct SettingsView: View {
     @Environment(\.dismiss) var dismiss
@@ -160,8 +161,11 @@ struct SettingsView: View {
                 
                 Section(header: Text("Data")) {
                     makeRow(image: self.serverService.isCloudEnabled ? "icloud.fill" : "icloud.slash",
-                            text: "iCloud sync \(self.serverService.isCloudEnabled ? "enabled" : "disabled")",
+                            text: "iCloud Sync \(self.serverService.isCloudEnabled ? "Active" : "Failed")",
                             color: self.serverService.isCloudEnabled ? .green : .red)
+                    makeRow(image: "server.rack",
+                            text: "DB Sync \(Auth.auth().currentUser != nil ? "Active" : "Failed")",
+                            color: Auth.auth().currentUser != nil ? .green : .red)
                 }
                 
                 Section(header: Text("About")) {
