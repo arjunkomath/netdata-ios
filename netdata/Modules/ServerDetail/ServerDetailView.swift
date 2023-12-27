@@ -42,10 +42,8 @@ struct ServerDetailView: View {
                                          showArrows: false)
                                 
                             case .fifteenMins:
-                                ChartView(datas: [viewModel.cpuUsageData])
-                                    .frame(height: 240)
-                                    .padding()
-                                    .listRowInsets(.init())
+                                ChartView(data: viewModel.cpuUsage)
+                                    .frame(height: 280)
                             }
                         }
                     }
@@ -63,31 +61,21 @@ struct ServerDetailView: View {
                                              showArrows: false)
                                     
                                 case .fifteenMins:
-                                    ChartView(datas: [viewModel.ramChartData], max: viewModel.ramMax)
-                                        .frame(height: 240)
-                                        .padding()
-                                        .listRowInsets(.init())
+                                    ChartView(data: viewModel.ramUsage)
+                                        .frame(height: 105)
                                 }
                             }
                         }
                         
                         RedactedView(loading: viewModel.diskSpaceUsage.labels.count < 1) {
                             ServerDetailItem(label: "Space (GiB)") {
-                                switch (viewModel.dataMode) {
-                                case .now:
-                                    Meter(progress: viewModel.diskSpaceUsageGauge)
-                                        .redacted(reason: viewModel.diskSpaceUsage.labels.count < 1 ? .placeholder : .init())
-                                    
-                                    DataGrid(labels: viewModel.diskSpaceUsage.labels,
-                                             data: viewModel.diskSpaceUsage.data,
-                                             dataType: .absolute,
-                                             showArrows: false)
-                                case .fifteenMins:
-                                    ChartView(datas: [viewModel.diskChartData], max: viewModel.diskMax)
-                                        .frame(height: 240)
-                                        .padding()
-                                        .listRowInsets(.init())
-                                }
+                                Meter(progress: viewModel.diskSpaceUsageGauge)
+                                    .redacted(reason: viewModel.diskSpaceUsage.labels.count < 1 ? .placeholder : .init())
+                                
+                                DataGrid(labels: viewModel.diskSpaceUsage.labels,
+                                         data: viewModel.diskSpaceUsage.data,
+                                         dataType: .absolute,
+                                         showArrows: false)
                             }
                         }
                     }
@@ -103,10 +91,8 @@ struct ServerDetailView: View {
                                              showArrows: false)
                                     
                                 case .fifteenMins:
-                                    ChartView(datas: [viewModel.load1ChartData, viewModel.load5ChartData, viewModel.load15ChartData], max: 1)
-                                        .frame(height: 250)
-                                        .padding()
-                                        .listRowInsets(.init())
+                                    ChartView(data: viewModel.load)
+                                        .frame(height: 105)
                                 }
                             }
                         }
@@ -150,7 +136,7 @@ struct ServerDetailView: View {
                 }
                 .padding(16)
                 
-                if viewModel.bookmarkedChartData.count > 0 && viewModel.dataMode == .now {
+                if viewModel.bookmarkedChartData.count > 0 {
                     VStack(alignment: .leading, spacing: 12) {
                         Label("Pinned Charts", systemImage: "pin.circle.fill")
                         
@@ -209,11 +195,9 @@ struct ServerDetailView: View {
         }
         .navigationBarTitle(server.name)
         .toolbar {
-            ToolbarItem(placement: .navigation) {
+            ToolbarItemGroup(placement: .navigation) {
                 PulsatingView(live: viewModel.isLive)
-            }
-            
-            ToolbarItem(placement: .principal) {
+                
                 if userSettings.enableCharts {
                     Picker("Data mode", selection: $viewModel.dataMode) {
                         Text("Now").tag(DataMode.now)

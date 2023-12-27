@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import AlertToast
 import Combine
 
 struct EditServerForm: View {
@@ -20,10 +21,6 @@ struct EditServerForm: View {
             Form {
                 Section(header: makeSectionHeader(text: "Server details"),
                         footer: Text("HTTPS is required for connections over the internet\nHTTP is allowed for LAN connections with IP or mDNS domains")) {
-                    if viewModel.validationError {
-                        ErrorMessage(message: viewModel.validationErrorMessage)
-                    }
-                    
                     TextField("Name", text: $viewModel.name)
                     TextField("Description", text: $viewModel.description)
                     TextField("NetData Server Full URL", text: $viewModel.url)
@@ -40,10 +37,6 @@ struct EditServerForm: View {
                         .toggleStyle(SwitchToggleStyle(tint: .accentColor))
                     }
                     
-                    if viewModel.basicAuthvalidationError {
-                        ErrorMessage(message: viewModel.basicAuthvalidationErrorMessage)
-                    }
-                    
                     if viewModel.enableBasicAuth {
                         TextField("Username", text: $viewModel.basicAuthUsername)
                             .autocapitalization(UITextAutocapitalizationType.none)
@@ -55,6 +48,20 @@ struct EditServerForm: View {
                 Task {
                     await self.updateServer()
                 }
+            }
+            .toast(isPresenting: $viewModel.validationError, duration: 5) {
+                AlertToast(
+                    displayMode: .banner(.pop),
+                    type: .error(.red),
+                    title: viewModel.validationErrorMessage
+                )
+            }
+            .toast(isPresenting: $viewModel.basicAuthvalidationError, duration: 5) {
+                AlertToast(
+                    displayMode: .banner(.pop),
+                    type: .error(.red),
+                    title: viewModel.basicAuthvalidationErrorMessage
+                )
             }
             .submitLabel(.done)
             .navigationBarTitle("Edit Server", displayMode: .inline)
@@ -103,9 +110,6 @@ struct EditServerForm: View {
         }
         .buttonStyle(BorderedBarButtonStyle())
         .disabled(viewModel.validatingUrl)
-        .alert(isPresented: $viewModel.invalidUrlAlert) {
-            Alert(title: Text("Oops!"), message: Text("You've entered an invalid URL"), dismissButton: .default(Text("OK")))
-        }
     }
     
     func updateServer() async {

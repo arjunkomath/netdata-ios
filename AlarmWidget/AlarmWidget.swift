@@ -98,6 +98,12 @@ struct AlarmWidgetEntryView : View {
             Text("Unsupported")
         case .systemExtraLarge:
             Text("Unsupported")
+        case .accessoryCircular:
+            Text("unknown")
+        case .accessoryRectangular:
+            Text("unknown")
+        case .accessoryInline:
+            Text("unknown")
         @unknown default: Text("unknown")
         }
     }

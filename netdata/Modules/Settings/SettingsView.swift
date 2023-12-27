@@ -72,12 +72,12 @@ struct SettingsView: View {
                     }
                     
                     Toggle(isOn: $userSettings.hapticFeedback) {
-                        Label("Haptic feedback", systemImage: "waveform.path")
+                        Label("Haptic Feedback", systemImage: "waveform.path")
                     }
                     .toggleStyle(SwitchToggleStyle(tint: .accentColor))
                     
                     Toggle(isOn: $userSettings.enableCharts) {
-                        Label("Show charts", systemImage: "chart.xyaxis.line")
+                        Label("Charts", systemImage: "chart.xyaxis.line")
                     }
                     .toggleStyle(SwitchToggleStyle(tint: .accentColor))
                 }

@@ -41,17 +41,6 @@ enum DataMode {
     @Published var isLive: Bool = false
     @Published var dataMode: DataMode = .now
     
-    // MARK:- Charts
-    @Published var ramChartData: [Double] = []
-    @Published var ramMax: Double = 0
-    
-    @Published var load1ChartData: [Double] = []
-    @Published var load5ChartData: [Double] = []
-    @Published var load15ChartData: [Double] = []
-    
-    @Published var diskChartData: [Double] = []
-    @Published var diskMax: Double = 0
-    
     var baseUrl = ""
     var basicAuthBase64 = ""
     
@@ -76,10 +65,6 @@ enum DataMode {
             self.load = self.dataMode == .now ?
             try await NetdataClient.shared.getChartData(baseUrl: baseUrl, basicAuthBase64: basicAuthBase64, chart: "system.load") :
             try await NetdataClient.shared.getChartDataWithHistory(baseUrl: baseUrl, basicAuthBase64: basicAuthBase64, chart: "system.load")
-            
-            self.load1ChartData = Array(self.load.data).reversed().map({ $0[1] ?? 0 })
-            self.load5ChartData = Array(self.load.data).reversed().map({ $0[2] ?? 0  })
-            self.load15ChartData = Array(self.load.data).reversed().map({ $0[3] ?? 0 })
         } catch {
             debugPrint("[fetchLoad] Failed to fetch chart data: \(error)")
         }
@@ -95,9 +80,6 @@ enum DataMode {
             if let dataPoint = self.ramUsage.data.first {
                 if let free = dataPoint[1], let used = dataPoint[2], let cached = dataPoint[3] {
                     self.ramUsageGauge = CGFloat(used / (free + used + cached))
-                    
-                    self.ramChartData = Array(self.ramUsage.data).reversed().map({ $0[2] ?? 0 })
-                    self.ramMax = free + used + cached
                 }
             }
         } catch {
@@ -133,9 +115,6 @@ enum DataMode {
             if let dataPoint = self.diskSpaceUsage.data.first {
                 if let avail = dataPoint[1], let used = dataPoint[2] {
                     self.diskSpaceUsageGauge = CGFloat(used / (avail + used))
-                    
-                    self.diskChartData = Array(self.diskSpaceUsage.data).reversed().map({ $0[2] ?? 0 })
-                    self.diskMax = avail + used
                 }
             }
         } catch {
