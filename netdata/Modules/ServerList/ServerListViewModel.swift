@@ -22,7 +22,6 @@ import SwiftUI
     @Published var basicAuthvalidationErrorMessage = ""
     
     @Published var validatingUrl = false
-    @Published var invalidUrlAlert = false
     @Published var validationError = false
     @Published var validationErrorMessage = ""
     
@@ -126,7 +125,8 @@ import SwiftUI
         self.basicAuthvalidationError = false
         
         if (!validateUrl(urlString: self.url)) {
-            invalidUrlAlert = true
+            validationError = true
+            validationErrorMessage = "Please enter a valid URL"
             return false
         }
         
