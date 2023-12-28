@@ -35,18 +35,21 @@ struct ServerListRow: View {
                     
                     Spacer()
                     
+                    if !server.basicAuthBase64.isEmpty {
+                        Image(systemName: "lock.shield")
+                            .foregroundColor(.accentColor)
+                    }
+                    
                     RedactedView(loading: fetchingAlarm) {
                         Circle()
                             .fill(self.getAlarmStatusColor())
                             .frame(width: 12, height: 12, alignment: .leading)
                     }
                     
-                    if !server.basicAuthBase64.isEmpty {
-                        Image(systemName: "lock.shield")
-                            .foregroundColor(.accentColor)
-                    }
-                    
+#if targetEnvironment(macCatalyst)
+#else
                     Image(systemName: "chevron.right")
+#endif
                 }
                 
                 Text(server.description)
