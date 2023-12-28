@@ -18,6 +18,29 @@ struct ServerListView: View {
     
     var body: some View {
         GeometryReader { geometry in
+            #if targetEnvironment(macCatalyst)
+            List {
+                if !self.serverService.isCloudEnabled && !serverService.isSynching {
+                    ErrorMessage(message: "iCloud not enabled, you need an iCloud account to view / add servers")
+                }
+                
+                if let error = self.serverService.mostRecentError {
+                    ErrorMessage(message: error.localizedDescription)
+                }
+
+                Section(header: Text("Favourites")) {
+                    ForEach(serverService.favouriteServers, id: \.id) { server in
+                        ServerListRow(server: server)
+                    }
+                }
+                
+                Section(header: Text("All Servers")) {
+                    ForEach(serverService.defaultServers, id: \.id) { server in
+                        ServerListRow(server: server)
+                    }
+                }
+            }
+            #else
             ScrollView {
                 VStack(alignment: .leading) {
                     RedactedView(loading: serverService.isSynching) {
@@ -54,6 +77,7 @@ struct ServerListView: View {
                 }
                 .padding(.horizontal, 16)
             }
+            #endif
         }
         .task {
             await serverService.refresh()

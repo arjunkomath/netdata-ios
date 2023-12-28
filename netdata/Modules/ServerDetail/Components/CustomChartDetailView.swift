@@ -53,6 +53,7 @@ struct CustomChartDetailView: View {
                 .readableGuidePadding()
             }
         }
+        .listStyle(.insetGrouped)
         .navigationBarTitle(serverChart.name, displayMode: .inline)
         .onReceive(timer) { _ in
             Task {

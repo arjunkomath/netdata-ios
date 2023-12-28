@@ -75,11 +75,6 @@ struct SettingsView: View {
                         Label("Haptic Feedback", systemImage: "waveform.path")
                     }
                     .toggleStyle(SwitchToggleStyle(tint: .accentColor))
-                    
-                    Toggle(isOn: $userSettings.enableCharts) {
-                        Label("Charts", systemImage: "chart.xyaxis.line")
-                    }
-                    .toggleStyle(SwitchToggleStyle(tint: .accentColor))
                 }
                 
                 if userService.userData != nil {

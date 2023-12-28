@@ -34,12 +34,19 @@ struct ChartView: View {
             for labelIndex in 1..<serverData.labels.count {
                 let label = serverData.labels[labelIndex]
                 if let value = serverData.data[dataIndex][labelIndex] {
-                    chartData.append(ChartDataPoint(label: label, value: value, time: Date(timeIntervalSince1970: time).formatted()))
+                    chartData.append(
+                        ChartDataPoint(
+                            label: label,
+                            value: value,
+                            time: Date(timeIntervalSince1970: time)
+                                .formatted(.dateTime.minute().second())
+                        )
+                    )
                 }
             }
         }
         
-        return chartData
+        return chartData.reversed()
     }
 }
 

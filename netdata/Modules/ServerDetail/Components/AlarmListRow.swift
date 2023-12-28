@@ -12,17 +12,17 @@ struct AlarmListRow: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            HStack {
-                Text(alarm.name)
-                    .bold()
-                Text(alarm.status)
-                    .font(.caption)
-                    .bold()
-                    .foregroundColor(self.isCritical() ? Color.red : Color.orange)
-                    .padding(5)
-                    .background(RoundedRectangle(cornerRadius: 14, style: .continuous)
-                                    .foregroundColor((self.isCritical() ? Color.red : Color.orange).opacity(0.2)))
-            }
+            Text(alarm.status)
+                .font(.caption)
+                .bold()
+                .foregroundColor(self.isCritical() ? Color.red : Color.orange)
+                .padding(.horizontal, 12)
+                .padding(.vertical, 4)
+                .background(RoundedRectangle(cornerRadius: 14, style: .continuous)
+                    .foregroundColor((self.isCritical() ? Color.red : Color.orange).opacity(0.1)))
+            
+            Text(alarm.name)
+                .bold()
             
             Text(alarm.info)
                 .font(.subheadline)

@@ -69,13 +69,20 @@ struct ServerDetailView: View {
                         
                         RedactedView(loading: viewModel.diskSpaceUsage.labels.count < 1) {
                             ServerDetailItem(label: "Space (GiB)") {
-                                Meter(progress: viewModel.diskSpaceUsageGauge)
-                                    .redacted(reason: viewModel.diskSpaceUsage.labels.count < 1 ? .placeholder : .init())
-                                
-                                DataGrid(labels: viewModel.diskSpaceUsage.labels,
-                                         data: viewModel.diskSpaceUsage.data,
-                                         dataType: .absolute,
-                                         showArrows: false)
+                                switch (viewModel.dataMode) {
+                                case .now:
+                                    Meter(progress: viewModel.diskSpaceUsageGauge)
+                                        .redacted(reason: viewModel.diskSpaceUsage.labels.count < 1 ? .placeholder : .init())
+                                    
+                                    DataGrid(labels: viewModel.diskSpaceUsage.labels,
+                                             data: viewModel.diskSpaceUsage.data,
+                                             dataType: .absolute,
+                                             showArrows: false)
+                                    
+                                case .fifteenMins:
+                                    ChartView(data: viewModel.diskSpaceUsage)
+                                        .frame(height: 105)
+                                }
                             }
                         }
                     }
@@ -174,19 +181,39 @@ struct ServerDetailView: View {
         }
         .onReceive(timer) { _ in
             Task {
-                await viewModel.fetchCpu()
-                await viewModel.fetchLoad()
-                await viewModel.fetchRam()
-                await viewModel.fetchDiskIo()
-                await viewModel.fetchNetwork()
-                await viewModel.fetchDiskSpace()
+                await withTaskGroup(of: Void.self) { group in
+                    group.addTask { await viewModel.fetchCpu() }
+                    group.addTask { await viewModel.fetchLoad() }
+                    group.addTask { await viewModel.fetchRam() }
+                    group.addTask { await viewModel.fetchDiskIo() }
+                    group.addTask { await viewModel.fetchNetwork() }
+                    group.addTask { await viewModel.fetchDiskSpace() }
+                    
+                    for await _ in group {}
+                }
                 
-                for (index, bookmark) in viewModel.bookmarks.enumerated() {
-                    do {
-                        viewModel.bookmarkedChartData[index] = try await NetdataClient.shared.getChartData(baseUrl: server.url, basicAuthBase64: server.basicAuthBase64, chart: bookmark.id)
-                    } catch {
-                        debugPrint("[\(bookmark.id)] Failed to fetch chart data")
+                var bookmarkedChartData = [Int: ServerData]()
+                await withTaskGroup(of: (Int, ServerData?).self) { group in
+                    for (index, bookmark) in viewModel.bookmarks.enumerated() {
+                        group.addTask {
+                            do {
+                                let chartData = try await NetdataClient.shared.getChartData(baseUrl: server.url, basicAuthBase64: server.basicAuthBase64, chart: bookmark.id)
+                                return (index, chartData)
+                            } catch {
+                                debugPrint("[\(bookmark.id)] Failed to fetch chart data")
+                                return (index, nil)
+                            }
+                        }
                     }
+                    
+                    for await (index, chartData) in group {
+                        if let chartData = chartData {
+                            bookmarkedChartData[index] = chartData
+                        }
+                    }
+                }
+                for (index, data) in bookmarkedChartData {
+                    viewModel.bookmarkedChartData[index] = data
                 }
             }
         }
@@ -198,13 +225,11 @@ struct ServerDetailView: View {
             ToolbarItemGroup(placement: .navigation) {
                 PulsatingView(live: viewModel.isLive)
                 
-                if userSettings.enableCharts {
-                    Picker("Data mode", selection: $viewModel.dataMode) {
-                        Text("Now").tag(DataMode.now)
-                        Text("15 Mins").tag(DataMode.fifteenMins)
-                    }
-                    .pickerStyle(.segmented)
+                Picker("Data mode", selection: $viewModel.dataMode) {
+                    Text("Now").tag(DataMode.now)
+                    Text("15 Mins").tag(DataMode.fifteenMins)
                 }
+                .pickerStyle(.segmented)
             }
             
             ToolbarItemGroup(placement: .bottomBar) {
