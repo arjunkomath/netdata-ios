@@ -11,27 +11,19 @@ struct Meter : View {
     var progress: CGFloat
     
     var body: some View {
-        VStack(spacing: 10){
-            ZStack {
-                Circle()
-                    .stroke(lineWidth: 16.0)
-                    .opacity(0.3)
-                    .foregroundColor(self.getColor())
-                
-                Circle()
-                    .trim(from: 0.0, to: CGFloat(min(self.progress, 1.0)))
-                    .stroke(style: StrokeStyle(lineWidth: 17.0, lineCap: .round, lineJoin: .round))
-                    .foregroundColor(self.getColor())
-                    .rotationEffect(Angle(degrees: 270.0))
-                    //.animation(.linear) //disabing animation here fixes the ui glitch that happens on SererDetailView init
-                
-                Text(String(format: "%.0f %%", min(self.progress, 1.0)*100.0))
-                    .font(.caption)
-                    .bold()
-            }
-            .frame(height: 72)
+        Gauge(
+            value: max(progress, 0),
+            in: 0...1
+        ) {
+            Text("%")
+        } currentValueLabel: {
+            Text(String(format: "%.0f", min(self.progress, 1.0)*100.0))
+                .font(.caption)
+                .bold()
         }
-        .frame(width: 102, height: 102)
+        .gaugeStyle(.accessoryCircular)
+        .tint(getColor())
+        .frame(width: 100, height: 100)
     }
     
     func getColor() -> Color {

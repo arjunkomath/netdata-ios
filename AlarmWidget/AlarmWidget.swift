@@ -9,6 +9,18 @@ import WidgetKit
 import Combine
 import SwiftUI
 
+extension View {
+    func widgetBackground(_ backgroundView: some View) -> some View {
+        if #available(iOSApplicationExtension 17.0, *) {
+            return containerBackground(for: .widget) {
+                backgroundView
+            }
+        } else {
+            return background(backgroundView)
+        }
+    }
+}
+
 struct Provider: TimelineProvider {
     
     func placeholder(in context: Context) -> AlarmsEntry {
@@ -48,8 +60,8 @@ struct Provider: TimelineProvider {
                             let serverAlarm = try await NetdataClient.shared.getAlarms(baseUrl: server.url, basicAuthBase64: server.basicAuthBase64)
                             
                             totalAlarmsCount += serverAlarm.alarms.count
-                            criticalAlarmsCount += serverAlarm.getCriticalAlarmsCount()
-                            alarms[server.name] = serverAlarm.getCriticalAlarmsCount() > 0 ? Color.red : serverAlarm.alarms.count > 0 ? Color.orange : Color.green;
+                            criticalAlarmsCount += serverAlarm.criticalAlarmsCount
+                            alarms[server.name] = serverAlarm.criticalAlarmsCount > 0 ? Color.red : serverAlarm.alarms.count > 0 ? Color.orange : Color.green;
                         } catch {
                             debugPrint("Fetch Alarms failed", server.name, error)
                         }
@@ -99,7 +111,7 @@ struct AlarmWidgetEntryView : View {
         case .systemExtraLarge:
             Text("Unsupported")
         case .accessoryCircular:
-            Text("unknown")
+            AlarmCircularView(entry: entry)
         case .accessoryRectangular:
             Text("unknown")
         case .accessoryInline:
@@ -116,8 +128,9 @@ struct AlarmWidget: Widget {
     var body: some WidgetConfiguration {
         StaticConfiguration(kind: kind, provider: Provider()) { entry in
             AlarmWidgetEntryView(entry: entry)
+                .widgetBackground(Color.black)
         }
-        .supportedFamilies([.systemSmall, .systemMedium])
+        .supportedFamilies([.systemSmall, .systemMedium, .accessoryCircular])
         .configurationDisplayName("Alarms")
         .description("Shows the count of active alarms in your favourite servers")
     }

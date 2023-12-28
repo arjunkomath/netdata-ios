@@ -35,6 +35,7 @@
 		5548A9BC273147FD003ACBBD /* ChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5548A9BB273147FD003ACBBD /* ChartView.swift */; };
 		555401A324D850D100B1B727 /* CustomTextStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 555401A224D850D100B1B727 /* CustomTextStyle.swift */; };
 		556064BE25C7E8CA0018FA14 /* MediumWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 556064BD25C7E8CA0018FA14 /* MediumWidget.swift */; };
+		558843052B3D432600C843C4 /* AlarmCircularView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 558843042B3D432600C843C4 /* AlarmCircularView.swift */; };
 		558CABAC24B99931002D115B /* CloudModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 558CABAB24B99931002D115B /* CloudModel.swift */; };
 		558CABAF24B999F7002D115B /* ServerService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 558CABAE24B999F7002D115B /* ServerService.swift */; };
 		558CABB124B99B42002D115B /* CloudService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 558CABB024B99B42002D115B /* CloudService.swift */; };
@@ -75,6 +76,7 @@
 		55E91EBD24D99D6900218F57 /* WelcomeScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55E91EBC24D99D6900218F57 /* WelcomeScreen.swift */; };
 		55EE682A24CD962100546B1A /* UserSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55EE682924CD962100546B1A /* UserSettings.swift */; };
 		55F1B1F12B35951200A97F3B /* SupportOptions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55F1B1F02B35951200A97F3B /* SupportOptions.swift */; };
+		55FA3AB12B3CCF30002E6DE1 /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 55FA3AB02B3CCF30002E6DE1 /* Alamofire */; };
 		55FC8F6B24BAD8F100CA8751 /* ServerDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55FC8F6A24BAD8F100CA8751 /* ServerDetailView.swift */; };
 		55FC8F6E24BADA5B00CA8751 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55FC8F6D24BADA5B00CA8751 /* SettingsView.swift */; };
 /* End PBXBuildFile section */
@@ -133,6 +135,7 @@
 		5548A9BB273147FD003ACBBD /* ChartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChartView.swift; sourceTree = "<group>"; };
 		555401A224D850D100B1B727 /* CustomTextStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomTextStyle.swift; sourceTree = "<group>"; };
 		556064BD25C7E8CA0018FA14 /* MediumWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediumWidget.swift; sourceTree = "<group>"; };
+		558843042B3D432600C843C4 /* AlarmCircularView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlarmCircularView.swift; sourceTree = "<group>"; };
 		558CABAB24B99931002D115B /* CloudModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudModel.swift; sourceTree = "<group>"; };
 		558CABAE24B999F7002D115B /* ServerService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerService.swift; sourceTree = "<group>"; };
 		558CABB024B99B42002D115B /* CloudService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudService.swift; sourceTree = "<group>"; };
@@ -182,6 +185,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				5514045725C6969C0081E4A4 /* CloudKit.framework in Frameworks */,
+				55FA3AB12B3CCF30002E6DE1 /* Alamofire in Frameworks */,
 				5514041A25C68F4F0081E4A4 /* SwiftUI.framework in Frameworks */,
 				5514041925C68F4F0081E4A4 /* WidgetKit.framework in Frameworks */,
 			);
@@ -262,11 +266,10 @@
 		5514041B25C68F4F0081E4A4 /* AlarmWidget */ = {
 			isa = PBXGroup;
 			children = (
+				558843032B3D42EC00C843C4 /* Vairants */,
 				5514041C25C68F4F0081E4A4 /* AlarmWidget.swift */,
 				5514041E25C68F510081E4A4 /* Assets.xcassets */,
 				5514042025C68F510081E4A4 /* Info.plist */,
-				55A8FE6B25C7E4AD00E2C2F8 /* SmallWidget.swift */,
-				556064BD25C7E8CA0018FA14 /* MediumWidget.swift */,
 			);
 			path = AlarmWidget;
 			sourceTree = "<group>";
@@ -280,6 +283,16 @@
 				55C638FC24CBFBA400395B23 /* DataGrid.swift */,
 			);
 			path = Charts;
+			sourceTree = "<group>";
+		};
+		558843032B3D42EC00C843C4 /* Vairants */ = {
+			isa = PBXGroup;
+			children = (
+				556064BD25C7E8CA0018FA14 /* MediumWidget.swift */,
+				55A8FE6B25C7E4AD00E2C2F8 /* SmallWidget.swift */,
+				558843042B3D432600C843C4 /* AlarmCircularView.swift */,
+			);
+			path = Vairants;
 			sourceTree = "<group>";
 		};
 		558CABAA24B99923002D115B /* Protocols */ = {
@@ -461,6 +474,9 @@
 			dependencies = (
 			);
 			name = AlarmWidgetExtension;
+			packageProductDependencies = (
+				55FA3AB02B3CCF30002E6DE1 /* Alamofire */,
+			);
 			productName = AlarmWidgetExtension;
 			productReference = 5514041825C68F4F0081E4A4 /* AlarmWidgetExtension.appex */;
 			productType = "com.apple.product-type.app-extension";
@@ -572,6 +588,7 @@
 				5514043725C6905A0081E4A4 /* CloudService.swift in Sources */,
 				556064BE25C7E8CA0018FA14 /* MediumWidget.swift in Sources */,
 				5514047B25C6AF750081E4A4 /* ServerCharts.swift in Sources */,
+				558843052B3D432600C843C4 /* AlarmCircularView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -658,7 +675,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
-				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MACCATALYST = YES;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2,6";
@@ -686,7 +703,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
-				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MACCATALYST = YES;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2,6";
@@ -747,6 +764,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.4;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -804,6 +822,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.4;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
@@ -836,7 +855,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.techulus.netdata;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
-				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MACCATALYST = YES;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2,6";
@@ -866,7 +885,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.techulus.netdata;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
-				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MACCATALYST = YES;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2,6";
@@ -957,6 +976,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 55E2FCCE2B370ACD00AB15A2 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseMessaging;
+		};
+		55FA3AB02B3CCF30002E6DE1 /* Alamofire */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 5525DA1B2B395C4100F56457 /* XCRemoteSwiftPackageReference "Alamofire" */;
+			productName = Alamofire;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

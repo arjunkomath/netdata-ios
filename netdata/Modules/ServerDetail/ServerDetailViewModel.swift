@@ -109,7 +109,9 @@ enum DataMode {
     
     func fetchDiskSpace() async {
         do {
-            let data = try await NetdataClient.shared.getChartData(baseUrl: baseUrl, basicAuthBase64: basicAuthBase64, chart: "disk_space._")
+            let data = self.dataMode == .now ?
+            try await NetdataClient.shared.getChartData(baseUrl: baseUrl, basicAuthBase64: basicAuthBase64, chart: "disk_space._") :
+            try await NetdataClient.shared.getChartDataWithHistory(baseUrl: baseUrl, basicAuthBase64: basicAuthBase64, chart: "disk_space._")
             self.diskSpaceUsage = data
             
             if let dataPoint = self.diskSpaceUsage.data.first {

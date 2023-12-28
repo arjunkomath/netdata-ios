@@ -24,7 +24,6 @@ struct ChartsListView: View {
                     ProgressView()
                 }
                 .frame(minWidth: 0, maxWidth: .infinity)
-                .padding()
             }
             
             ForEach(getActiveCharts()) { chart in
@@ -33,6 +32,7 @@ struct ChartsListView: View {
                              basicAuthBase64: basicAuthBase64)
             }
         }
+        .listStyle(.plain)
         .navigationTitle(Text("All Charts"))
         .searchable(text: $searchText)
         .task {

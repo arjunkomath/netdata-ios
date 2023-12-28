@@ -19,13 +19,13 @@ struct ChartListRow: View {
             VStack(alignment: .leading, spacing: 10) {
                 HStack {
                     Text("\(chart.name) - \(chart.family)")
-                        .bold()
+                        .font(.headline)
                 }
                 
                 Text(chart.title)
                     .font(.subheadline)
             }
-            .padding(5)
+            .padding(.vertical, 8)
         }
     }
 }

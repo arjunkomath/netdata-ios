@@ -23,12 +23,11 @@ struct AlarmsListView: View {
                 VStack(alignment: .center, spacing: 16) {
                     ProgressView()
                 }
-                .frame(minWidth: 0, maxWidth: .infinity)
                 .padding()
             }
             
             if self.getActiveAlarms().isEmpty && serverAlarms.status == true {
-                VStack(alignment: .center, spacing: 16) {
+                VStack(alignment: .leading, spacing: 16) {
                     Image(systemName: "hand.thumbsup.fill")
                         .imageScale(.large)
                         .foregroundColor(.green)
@@ -36,8 +35,6 @@ struct AlarmsListView: View {
                     Text("No active alarms.")
                         .font(.headline)
                 }
-                .frame(minWidth: 0, maxWidth: .infinity)
-                .padding()
             }
             
             ForEach(self.getActiveAlarms(), id: \.self) { key in
@@ -61,6 +58,7 @@ struct AlarmsListView: View {
                 }
             }
         }
+        .listStyle(.plain)
         .refreshable {
             await self.fetchAlarms()
         }

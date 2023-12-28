@@ -6,7 +6,7 @@
 //
 
 import Foundation
-import Combine
+import Alamofire
 
 enum NetDataEndpoint: String {
     case info = "/api/v1/info"
@@ -22,9 +22,6 @@ enum APIError: Error {
     case invalidRequest
 }
 
-@available(iOS 15.0, *)
-@available(macOS 12.0, *)
-@available(tvOS 15.0, *)
 public class NetdataClient {
     public static let shared = NetdataClient()
     
@@ -52,8 +49,8 @@ public class NetdataClient {
         // after=-10&points=10
         var request = URLComponents(string: baseUrl + NetDataEndpoint.data.rawValue)!
         request.queryItems = [
-            URLQueryItem(name: "after", value: "-10"),
-            URLQueryItem(name: "points", value: "10"),
+            URLQueryItem(name: "after", value: "-1"),
+            URLQueryItem(name: "points", value: "1"),
             URLQueryItem(name: "chart", value: chart)
         ];
         
@@ -65,11 +62,12 @@ public class NetdataClient {
     }
     
     func getChartDataWithHistory(baseUrl: String, basicAuthBase64: String = "", chart: String) async throws -> ServerData {
-        // after=-900&points=900
         var request = URLComponents(string: baseUrl + NetDataEndpoint.data.rawValue)!
+        
         request.queryItems = [
-            URLQueryItem(name: "after", value: "-900"),
-            URLQueryItem(name: "points", value: "900"),
+            URLQueryItem(name: "after", value: "-15"),
+            URLQueryItem(name: "points", value: "15"),
+            URLQueryItem(name: "gtime", value: "60"),
             URLQueryItem(name: "chart", value: chart)
         ];
         
@@ -81,19 +79,29 @@ public class NetdataClient {
     }
     
     private func run<T: Decodable>(requestUrl: URL, basicAuthBase64: String) async throws -> T {
-        var request = URLRequest(url: requestUrl)
+        var headers: HTTPHeaders = [
+            "Cache-Control": "no-cache"
+        ]
         
         if !basicAuthBase64.isEmpty {
-            request.setValue("Basic \(basicAuthBase64)", forHTTPHeaderField: "Authorization")
+            headers["Authorization"] = "Basic \(basicAuthBase64)"
         }
         
-        do {
-            let (jsonData, _) = try await session.data(for: request)
-            let response = try JSONDecoder().decode(T.self, from: jsonData)
-            return response
-        } catch {
-            print("Decoding error: \(error)")
-            throw error
+        return try await withCheckedThrowingContinuation { continuation in
+            AF.request(
+                requestUrl.absoluteString,
+                method: .get,
+                encoding: JSONEncoding.default,
+                headers: headers
+            )
+            .responseDecodable(of: T.self) { response in
+                switch(response.result) {
+                case let .success(data):
+                    continuation.resume(returning: data)
+                case let .failure(error):
+                    continuation.resume(throwing: error)
+                }
+            }
         }
     }
 }

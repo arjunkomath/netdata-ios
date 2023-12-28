@@ -19,10 +19,10 @@ struct AuthAPI {
     static let API_BASE_URL = "https://netdata.techulus.com/auth"
 #endif
     
-    static func createToken(uid: String) async throws -> AuthTokenResult{
+    static func createToken(uid: String) async throws -> AuthTokenResult {
         let parameters: [String: String] = [
             "userId": uid
-            ]
+        ]
         
         return try await withCheckedThrowingContinuation { continuation in
             AF.request(
