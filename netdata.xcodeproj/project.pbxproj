@@ -13,7 +13,7 @@
 		5514041A25C68F4F0081E4A4 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 552B4E7924CD16C0008B9DA6 /* SwiftUI.framework */; };
 		5514041D25C68F4F0081E4A4 /* AlarmWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5514041C25C68F4F0081E4A4 /* AlarmWidget.swift */; };
 		5514041F25C68F510081E4A4 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5514041E25C68F510081E4A4 /* Assets.xcassets */; };
-		5514042325C68F510081E4A4 /* AlarmWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 5514041825C68F4F0081E4A4 /* AlarmWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		5514042325C68F510081E4A4 /* AlarmWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 5514041825C68F4F0081E4A4 /* AlarmWidgetExtension.appex */; platformFilter = ios; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		5514042F25C6904A0081E4A4 /* ServerService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 558CABAE24B999F7002D115B /* ServerService.swift */; };
 		5514043725C6905A0081E4A4 /* CloudService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 558CABB024B99B42002D115B /* CloudService.swift */; };
 		5514043F25C690620081E4A4 /* NDServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55D1C53324B9636E0087F8A2 /* NDServer.swift */; };
@@ -648,6 +648,7 @@
 /* Begin PBXTargetDependency section */
 		5514042225C68F510081E4A4 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
+			platformFilter = ios;
 			target = 5514041725C68F4F0081E4A4 /* AlarmWidgetExtension */;
 			targetProxy = 5514042125C68F510081E4A4 /* PBXContainerItemProxy */;
 		};

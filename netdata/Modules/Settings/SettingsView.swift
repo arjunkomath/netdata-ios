@@ -66,6 +66,8 @@ struct SettingsView: View {
     var body: some View {
         NavigationView {
             List {
+#if targetEnvironment(macCatalyst)
+#else
                 Section(header: Text("Experience")) {
                     ColorPicker(selection: $userSettings.appTintColor, supportsOpacity: false) {
                         Label("App Tint", systemImage: "paintbrush")
@@ -76,6 +78,7 @@ struct SettingsView: View {
                     }
                     .toggleStyle(SwitchToggleStyle(tint: .accentColor))
                 }
+#endif
                 
                 if userService.userData != nil {
                     Section(header: Text("Alert Notifications (beta)"),
