@@ -12,14 +12,13 @@ struct Meter : View {
     
     var body: some View {
         Gauge(
-            value: max(progress, 0),
+            value: max(progress, 1),
             in: 0...1
         ) {
             Text("%")
         } currentValueLabel: {
             Text(String(format: "%.0f", min(self.progress, 1.0)*100.0))
-                .font(.caption)
-                .bold()
+                .font(.system(size: 18, weight: .regular, design: .rounded))
         }
         .gaugeStyle(.accessoryCircular)
         .tint(getColor())
