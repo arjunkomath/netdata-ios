@@ -65,7 +65,7 @@ public struct NDServer: CloudModel, Equatable, Identifiable {
         
         self.record = record
         self.serverInfo = !self.serverInfoJson.isEmpty ?
-            try! JSONDecoder().decode(ServerInfo.self, from: self.serverInfoJson.data(using: .utf8)!) : nil
+        try! JSONDecoder().decode(ServerInfo.self, from: self.serverInfoJson.data(using: .utf8)!) : nil
     }
     
     public func toRecord(owner: CKRecord?) -> CKRecord {
@@ -78,5 +78,20 @@ public struct NDServer: CloudModel, Equatable, Identifiable {
         record[RecordKeys.basicAuthBase64.rawValue] = basicAuthBase64
         record[RecordKeys.isFavourite.rawValue] = isFavourite
         return record
+    }
+}
+
+extension NDServer {
+    static func placeholder() -> NDServer {
+        let mockRecord = CKRecord(recordType: "MockRecord")
+        mockRecord[RecordKeys.id.rawValue] = "mockId"
+        mockRecord[RecordKeys.name.rawValue] = "mockName"
+        mockRecord[RecordKeys.description.rawValue] = "mockDescription"
+        mockRecord[RecordKeys.url.rawValue] = "mockUrl"
+        mockRecord[RecordKeys.serverInfoJson.rawValue] = nil
+        mockRecord[RecordKeys.basicAuthBase64.rawValue] = "mockAuth"
+        mockRecord[RecordKeys.isFavourite.rawValue] = 0
+        
+        return NDServer(withRecord: mockRecord)
     }
 }
