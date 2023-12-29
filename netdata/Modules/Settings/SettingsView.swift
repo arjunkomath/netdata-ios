@@ -8,20 +8,22 @@
 import SwiftUI
 import StoreKit
 import FirebaseAuth
+import AlertToast
 
 struct SettingsView: View {
     @Environment(\.dismiss) var dismiss
     @Environment(\.requestReview) var requestReview
-    @Environment(\.scenePhase) private var scenePhase
+    @Environment(\.scenePhase) var scenePhase
     
-    @EnvironmentObject private var serverService: ServerService
-    @EnvironmentObject private var userService: UserService
+    @EnvironmentObject var serverService: ServerService
+    @EnvironmentObject var userService: UserService
     
     @ObservedObject var userSettings = UserSettings()
     
     @State private var showPushPermissionAlert = false
     @State private var hasPushPermission = false
     @State private var alertNotifications = false
+    @State private var showApiKeyCopiedToast = false
     
     private var versionNumber: String {
         Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? NSLocalizedString("Error", comment: "")
@@ -66,19 +68,18 @@ struct SettingsView: View {
     var body: some View {
         NavigationView {
             List {
-#if targetEnvironment(macCatalyst)
-#else
                 Section(header: Text("Experience")) {
                     ColorPicker(selection: $userSettings.appTintColor, supportsOpacity: false) {
                         Label("App Tint", systemImage: "paintbrush")
                     }
-                    
+#if targetEnvironment(macCatalyst)
+#else
                     Toggle(isOn: $userSettings.hapticFeedback) {
                         Label("Haptic Feedback", systemImage: "waveform.path")
                     }
                     .toggleStyle(SwitchToggleStyle(tint: .accentColor))
-                }
 #endif
+                }
                 
                 if userService.userData != nil {
                     Section(header: Text("Alert Notifications (beta)"),
@@ -128,6 +129,7 @@ struct SettingsView: View {
                         if alertNotifications {
                             Button(action: {
                                 UIPasteboard.general.string = userService.userData?.api_key
+                                showApiKeyCopiedToast = true
                             }) {
                                 Label("Copy API key", systemImage: "doc.on.doc")
                                     .foregroundColor(.accentColor)
@@ -196,6 +198,13 @@ struct SettingsView: View {
                 ToolbarItem(placement: .navigation) {
                     dismissButton
                 }
+            }
+            .toast(isPresenting: $showApiKeyCopiedToast) {
+                AlertToast(
+                    displayMode: .banner(.pop),
+                    type: .complete(.green),
+                    title: "API key copied to clipboard"
+                )
             }
             .alert(isPresented: $showPushPermissionAlert) {
                 Alert(title: Text("Enable push notifications"),

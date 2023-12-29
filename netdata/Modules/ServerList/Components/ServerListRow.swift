@@ -30,7 +30,7 @@ struct ServerListRow: View {
                     
                     Text(server.name)
                         .lineLimit(1)
-                        .font(.system(size: 20, weight: .semibold, design: .rounded))
+                        .font(.system(size: 20, weight: .medium, design: .rounded))
                         .foregroundColor(self.isOffline() ? .red : .primary)
                     
                     Spacer()
@@ -46,10 +46,7 @@ struct ServerListRow: View {
                             .frame(width: 12, height: 12, alignment: .leading)
                     }
                     
-#if targetEnvironment(macCatalyst)
-#else
                     Image(systemName: "chevron.right")
-#endif
                 }
                 
                 Text(server.description)
@@ -61,6 +58,9 @@ struct ServerListRow: View {
             .background(Color(UIColor.secondarySystemBackground))
             .cornerRadius(10)
         }
+#if targetEnvironment(macCatalyst)
+        .buttonStyle(.borderless)
+#endif
         .task {
             if let alarms = await viewModel.fetchAlarms(server: server) {
                 withAnimation {
