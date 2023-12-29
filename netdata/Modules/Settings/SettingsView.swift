@@ -170,7 +170,7 @@ struct SettingsView: View {
                 
                 Section(
                     header: Text("About"),
-                    footer: Text("Please note that this app is an independent iOS/macOS client and is not officially affiliated with, authorized, maintained, sponsored, or endorsed by Netdata (Netdata Inc) or any of its affiliates or subsidiaries. This application is an open-source, and it operates by utilizing the APIs provided by Netdata.")
+                    footer: Text("Please note that this app is an independent iOS/macOS client and is not officially affiliated with, authorized, maintained, sponsored, or endorsed by Netdata (Netdata Inc) or any of its affiliates or subsidiaries. This application is open-source, and it operates by utilizing the APIs provided by Netdata.")
                 ) {
                     makeRow(image: "desktopcomputer", text: "Source code",
                             link: URL(string: "https://github.com/arjunkomath/netdata-ios")!)
