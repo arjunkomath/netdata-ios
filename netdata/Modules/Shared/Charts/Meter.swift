@@ -7,12 +7,18 @@
 
 import SwiftUI
 
+extension Comparable {
+    func clamped(to limits: ClosedRange<Self>) -> Self {
+        return min(max(self, limits.lowerBound), limits.upperBound)
+    }
+}
+
 struct Meter : View {
     var progress: CGFloat
     
     var body: some View {
         Gauge(
-            value: max(progress, 1),
+            value: progress.clamped(to: 0...1),
             in: 0...1
         ) {
             Text("%")

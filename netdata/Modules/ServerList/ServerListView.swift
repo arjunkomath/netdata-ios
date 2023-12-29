@@ -18,29 +18,6 @@ struct ServerListView: View {
     
     var body: some View {
         GeometryReader { geometry in
-            #if targetEnvironment(macCatalyst)
-            List {
-                if !self.serverService.isCloudEnabled && !serverService.isSynching {
-                    ErrorMessage(message: "iCloud not enabled, you need an iCloud account to view / add servers")
-                }
-                
-                if let error = self.serverService.mostRecentError {
-                    ErrorMessage(message: error.localizedDescription)
-                }
-
-                Section(header: Text("Favourites")) {
-                    ForEach(serverService.favouriteServers, id: \.id) { server in
-                        ServerListRow(server: server)
-                    }
-                }
-                
-                Section(header: Text("All Servers")) {
-                    ForEach(serverService.defaultServers, id: \.id) { server in
-                        ServerListRow(server: server)
-                    }
-                }
-            }
-            #else
             ScrollView {
                 VStack(alignment: .leading) {
                     RedactedView(loading: serverService.isSynching) {
@@ -55,6 +32,7 @@ struct ServerListView: View {
                         if serverService.favouriteServers.isEmpty == false {
                             Label("Favourites", systemImage: "star.fill")
                                 .font(.headline)
+                                .padding(.top, 16)
                             LazyVGrid(columns: gridLayout(for: geometry.size.width), alignment: .leading, spacing: 8) {
                                 ForEach(serverService.favouriteServers, id: \.id) { server in
                                     ServerListRow(server: server)
@@ -66,6 +44,7 @@ struct ServerListView: View {
                         if serverService.defaultServers.isEmpty == false {
                             Label("All Servers", systemImage: "folder.fill")
                                 .font(.headline)
+                                .padding(.top, 8)
                             LazyVGrid(columns: gridLayout(for: geometry.size.width), alignment: .leading, spacing: 8) {
                                 ForEach(serverService.defaultServers, id: \.id) { server in
                                     ServerListRow(server: server)
@@ -77,7 +56,6 @@ struct ServerListView: View {
                 }
                 .padding(.horizontal, 16)
             }
-            #endif
         }
         .task {
             await serverService.refresh()
