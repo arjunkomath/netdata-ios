@@ -20,6 +20,19 @@ struct ServerListView: View {
         GeometryReader { geometry in
             ScrollView {
                 VStack(alignment: .leading) {
+                    if serverService.defaultServers.isEmpty {
+                        RedactedView(loading: serverService.isSynching) {
+                            Label("Loading...", systemImage: "star.fill")
+                                .font(.headline)
+                                .padding(.top, 16)
+                            LazyVGrid(columns: gridLayout(for: geometry.size.width), alignment: .leading, spacing: 8) {
+                                ForEach(1...3, id: \.self) { _ in
+                                    ServerListRow(server: NDServer.placeholder())
+                                }
+                            }
+                        }
+                    }
+                    
                     RedactedView(loading: serverService.isSynching) {
                         if !self.serverService.isCloudEnabled && !serverService.isSynching {
                             ErrorMessage(message: "iCloud not enabled, you need an iCloud account to view / add servers")
