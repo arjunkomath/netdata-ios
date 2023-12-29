@@ -91,6 +91,8 @@ struct ServerListView: View {
                 }
                 .sheet(isPresented: $showSettings) {
                     SettingsView()
+                        .environmentObject(UserService.shared)
+                        .environmentObject(self.serverService)
                 }
             }
             
