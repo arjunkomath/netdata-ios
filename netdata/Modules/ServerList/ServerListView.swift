@@ -18,7 +18,7 @@ struct ServerListView: View {
     
     var body: some View {
         let layout = [
-            GridItem(.adaptive(minimum: 160), spacing: 12)
+            GridItem(.adaptive(minimum: 160), spacing: 8)
         ]
         
         ScrollView {
