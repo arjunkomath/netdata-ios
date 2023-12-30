@@ -7,7 +7,7 @@
 > **This app does NOT work with Netdata Cloud**
 
 > [!IMPORTANT]  
-> Please note that this app is an independent iOS/macOS client and is not officially affiliated with, authorized, maintained, sponsored, or endorsed by Netdata (Netdata Inc) or any of its affiliates or subsidiaries. This application is an open-source, and it operates by utilizing the APIs provided by Netdata.
+> Please note that this app is an independent iOS/macOS client and is not officially affiliated with, authorized, maintained, sponsored, or endorsed by Netdata (Netdata Inc) or any of its affiliates or subsidiaries. This application is open-source, and it operates by utilizing the APIs provided by Netdata.
 
 ## [Download on the App Store](https://apps.apple.com/us/app/netdata-server-monitoring/id1525322870)
 

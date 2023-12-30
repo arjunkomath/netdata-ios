@@ -20,7 +20,7 @@ struct ServerListView: View {
         GeometryReader { geometry in
             ScrollView {
                 VStack(alignment: .leading) {
-                    if serverService.defaultServers.isEmpty {
+                    if serverService.defaultServers.isEmpty && serverService.mostRecentError != nil {
                         RedactedView(loading: serverService.isSynching) {
                             Label("Loading...", systemImage: "star.fill")
                                 .font(.headline)
