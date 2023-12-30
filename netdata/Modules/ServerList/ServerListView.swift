@@ -17,58 +17,60 @@ struct ServerListView: View {
     @State private var showSettings = false
     
     var body: some View {
-        GeometryReader { geometry in
-            ScrollView {
-                VStack(alignment: .leading) {
-                    if serverService.defaultServers.isEmpty && serverService.mostRecentError != nil {
-                        RedactedView(loading: serverService.isSynching) {
-                            Label("Loading...", systemImage: "star.fill")
-                                .font(.headline)
-                                .padding(.top, 16)
-                            LazyVGrid(columns: gridLayout(for: geometry.size.width), alignment: .leading, spacing: 8) {
-                                ForEach(1...3, id: \.self) { _ in
-                                    ServerListRow(server: NDServer.placeholder())
-                                }
-                            }
-                        }
-                    }
-                    
+        let layout = [
+            GridItem(.adaptive(minimum: 160), spacing: 8)
+        ]
+        
+        ScrollView {
+            VStack(alignment: .leading) {
+                if serverService.defaultServers.isEmpty && serverService.mostRecentError != nil {
                     RedactedView(loading: serverService.isSynching) {
-                        if !self.serverService.isCloudEnabled && !serverService.isSynching {
-                            ErrorMessage(message: "iCloud not enabled, you need an iCloud account to view / add servers")
-                        }
-                        
-                        if let error = self.serverService.mostRecentError {
-                            ErrorMessage(message: error.localizedDescription)
-                        }
-                        
-                        if serverService.favouriteServers.isEmpty == false {
-                            Label("Favourites", systemImage: "star.fill")
-                                .font(.headline)
-                                .padding(.top, 16)
-                            LazyVGrid(columns: gridLayout(for: geometry.size.width), alignment: .leading, spacing: 8) {
-                                ForEach(serverService.favouriteServers, id: \.id) { server in
-                                    ServerListRow(server: server)
-                                }
+                        Label("Loading...", systemImage: "star.fill")
+                            .font(.headline)
+                            .padding(.top, 16)
+                        LazyVGrid(columns: layout, alignment: .leading, spacing: 8) {
+                            ForEach(1...3, id: \.self) { _ in
+                                ServerListRow(server: NDServer.placeholder())
                             }
-                            .padding(.bottom, 16)
-                        }
-                        
-                        if serverService.defaultServers.isEmpty == false {
-                            Label("All Servers", systemImage: "folder.fill")
-                                .font(.headline)
-                                .padding(.top, 8)
-                            LazyVGrid(columns: gridLayout(for: geometry.size.width), alignment: .leading, spacing: 8) {
-                                ForEach(serverService.defaultServers, id: \.id) { server in
-                                    ServerListRow(server: server)
-                                }
-                            }
-                            .padding(.bottom, 16)
                         }
                     }
                 }
-                .padding(.horizontal, 16)
+                
+                RedactedView(loading: serverService.isSynching) {
+                    if !self.serverService.isCloudEnabled && !serverService.isSynching {
+                        ErrorMessage(message: "iCloud not enabled, you need an iCloud account to view / add servers")
+                    }
+                    
+                    if let error = self.serverService.mostRecentError {
+                        ErrorMessage(message: error.localizedDescription)
+                    }
+                    
+                    if serverService.favouriteServers.isEmpty == false {
+                        Label("Favourites", systemImage: "star.fill")
+                            .font(.headline)
+                            .padding(.top, 16)
+                        LazyVGrid(columns: layout, alignment: .leading, spacing: 8) {
+                            ForEach(serverService.favouriteServers, id: \.id) { server in
+                                ServerListRow(server: server)
+                            }
+                        }
+                        .padding(.bottom, 16)
+                    }
+                    
+                    if serverService.defaultServers.isEmpty == false {
+                        Label("All Servers", systemImage: "folder.fill")
+                            .font(.headline)
+                            .padding(.top, 8)
+                        LazyVGrid(columns: layout, alignment: .leading, spacing: 8) {
+                            ForEach(serverService.defaultServers, id: \.id) { server in
+                                ServerListRow(server: server)
+                            }
+                        }
+                        .padding(.bottom, 16)
+                    }
+                }
             }
+            .padding(.horizontal, 16)
         }
         .task {
             await serverService.refresh()
@@ -128,10 +130,5 @@ struct ServerListView: View {
     
     func deleteFavouriteServer(at offsets: IndexSet) {
         self.serverService.delete(server: serverService.favouriteServers[offsets.first!])
-    }
-    
-    private func gridLayout(for width: CGFloat) -> [GridItem] {
-        let numberOfColumns = min(Int(width / 180), 6)
-        return Array(repeating: .init(.flexible()), count: max(numberOfColumns, 1)) // Ensuring at least one column
     }
 }
