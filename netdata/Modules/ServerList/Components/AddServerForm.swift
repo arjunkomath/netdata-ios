@@ -25,7 +25,7 @@ struct AddServerForm: View {
                 }
                 
                 Section(header: makeSectionHeader(text: "Server details"),
-                        footer: Text("HTTPS is required for connections over the internet\nHTTP is allowed for LAN connections with IP or mDNS domains")) {
+                        footer: Text("HTTPS is recommended for connections over the internet\nHTTP is allowed for LAN connections with IP or mDNS domains")) {
                     TextField("Name", text: $viewModel.name)
                     TextField("Description", text: $viewModel.description)
                     TextField("NetData Server Full URL", text: $viewModel.url)

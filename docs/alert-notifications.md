@@ -42,7 +42,7 @@ custom_sender() {
 
 ### I'm not receiving any notifications
 
+- SEND_CUSTOM should be set to YES in the Netdata Agent configuration file.
+- DEFAULT_RECIPIENT_CUSTOM should not be empty in the Netdata Agent configuration file.
 - Make sure you have enabled push notifications for the app on your iOS device.
 - Make sure you have enabled alerts in the app.
-- Make sure you have configured the custom sender correctly.
-- Make sure you have configured the custom sender with the correct API Key.

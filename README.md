@@ -11,19 +11,19 @@
 
 ## [Download on the App Store](https://apps.apple.com/us/app/netdata-server-monitoring/id1525322870)
 
-*Warning! I'm learning Swift and SwiftUI, so the code is probably terrible.*
-
-![screenshot-1](https://github.com/arjunkomath/netdata-ios/blob/main/screenshots/mockup.png?raw=true)
-
 ## Features
 
 - ### Real-time monitoring on the go
 Monitor everything in real time on your mobile device
 
 - ### Seamless connection
-Works out-of-the-box with any Netdata instance
+Works out-of-the-box with any self hosted Netdata instance
 
-- ### Free & Open-source
+- ### Push notifications for alerts (beta)
+Get notified when alerts are triggered in your server.
+You can find the backend implementation [here](https://github.com/arjunkomath/netdata-functions).
+
+- ### Open-source
 Open-source iOS, iPadOS and macOS client
 
 ## Netdata
