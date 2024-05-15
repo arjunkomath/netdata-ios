@@ -166,6 +166,11 @@ struct SettingsView: View {
                     makeRow(image: "server.rack",
                             text: "DB Sync \(Auth.auth().currentUser != nil ? "Active" : "Failed")",
                             color: Auth.auth().currentUser != nil ? .green : .red)
+                    if let id = Auth.auth().currentUser?.uid {
+                        makeRow(image: "person",
+                                text: "\(id)",
+                                color: .primary)
+                    }
                 }
                 
                 Section(
