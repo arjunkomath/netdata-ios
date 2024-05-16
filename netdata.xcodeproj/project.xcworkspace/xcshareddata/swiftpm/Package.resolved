@@ -1,12 +1,13 @@
 {
+  "originHash" : "7c6ef9d1fd62e36da9369c00e1206813367085637a2933ba810190757d47cd13",
   "pins" : [
     {
       "identity" : "abseil-cpp-binary",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/google/abseil-cpp-binary.git",
       "state" : {
-        "revision" : "bfc0b6f81adc06ce5121eb23f628473638d67c5c",
-        "version" : "1.2022062300.0"
+        "revision" : "df308b8b46607675f2b9ec8e569109008f9155ce",
+        "version" : "1.2022062300.1"
       }
     },
     {
@@ -41,8 +42,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/firebase/firebase-ios-sdk",
       "state" : {
-        "revision" : "c60c958e707c50a9cf8bcb7cfd7d51c566d726c5",
-        "version" : "10.19.1"
+        "revision" : "b880ec8ec927a838c51c12862c6222c30d7097d7",
+        "version" : "10.20.0"
       }
     },
     {
@@ -50,8 +51,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/google/GoogleAppMeasurement.git",
       "state" : {
-        "revision" : "6b332152355c372ace9966d8ee76ed191f97025e",
-        "version" : "10.17.0"
+        "revision" : "ceec9f28dea12b7cf3dabf18b5ed7621c88fd4aa",
+        "version" : "10.20.0"
       }
     },
     {
@@ -77,8 +78,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/google/grpc-binary.git",
       "state" : {
-        "revision" : "a673bc2937fbe886dd1f99c401b01b6d977a9c98",
-        "version" : "1.49.1"
+        "revision" : "ea4cb5cc0c39c732b85386263116d2e2fdbbdc61",
+        "version" : "1.49.2"
       }
     },
     {
@@ -136,5 +137,5 @@
       }
     }
   ],
-  "version" : 2
+  "version" : 3
 }
