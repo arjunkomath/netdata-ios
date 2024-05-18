@@ -127,6 +127,10 @@ struct SettingsView: View {
                             }
                         }
                         
+                        if let tokens = userService.userData?.device_tokens {
+                            makeRow(image: "macbook.and.ipad", text: "\(tokens.count) devices registered")
+                        }
+                        
                         if alertNotifications {
                             Button(action: {
                                 UIPasteboard.general.string = userService.userData?.api_key
