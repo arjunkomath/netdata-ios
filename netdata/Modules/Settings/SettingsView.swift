@@ -127,7 +127,7 @@ struct SettingsView: View {
                             }
                         }
                         
-                        if let tokens = userService.userData?.device_tokens {
+                        if let tokens = userService.userData?.device_tokens, alertNotifications {
                             makeRow(image: "macbook.and.ipad", text: "\(tokens.count) devices registered")
                         }
                         
