@@ -25,6 +25,7 @@ struct SettingsView: View {
     @State private var alertNotifications = false
     @State private var showApiKeyCopiedToast = false
     @State private var showUserIdCopiedToast = false
+    @State private var showRotateApiKeyAlert = false
 
     private var versionNumber: String {
         Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? NSLocalizedString("Error", comment: "")
@@ -139,6 +140,13 @@ struct SettingsView: View {
                                 Label("Copy API key", systemImage: "doc.on.doc")
                                     .foregroundColor(.accentColor)
                             }
+                            
+                            Button(action: {
+                                showRotateApiKeyAlert = true
+                            }) {
+                                Label("Rotate API key", systemImage: "exclamationmark.arrow.circlepath")
+                                    .foregroundColor(.red)
+                            }
                         }
                         
                         makeRow(image: "server.rack", text: "View configuration guide",
@@ -229,6 +237,16 @@ struct SettingsView: View {
                     type: .complete(.green),
                     title: "User ID copied to clipboard"
                 )
+            }
+            .alert(isPresented: $showRotateApiKeyAlert) {
+                Alert(title: Text("Confirm API Key Rotation"),
+                      message: Text("Rotating your API key will immediately generate a new key and deactivate the current one; do you want to proceed?"),
+                      primaryButton: .default(Text("Confirm")) {
+                    Task {
+                        await userService.rotateApiKey()
+                    }
+                },
+                      secondaryButton: .cancel())
             }
             .alert(isPresented: $showPushPermissionAlert) {
                 Alert(title: Text("Enable push notifications"),

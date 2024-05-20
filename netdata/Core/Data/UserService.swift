@@ -113,4 +113,19 @@ class UserService: ObservableObject, PublicCloudService {
             print("Toggle alert failed: \(error)")
         }
     }
+    
+    func rotateApiKey() async {
+        do {
+            if let userId = Auth.auth().currentUser?.uid {
+                try await self.db
+                    .collection("users")
+                    .document(userId)
+                    .updateData([
+                        "api_key": UUID().uuidString.lowercased(),
+                    ])
+            }
+        } catch {
+            print("Rotate API key failed: \(error)")
+        }
+    }
 }
