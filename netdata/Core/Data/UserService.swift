@@ -91,6 +91,9 @@ class UserService: ObservableObject, PublicCloudService {
                     .updateData([
                         "enable_alert_notifications": enabled
                     ])
+                
+                let token = try await Messaging.messaging().token()
+                await self.updateDeviceToken(token: token)
             }
         } catch {
             print("Toggle alert failed: \(error)")
