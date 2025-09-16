@@ -95,10 +95,8 @@ struct AlarmsListView: View {
             self.presentationMode.wrappedValue.dismiss()
         }) {
             Image(systemName: "xmark")
-                .imageScale(.small)
+                .imageScale(.medium)
         }
-        .buttonStyle(BorderedBarButtonStyle())
-        .accentColor(Color.red)
     }
 }
 

@@ -90,10 +90,8 @@ struct EditServerForm: View {
             self.presentationMode.wrappedValue.dismiss()
         }) {
             Image(systemName: "xmark")
-                .imageScale(.small)
+                .imageScale(.medium)
         }
-        .buttonStyle(BorderedBarButtonStyle())
-        .accentColor(Color.red)
     }
     
     private var saveButton: some View {
@@ -108,7 +106,6 @@ struct EditServerForm: View {
                     .fontWeight(.bold)
             }
         }
-        .buttonStyle(BorderedBarButtonStyle())
         .disabled(viewModel.validatingUrl)
     }
     

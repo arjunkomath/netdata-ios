@@ -109,10 +109,8 @@ struct AddServerForm: View {
             self.presentationMode.wrappedValue.dismiss()
         }) {
             Image(systemName: "xmark")
-                .imageScale(.small)
+                .imageScale(.medium)
         }
-        .buttonStyle(BorderedBarButtonStyle())
-        .accentColor(Color.red)
     }
     
     private var saveButton: some View {
@@ -121,13 +119,8 @@ struct AddServerForm: View {
                 await addServer()
             }
         }) {
-            HStack {
-                Image(systemName: "plus.circle.fill")
-                Text("Add")
-                    .fontWeight(.bold)
-            }
+            Text("Save")
         }
-        .buttonStyle(BorderedBarButtonStyle())
         .disabled(viewModel.validatingUrl)
     }
     

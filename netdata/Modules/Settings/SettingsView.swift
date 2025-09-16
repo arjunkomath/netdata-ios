@@ -267,10 +267,8 @@ struct SettingsView: View {
             dismiss()
         }) {
             Image(systemName: "xmark")
-                .imageScale(.small)
+                .imageScale(.medium)
         }
-        .buttonStyle(BorderedBarButtonStyle())
-        .accentColor(Color.red)
     }
     
     private func deleteBookmarks(at offsets: IndexSet) {
