@@ -20,6 +20,8 @@ class ServerService: ObservableObject, PublicCloudService {
     @Published public var mostRecentError: Error?
     @Published public var isSynching = true
     @Published public var isCloudEnabled = true
+    @Published public var showingDeleteConfirmation = false
+    @Published public var serverToDelete: NDServer?
     
     init() {
         container.accountStatus { (status, error) in
@@ -69,14 +71,52 @@ class ServerService: ObservableObject, PublicCloudService {
         addOperation(operation: operation, fetch: true)
     }
     
-    public func delete(server: NDServer) {
+    public func requestDelete(server: NDServer) {
+        serverToDelete = server
+        showingDeleteConfirmation = true
+    }
+    
+    public func confirmDelete() async {
+        guard let server = serverToDelete else { return }
+        
+        showingDeleteConfirmation = false
+        await performDelete(server: server)
+        serverToDelete = nil
+    }
+    
+    public func cancelDelete() {
+        showingDeleteConfirmation = false
+        serverToDelete = nil
+    }
+    
+    private func performDelete(server: NDServer) async {
+        self.isSynching = true
+        
+        // Remove from local arrays first
         defaultServers.removeAll(where: { server.id == $0.id })
         favouriteServers.removeAll(where: { server.id == $0.id })
         
+        // Delete from CloudKit if it has a record
         if let record = server.record {
-            let operation = CKModifyRecordsOperation(recordsToSave: nil,
-                                                     recordIDsToDelete: [record.recordID])
-            addOperation(operation: operation, fetch: false)
+            do {
+                try await database.deleteRecord(withID: record.recordID)
+                os_log("Successfully deleted server: \(server.name ?? "Unknown")")
+                self.isSynching = false
+                serverToDelete = nil
+            } catch {
+                os_log(.error, "Failed to delete server: \(server.name ?? "Unknown") - \(error.localizedDescription)")
+                // Re-add the server back to the appropriate list since deletion failed
+                if server.isFavourite == 1 {
+                    favouriteServers.insert(server, at: 0)
+                } else {
+                    defaultServers.insert(server, at: 0)
+                }
+                self.setError(error: error)
+                self.isSynching = false
+            }
+        } else {
+            self.isSynching = false
+            serverToDelete = nil
         }
     }
     

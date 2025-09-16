@@ -122,13 +122,31 @@ struct ServerListView: View {
         .sheet(isPresented: $showWelcome) {
             WelcomeScreen()
         }
+        .confirmationDialog(
+            "Delete Server",
+            isPresented: $serverService.showingDeleteConfirmation,
+            titleVisibility: .visible
+        ) {
+            Button("Delete", role: .destructive) {
+                Task {
+                    await serverService.confirmDelete()
+                }
+            }
+            Button("Cancel", role: .cancel) {
+                serverService.cancelDelete()
+            }
+        } message: {
+            Text("Are you sure you want to delete '\(serverService.serverToDelete?.name ?? "this server")'? This action cannot be undone.")
+        }
     }
     
     func deleteServer(at offsets: IndexSet) {
-        self.serverService.delete(server: serverService.defaultServers[offsets.first!])
+        guard let index = offsets.first else { return }
+        serverService.requestDelete(server: serverService.defaultServers[index])
     }
-    
+
     func deleteFavouriteServer(at offsets: IndexSet) {
-        self.serverService.delete(server: serverService.favouriteServers[offsets.first!])
+        guard let index = offsets.first else { return }
+        serverService.requestDelete(server: serverService.favouriteServers[index])
     }
 }

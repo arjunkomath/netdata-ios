@@ -86,7 +86,7 @@ struct ServerListRow: View {
             })
             
             Button(role: .destructive, action: {
-                ServerService.shared.delete(server: server)
+                ServerService.shared.requestDelete(server: server)
             }) {
                 Label("Delete", systemImage: "trash")
             }
