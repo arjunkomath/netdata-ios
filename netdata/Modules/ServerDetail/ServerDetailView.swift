@@ -69,7 +69,7 @@ struct ServerDetailView: View {
                     }
                     
                     VStack(alignment: .leading, spacing: 12) {
-                        RedactedView(loading: viewModel.load.labels.count < 1) {
+                        if viewModel.load.labels.count > 0 {
                             ServerDetailItem(label: "Load") {
                                 switch (viewModel.dataMode) {
                                 case .now:
@@ -77,15 +77,15 @@ struct ServerDetailView: View {
                                              data: viewModel.load.data,
                                              dataType: .absolute,
                                              showArrows: false)
-                                    
+
                                 case .fifteenMins:
                                     ChartView(data: viewModel.load)
                                         .frame(height: 105)
                                 }
                             }
                         }
-                        
-                        RedactedView(loading: viewModel.diskIO.labels.count < 1) {
+
+                        if viewModel.diskIO.labels.count > 0 {
                             ServerDetailItem(label: "I/O (KiB/s)") {
                                 DataGrid(labels: viewModel.diskIO.labels,
                                          data: viewModel.diskIO.data,
@@ -95,7 +95,7 @@ struct ServerDetailView: View {
                         }
                     }
                     
-                    RedactedView(loading: viewModel.network.labels.count < 1) {
+                    if viewModel.network.labels.count > 0 {
                         ServerDetailItem(label: "system.net (kilobits/s)") {
                             DataGrid(labels: viewModel.network.labels,
                                      data: viewModel.network.data,
@@ -104,7 +104,7 @@ struct ServerDetailView: View {
                         }
                     }
                     
-                    RedactedView(loading: viewModel.networkIPv4.labels.count < 1) {
+                    if viewModel.networkIPv4.labels.count > 0 {
                         ServerDetailItem(label: "system.ip (megabits/s)") {
                             DataGrid(labels: viewModel.networkIPv4.labels,
                                      data: viewModel.networkIPv4.data,
@@ -112,8 +112,8 @@ struct ServerDetailView: View {
                                      showArrows: true)
                         }
                     }
-                    
-                    RedactedView(loading: viewModel.networkIPv6.labels.count < 1) {
+
+                    if viewModel.networkIPv6.labels.count > 0 {
                         ServerDetailItem(label: "system.ipv6 (kilobits/s)") {
                             DataGrid(labels: viewModel.networkIPv6.labels,
                                      data: viewModel.networkIPv6.data,
