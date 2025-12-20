@@ -24,8 +24,6 @@ enum DataMode {
     @Published var ramUsageGauge : CGFloat = 0
     
     // MARK:- Disk
-    @Published var diskSpaceUsage: ServerData = ServerData(labels: [], data: [])
-    @Published var diskSpaceUsageGauge : CGFloat = 0
     @Published var diskIO: ServerData = ServerData(labels: [], data: [])
     
     // MARK:- Network
@@ -104,23 +102,6 @@ enum DataMode {
             self.networkIPv6 = try await NetdataClient.shared.getChartData(baseUrl: baseUrl, basicAuthBase64: basicAuthBase64, chart: "system.ipv6")
         } catch {
             debugPrint("[fetchNetwork] Failed to fetch chart data")
-        }
-    }
-    
-    func fetchDiskSpace() async {
-        do {
-            let data = self.dataMode == .now ?
-            try await NetdataClient.shared.getChartData(baseUrl: baseUrl, basicAuthBase64: basicAuthBase64, chart: "disk_space._") :
-            try await NetdataClient.shared.getChartDataWithHistory(baseUrl: baseUrl, basicAuthBase64: basicAuthBase64, chart: "disk_space._")
-            self.diskSpaceUsage = data
-            
-            if let dataPoint = self.diskSpaceUsage.data.first {
-                if let avail = dataPoint[1], let used = dataPoint[2] {
-                    self.diskSpaceUsageGauge = CGFloat(used / (avail + used))
-                }
-            }
-        } catch {
-            debugPrint("[fetchDiskSpace] Failed to fetch chart data")
         }
     }
     
