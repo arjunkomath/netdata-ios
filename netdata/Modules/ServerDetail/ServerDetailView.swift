@@ -66,25 +66,6 @@ struct ServerDetailView: View {
                                 }
                             }
                         }
-                        
-                        RedactedView(loading: viewModel.diskSpaceUsage.labels.count < 1) {
-                            ServerDetailItem(label: "Space (GiB)") {
-                                switch (viewModel.dataMode) {
-                                case .now:
-                                    Meter(progress: viewModel.diskSpaceUsageGauge)
-                                        .redacted(reason: viewModel.diskSpaceUsage.labels.count < 1 ? .placeholder : .init())
-                                    
-                                    DataGrid(labels: viewModel.diskSpaceUsage.labels,
-                                             data: viewModel.diskSpaceUsage.data,
-                                             dataType: .absolute,
-                                             showArrows: false)
-                                    
-                                case .fifteenMins:
-                                    ChartView(data: viewModel.diskSpaceUsage)
-                                        .frame(height: 105)
-                                }
-                            }
-                        }
                     }
                     
                     VStack(alignment: .leading, spacing: 12) {
@@ -190,7 +171,6 @@ struct ServerDetailView: View {
                     group.addTask { await viewModel.fetchRam() }
                     group.addTask { await viewModel.fetchDiskIo() }
                     group.addTask { await viewModel.fetchNetwork() }
-                    group.addTask { await viewModel.fetchDiskSpace() }
                     
                     for await _ in group {}
                 }
