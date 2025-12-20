@@ -30,7 +30,6 @@
 		5525DA1D2B395C4100F56457 /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 5525DA1C2B395C4100F56457 /* Alamofire */; };
 		5525DA1F2B398B8E00F56457 /* UserData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5525DA1E2B398B8E00F56457 /* UserData.swift */; };
 		552862E524CD018B008E2B0E /* ErrorMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 552862E424CD018B008E2B0E /* ErrorMessage.swift */; };
-		C1ADE00024D12345008PARSE /* ParseErrorReportSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1ADE00124D12345008PARSE /* ParseErrorReportSheet.swift */; };
 		552C2C2624D6B9BB00D3DFBE /* CustomChartDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 552C2C2524D6B9BB00D3DFBE /* CustomChartDetailView.swift */; };
 		552E19D324CDB71500CDB97F /* EditServerForm.swift in Sources */ = {isa = PBXBuildFile; fileRef = 552E19D224CDB71500CDB97F /* EditServerForm.swift */; };
 		5548A9BC273147FD003ACBBD /* ChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5548A9BB273147FD003ACBBD /* ChartView.swift */; };
@@ -128,7 +127,6 @@
 		5525DA192B395C1100F56457 /* AuthAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthAPI.swift; sourceTree = "<group>"; };
 		5525DA1E2B398B8E00F56457 /* UserData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserData.swift; sourceTree = "<group>"; };
 		552862E424CD018B008E2B0E /* ErrorMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorMessage.swift; sourceTree = "<group>"; };
-		C1ADE00124D12345008PARSE /* ParseErrorReportSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParseErrorReportSheet.swift; sourceTree = "<group>"; };
 		552B4E7724CD16C0008B9DA6 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
 		552B4E7924CD16C0008B9DA6 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
 		552C2C2524D6B9BB00D3DFBE /* CustomChartDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomChartDetailView.swift; sourceTree = "<group>"; };
@@ -235,7 +233,6 @@
 				5548A9BB273147FD003ACBBD /* ChartView.swift */,
 				555401A224D850D100B1B727 /* CustomTextStyle.swift */,
 				552862E424CD018B008E2B0E /* ErrorMessage.swift */,
-				C1ADE00124D12345008PARSE /* ParseErrorReportSheet.swift */,
 				55193D2924E14D9500FE1D55 /* ReadableGuidePadding.swift */,
 				55B348542676137C0039471E /* PulsatingView.swift */,
 				55F1B1F02B35951200A97F3B /* SupportOptions.swift */,
@@ -616,7 +613,6 @@
 				559843B424CEFAAC0034E92D /* ServerDetailViewModel.swift in Sources */,
 				552E19D324CDB71500CDB97F /* EditServerForm.swift in Sources */,
 				552862E524CD018B008E2B0E /* ErrorMessage.swift in Sources */,
-				C1ADE00024D12345008PARSE /* ParseErrorReportSheet.swift in Sources */,
 				55BA431224C3395400599345 /* ServerData.swift in Sources */,
 				55C638F924CBE6B800395B23 /* PercentageUsageData.swift in Sources */,
 				55BA431024C332C900599345 /* ServerInfo.swift in Sources */,

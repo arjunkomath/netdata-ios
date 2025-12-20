@@ -23,7 +23,6 @@ public struct NDServer: CloudModel, Equatable, Identifiable {
     
     public var record: CKRecord?
     public let serverInfo: ServerInfo?
-    public let parseError: String?
 
     public var creationDate: Date {
         record?.creationDate ?? Date()
@@ -43,7 +42,6 @@ public struct NDServer: CloudModel, Equatable, Identifiable {
         self.description = description
         self.url = url
         self.serverInfo = serverInfo
-        self.parseError = nil
         self.basicAuthBase64 = basicAuthBase64 ?? ""
         self.isFavourite = isFavourite ?? 0
 
@@ -66,17 +64,12 @@ public struct NDServer: CloudModel, Equatable, Identifiable {
         self.isFavourite = record[RecordKeys.isFavourite.rawValue] as? Int ?? 0
         self.record = record
 
-        var parsedInfo: ServerInfo? = nil
-        var errorMessage: String? = nil
-        if !self.serverInfoJson.isEmpty, let data = self.serverInfoJson.data(using: .utf8) {
-            do {
-                parsedInfo = try JSONDecoder().decode(ServerInfo.self, from: data)
-            } catch {
-                errorMessage = "Failed to parse server info: \(error.localizedDescription)"
-            }
+        if !self.serverInfoJson.isEmpty,
+           let data = self.serverInfoJson.data(using: .utf8) {
+            self.serverInfo = try? JSONDecoder().decode(ServerInfo.self, from: data)
+        } else {
+            self.serverInfo = nil
         }
-        self.serverInfo = parsedInfo
-        self.parseError = errorMessage
     }
     
     public func toRecord(owner: CKRecord?) -> CKRecord {

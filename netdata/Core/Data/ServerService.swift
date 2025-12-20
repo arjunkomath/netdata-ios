@@ -10,9 +10,6 @@ import CloudKit
 import Combine
 import WidgetKit
 import os.log
-#if os(iOS)
-import UIKit
-#endif
 
 @MainActor
 class ServerService: ObservableObject, PublicCloudService {
@@ -20,7 +17,6 @@ class ServerService: ObservableObject, PublicCloudService {
     
     @Published public var favouriteServers: [NDServer] = []
     @Published public var defaultServers: [NDServer] = []
-    @Published public var serversWithErrors: [NDServer] = []
     @Published public var mostRecentError: Error?
     @Published public var isSynching = true
     @Published public var isCloudEnabled = true
@@ -155,16 +151,14 @@ class ServerService: ObservableObject, PublicCloudService {
             let nativeRecords: [NDServer] = matchResults
                 .compactMap { _, result in try? NDServer(withRecord: result.get()) }
 
-            self.favouriteServers = nativeRecords.filter { $0.isFavourite == 1 && $0.parseError == nil }
-            self.defaultServers = nativeRecords.filter { $0.isFavourite != 1 && $0.parseError == nil }
-            self.serversWithErrors = nativeRecords.filter { $0.parseError != nil }
+            self.favouriteServers = nativeRecords.filter { $0.isFavourite == 1 }
+            self.defaultServers = nativeRecords.filter { $0.isFavourite != 1 }
             self.isSynching = false
 
             return (self.favouriteServers, self.defaultServers)
         } catch {
             self.favouriteServers = []
             self.defaultServers = []
-            self.serversWithErrors = []
             self.setError(error: error)
             self.isSynching = false
             return ([],[])
@@ -213,56 +207,5 @@ class ServerService: ObservableObject, PublicCloudService {
         default:
             os_log("CKError: \(error.localizedDescription)")
         }
-    }
-
-    func generateErrorReportURL() -> URL? {
-        guard !serversWithErrors.isEmpty else { return nil }
-
-        let appVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "Unknown"
-        let buildNumber = Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? "Unknown"
-
-        #if os(iOS)
-        let osVersion = UIDevice.current.systemVersion
-        let deviceModel = UIDevice.current.model
-        #else
-        let osVersion = ProcessInfo.processInfo.operatingSystemVersionString
-        let deviceModel = "Mac"
-        #endif
-
-        var errorDetails = ""
-        for server in serversWithErrors {
-            let truncatedJson = server.serverInfoJson.prefix(500)
-            errorDetails += """
-
-            ### Server: \(server.name)
-            **Error:** \(server.parseError ?? "Unknown error")
-            **JSON snippet:**
-            ```json
-            \(truncatedJson)\(server.serverInfoJson.count > 500 ? "..." : "")
-            ```
-
-            """
-        }
-
-        let body = """
-        ## Environment
-        - App Version: \(appVersion) (\(buildNumber))
-        - iOS Version: \(osVersion)
-        - Device: \(deviceModel)
-
-        ## Error Details
-        \(serversWithErrors.count) server(s) failed to load due to JSON parsing errors.
-        \(errorDetails)
-        """
-
-        let title = "Server Parse Error"
-        var components = URLComponents(string: "https://github.com/arjunkomath/netdata-ios/issues/new")
-        components?.queryItems = [
-            URLQueryItem(name: "title", value: title),
-            URLQueryItem(name: "body", value: body),
-            URLQueryItem(name: "labels", value: "bug")
-        ]
-
-        return components?.url
     }
 }
