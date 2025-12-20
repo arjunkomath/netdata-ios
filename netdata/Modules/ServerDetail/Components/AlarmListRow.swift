@@ -12,7 +12,7 @@ struct AlarmListRow: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text(alarm.status)
+            Text(alarm.status ?? "UNKNOWN")
                 .font(.caption)
                 .bold()
                 .foregroundColor(self.isCritical() ? Color.red : Color.orange)
@@ -20,16 +20,18 @@ struct AlarmListRow: View {
                 .padding(.vertical, 4)
                 .background(RoundedRectangle(cornerRadius: 14, style: .continuous)
                     .foregroundColor((self.isCritical() ? Color.red : Color.orange).opacity(0.1)))
-            
-            Text(alarm.name)
+
+            Text(alarm.name ?? "Unknown")
                 .bold()
-            
-            Text(alarm.info)
+
+            Text(alarm.info ?? "")
                 .font(.subheadline)
-            
-            Text("\(Date(timeIntervalSince1970: alarm.last_status_change), style: .relative) ago")
-                .font(.caption)
-                .foregroundColor(.gray)
+
+            if let lastChange = alarm.last_status_change {
+                Text("\(Date(timeIntervalSince1970: lastChange), style: .relative) ago")
+                    .font(.caption)
+                    .foregroundColor(.gray)
+            }
         }
         .padding(8)
     }

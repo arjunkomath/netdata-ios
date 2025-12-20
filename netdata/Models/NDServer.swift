@@ -23,7 +23,7 @@ public struct NDServer: CloudModel, Equatable, Identifiable {
     
     public var record: CKRecord?
     public let serverInfo: ServerInfo?
-    
+
     public var creationDate: Date {
         record?.creationDate ?? Date()
     }
@@ -42,13 +42,13 @@ public struct NDServer: CloudModel, Equatable, Identifiable {
         self.description = description
         self.url = url
         self.serverInfo = serverInfo
-        self.basicAuthBase64 = basicAuthBase64 == nil ? "" : basicAuthBase64!
-        self.isFavourite = isFavourite == nil ? 0 : isFavourite!
-        
-        if (serverInfo != nil) {
-            let jsonEncoder = JSONEncoder()
-            let jsonData = try? jsonEncoder.encode(serverInfo)
-            self.serverInfoJson = String(data: jsonData!, encoding: String.Encoding.utf8)!
+        self.basicAuthBase64 = basicAuthBase64 ?? ""
+        self.isFavourite = isFavourite ?? 0
+
+        if let info = serverInfo,
+           let jsonData = try? JSONEncoder().encode(info),
+           let jsonString = String(data: jsonData, encoding: .utf8) {
+            self.serverInfoJson = jsonString
         } else {
             self.serverInfoJson = ""
         }
@@ -62,10 +62,14 @@ public struct NDServer: CloudModel, Equatable, Identifiable {
         self.serverInfoJson = record[RecordKeys.serverInfoJson.rawValue] as? String ?? ""
         self.basicAuthBase64 = record[RecordKeys.basicAuthBase64.rawValue] as? String ?? ""
         self.isFavourite = record[RecordKeys.isFavourite.rawValue] as? Int ?? 0
-        
         self.record = record
-        self.serverInfo = !self.serverInfoJson.isEmpty ?
-        try! JSONDecoder().decode(ServerInfo.self, from: self.serverInfoJson.data(using: .utf8)!) : nil
+
+        if !self.serverInfoJson.isEmpty,
+           let data = self.serverInfoJson.data(using: .utf8) {
+            self.serverInfo = try? JSONDecoder().decode(ServerInfo.self, from: data)
+        } else {
+            self.serverInfo = nil
+        }
     }
     
     public func toRecord(owner: CKRecord?) -> CKRecord {

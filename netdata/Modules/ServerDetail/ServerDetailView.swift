@@ -143,23 +143,26 @@ struct ServerDetailView: View {
                 }
                 .padding(16)
                 
-                if viewModel.bookmarkedChartData.count > 0 {
+                if viewModel.bookmarkedChartData.count > 0 && viewModel.bookmarks.count > 0 {
                     VStack(alignment: .leading, spacing: 12) {
                         Label("Pinned Charts", systemImage: "pin.circle.fill")
-                        
+
                         LazyVGrid(columns: gridLayout(for: geometry.size.width), alignment: .leading, spacing: 12) {
                             ForEach(Array(viewModel.bookmarkedChartData.enumerated()), id: \.offset) { i, chart in
-                                RedactedView(loading: chart.data.count == 0) {
-                                    ServerDetailItem(label: viewModel.bookmarks[i].id) {
-                                        if self.getDataType(chart: viewModel.bookmarks[i]) == .percentage {
-                                            Meter(progress: viewModel.getGaugeData(data: chart.data))
-                                                .redacted(reason: chart.labels.count < 1 ? .placeholder : .init())
+                                if i < viewModel.bookmarks.count {
+                                    let bookmark = viewModel.bookmarks[i]
+                                    RedactedView(loading: chart.data.count == 0) {
+                                        ServerDetailItem(label: bookmark.id) {
+                                            if self.getDataType(chart: bookmark) == .percentage {
+                                                Meter(progress: viewModel.getGaugeData(data: chart.data))
+                                                    .redacted(reason: chart.labels.count < 1 ? .placeholder : .init())
+                                            }
+
+                                            DataGrid(labels: chart.labels,
+                                                     data: chart.data,
+                                                     dataType: self.getDataType(chart: bookmark),
+                                                     showArrows: false)
                                         }
-                                        
-                                        DataGrid(labels: chart.labels,
-                                                 data: chart.data,
-                                                 dataType: self.getDataType(chart: viewModel.bookmarks[i]),
-                                                 showArrows: false)
                                     }
                                 }
                             }
