@@ -15,6 +15,7 @@ struct ServerListView: View {
     @State private var showAddServer = false
     @State private var showWelcome = false
     @State private var showSettings = false
+    @State private var showParseErrorSheet = false
     
     var body: some View {
         let layout = [
@@ -44,7 +45,25 @@ struct ServerListView: View {
                     if let error = self.serverService.mostRecentError {
                         ErrorMessage(message: error.localizedDescription)
                     }
-                    
+
+                    if !serverService.serversWithErrors.isEmpty {
+                        Button(action: { showParseErrorSheet = true }) {
+                            HStack {
+                                Image(systemName: "exclamationmark.triangle.fill")
+                                    .foregroundColor(.orange)
+                                Text("\(serverService.serversWithErrors.count) server(s) failed to load")
+                                    .foregroundColor(.primary)
+                                Spacer()
+                                Image(systemName: "chevron.right")
+                                    .foregroundColor(.secondary)
+                            }
+                            .padding()
+                            .background(Color.orange.opacity(0.1))
+                            .cornerRadius(8)
+                        }
+                        .padding(.top, 8)
+                    }
+
                     if serverService.favouriteServers.isEmpty == false {
                         Label("Favourites", systemImage: "star.fill")
                             .font(.headline)
@@ -138,8 +157,12 @@ struct ServerListView: View {
         } message: {
             Text("Are you sure you want to delete '\(serverService.serverToDelete?.name ?? "this server")'? This action cannot be undone.")
         }
+        .sheet(isPresented: $showParseErrorSheet) {
+            ParseErrorReportSheet()
+                .environmentObject(serverService)
+        }
     }
-    
+
     func deleteServer(at offsets: IndexSet) {
         guard let index = offsets.first else { return }
         serverService.requestDelete(server: serverService.defaultServers[index])
