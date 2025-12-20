@@ -49,7 +49,7 @@ enum DataMode {
             try await NetdataClient.shared.getChartDataWithHistory(baseUrl: baseUrl, basicAuthBase64: basicAuthBase64, chart: "system.cpu")
             
             self.cpuUsage = data
-            self.cpuUsageData = Array(self.cpuUsage.data).reversed().map({ d in Array(d[1..<d.count]).reduce(0, { acc, val in acc + (val ?? 0) }) })
+            self.cpuUsageData = Array(self.cpuUsage.data).reversed().map({ d in d.count > 1 ? Array(d[1..<d.count]).reduce(0, { acc, val in acc + (val ?? 0) }) : 0 })
             
             self.isLive = true
         } catch {
@@ -76,8 +76,12 @@ enum DataMode {
             self.ramUsage = data
             
             if let dataPoint = self.ramUsage.data.first {
-                if let free = dataPoint[1], let used = dataPoint[2], let cached = dataPoint[3] {
-                    self.ramUsageGauge = CGFloat(used / (free + used + cached))
+                let free = dataPoint.indices.contains(1) ? (dataPoint[1] ?? 0) : 0
+                let used = dataPoint.indices.contains(2) ? (dataPoint[2] ?? 0) : 0
+                let cached = dataPoint.indices.contains(3) ? (dataPoint[3] ?? 0) : 0
+                let total = free + used + cached
+                if total > 0 {
+                    self.ramUsageGauge = CGFloat(used / total)
                 }
             }
         } catch {
@@ -129,7 +133,8 @@ enum DataMode {
     }
     
     func getGaugeData(data: [[Double?]]) -> CGFloat {
-        return data.count == 0 ? 0 : CGFloat(Array(data.first![1..<data.first!.count]).reduce(0, { acc, val in acc + (val ?? 0) }) / 100)
+        guard let first = data.first, first.count > 1 else { return 0 }
+        return CGFloat(Array(first[1..<first.count]).reduce(0, { acc, val in acc + (val ?? 0) }) / 100)
     }
     
     func validateServer(serverUrl: String) async -> Bool {
