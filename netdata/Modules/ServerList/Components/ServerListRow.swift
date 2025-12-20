@@ -17,7 +17,7 @@ struct ServerListRow: View {
     @State private var showEditServerSheet = false
     
     @State private var fetchingAlarm = true
-    @State private var serverAlarms = ServerAlarms(status: false, alarms: [:])
+    @State private var serverAlarms = ServerAlarms(status: nil, alarms: nil)
     
     var body: some View {
         NavigationLink(destination: ServerDetailView(server: server)) {
@@ -143,34 +143,28 @@ struct ServerListRow: View {
     }
     
     func isOffline() -> Bool {
-        return !fetchingAlarm && !serverAlarms.status
+        return !fetchingAlarm && !(serverAlarms.status ?? false)
     }
     
     func getAlarmStatusColor() -> Color {
-        if !serverAlarms.status {
+        guard let status = serverAlarms.status, status else {
             return Color.gray
         }
-        
-        if serverAlarms.alarms.isEmpty {
+
+        guard let alarms = serverAlarms.alarms, !alarms.isEmpty else {
             return Color.green
         }
-        
+
         if self.hasCriticalAlarm() {
             return Color.red
         }
-        
+
         return Color.orange
     }
     
     func hasCriticalAlarm() -> Bool {
-        for (_, alarm) in serverAlarms.alarms {
-            // use enum instead if I can find all possible values
-            if alarm.status == "CRITICAL" {
-                return true
-            }
-        }
-        
-        return false
+        guard let alarms = serverAlarms.alarms else { return false }
+        return alarms.values.contains { $0.status == "CRITICAL" }
     }
 }
 

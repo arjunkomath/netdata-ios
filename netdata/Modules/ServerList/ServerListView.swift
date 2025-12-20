@@ -44,7 +44,7 @@ struct ServerListView: View {
                     if let error = self.serverService.mostRecentError {
                         ErrorMessage(message: error.localizedDescription)
                     }
-                    
+
                     if serverService.favouriteServers.isEmpty == false {
                         Label("Favourites", systemImage: "star.fill")
                             .font(.headline)
@@ -139,7 +139,7 @@ struct ServerListView: View {
             Text("Are you sure you want to delete '\(serverService.serverToDelete?.name ?? "this server")'? This action cannot be undone.")
         }
     }
-    
+
     func deleteServer(at offsets: IndexSet) {
         guard let index = offsets.first else { return }
         serverService.requestDelete(server: serverService.defaultServers[index])

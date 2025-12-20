@@ -58,10 +58,11 @@ struct Provider: TimelineProvider {
                     for server in favouriteServers {
                         do {
                             let serverAlarm = try await NetdataClient.shared.getAlarms(baseUrl: server.url, basicAuthBase64: server.basicAuthBase64)
-                            
-                            totalAlarmsCount += serverAlarm.alarms.count
+                            let alarmCount = serverAlarm.alarms?.count ?? 0
+
+                            totalAlarmsCount += alarmCount
                             criticalAlarmsCount += serverAlarm.criticalAlarmsCount
-                            alarms[server.name] = serverAlarm.criticalAlarmsCount > 0 ? Color.red : serverAlarm.alarms.count > 0 ? Color.orange : Color.green;
+                            alarms[server.name] = serverAlarm.criticalAlarmsCount > 0 ? Color.red : alarmCount > 0 ? Color.orange : Color.green
                         } catch {
                             debugPrint("Fetch Alarms failed", server.name, error)
                         }

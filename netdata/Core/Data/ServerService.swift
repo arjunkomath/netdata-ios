@@ -142,19 +142,19 @@ class ServerService: ObservableObject, PublicCloudService {
     @discardableResult
     func fetchServers() async -> ([NDServer], [NDServer]) {
         self.isSynching = true
-        
+
         do {
             let query = CKQuery(recordType: NDServer.RecordType, predicate: NSPredicate(value: true))
             query.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: false)]
             let (matchResults, _) = try await database.records(matching: query, inZoneWith: nil)
-            
+
             let nativeRecords: [NDServer] = matchResults
                 .compactMap { _, result in try? NDServer(withRecord: result.get()) }
-            
+
             self.favouriteServers = nativeRecords.filter { $0.isFavourite == 1 }
             self.defaultServers = nativeRecords.filter { $0.isFavourite != 1 }
             self.isSynching = false
-            
+
             return (self.favouriteServers, self.defaultServers)
         } catch {
             self.favouriteServers = []

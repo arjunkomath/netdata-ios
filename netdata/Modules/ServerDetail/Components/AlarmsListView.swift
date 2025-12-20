@@ -15,7 +15,7 @@ struct AlarmsListView: View {
     var basicAuthBase64: String
     
     @State private var loading = false
-    @State private var serverAlarms = ServerAlarms(status: false, alarms: [:])
+    @State private var serverAlarms = ServerAlarms(status: nil, alarms: nil)
     
     var body: some View {
         List {
@@ -38,16 +38,20 @@ struct AlarmsListView: View {
             }
             
             ForEach(self.getActiveAlarms(), id: \.self) { key in
-                AlarmListRow(alarm: serverAlarms.alarms[key]!)
-                    .contextMenu {
-                        Button(action: {
-                            withAnimation {
-                                userSettings.ignoredAlarms.append(serverAlarms.alarms[key]!.name)
-                            }
-                        }, label: {
-                            Label("Hide alarm", systemImage: "eye.slash.fill")
-                        })
-                    }
+                if let alarm = serverAlarms.alarms?[key] {
+                    AlarmListRow(alarm: alarm)
+                        .contextMenu {
+                            Button(action: {
+                                withAnimation {
+                                    if let name = alarm.name {
+                                        userSettings.ignoredAlarms.append(name)
+                                    }
+                                }
+                            }, label: {
+                                Label("Hide alarm", systemImage: "eye.slash.fill")
+                            })
+                        }
+                }
             }
             
             if self.hiddenAlarmsCount() > 0 {
@@ -80,14 +84,15 @@ struct AlarmsListView: View {
     }
     
     private func getActiveAlarms() -> [String] {
-        return serverAlarms.alarms.keys.sorted().filter { key in
-            return serverAlarms.alarms[key] != nil &&
-            !userSettings.ignoredAlarms.contains(serverAlarms.alarms[key]!.name)
+        guard let alarms = serverAlarms.alarms else { return [] }
+        return alarms.keys.sorted().filter { key in
+            guard let alarm = alarms[key], let name = alarm.name else { return false }
+            return !userSettings.ignoredAlarms.contains(name)
         }
     }
-    
+
     private func hiddenAlarmsCount() -> Int {
-        return serverAlarms.alarms.keys.count - self.getActiveAlarms().count
+        return (serverAlarms.alarms?.keys.count ?? 0) - self.getActiveAlarms().count
     }
     
     private var dismissButton: some View {
