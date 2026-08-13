@@ -56,8 +56,13 @@ struct ChartsListView: View {
             return charts.activeCharts
         }
         
-        return charts.activeCharts.filter {
-            $0.name.lowercased().contains(searchText.lowercased())
+        return charts.activeCharts.filter { chart in
+            let query = searchText.lowercased()
+            return chart.name.lowercased().contains(query) ||
+                chart.title.lowercased().contains(query) ||
+                chart.family.lowercased().contains(query) ||
+                chart.context.lowercased().contains(query) ||
+                chart.units.lowercased().contains(query)
         }
     }
     

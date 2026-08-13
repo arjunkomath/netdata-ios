@@ -5,7 +5,7 @@ struct ChartDataPoint: Identifiable {
     let id = UUID()
     var label: String
     var value: Double
-    var time: String
+    var time: Date
 }
 
 struct ChartView: View {
@@ -14,15 +14,49 @@ struct ChartView: View {
     var body: some View {
         let chartData = prepareChartData(serverData: data)
         
-        Chart {
-            ForEach(chartData) { dataPoint in
-                LineMark(
-                    x: .value("Time", dataPoint.time),
-                    y: .value(dataPoint.label, dataPoint.value)
-                )
-                .foregroundStyle(by: .value("Label", dataPoint.label))
-                .interpolationMethod(.catmullRom)
+        if chartData.isEmpty {
+            VStack(spacing: 8) {
+                Image(systemName: "chart.xyaxis.line")
+                    .font(.title2)
+                    .foregroundStyle(.secondary)
+                Text("Waiting for chart data")
+                    .font(.callout)
+                    .foregroundStyle(.secondary)
             }
+            .frame(maxWidth: .infinity, minHeight: 140)
+        } else {
+            Chart {
+                ForEach(chartData) { dataPoint in
+                    LineMark(
+                        x: .value("Time", dataPoint.time),
+                        y: .value(dataPoint.label, dataPoint.value)
+                    )
+                    .foregroundStyle(by: .value("Series", dataPoint.label))
+                    .lineStyle(.init(lineWidth: 2, lineCap: .round, lineJoin: .round))
+                    .interpolationMethod(.catmullRom)
+                }
+            }
+            .chartLegend(position: .bottom, alignment: .leading, spacing: 8)
+            .chartXAxis {
+                AxisMarks(values: .automatic(desiredCount: 4)) {
+                    AxisGridLine()
+                    AxisTick()
+                    AxisValueLabel(format: .dateTime.hour().minute())
+                }
+            }
+            .chartYAxis {
+                AxisMarks(position: .leading, values: .automatic(desiredCount: 4)) {
+                    AxisGridLine()
+                    AxisTick()
+                    AxisValueLabel()
+                }
+            }
+            .chartPlotStyle { plotArea in
+                plotArea
+                    .background(.quaternary.opacity(0.35))
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
+            }
+            .padding(.top, 8)
         }
     }
     
@@ -39,14 +73,13 @@ struct ChartView: View {
                             label: label,
                             value: value,
                             time: Date(timeIntervalSince1970: time)
-                                .formatted(.dateTime.minute().second())
                         )
                     )
                 }
             }
         }
         
-        return chartData.reversed()
+        return Array(chartData.reversed())
     }
 }
 
