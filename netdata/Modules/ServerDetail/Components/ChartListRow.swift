@@ -16,7 +16,7 @@ struct ChartListRow: View {
         NavigationLink(destination: CustomChartDetailView(serverChart: chart,
                                                           serverUrl: serverUrl,
                                                           basicAuthBase64: basicAuthBase64)) {
-            VStack(alignment: .leading, spacing: 8) {
+            VStack(alignment: .leading, spacing: 5) {
                 HStack(alignment: .firstTextBaseline) {
                     Text(chart.name)
                         .font(.headline)
@@ -28,7 +28,7 @@ struct ChartListRow: View {
                         .font(.caption2.weight(.semibold))
                         .foregroundStyle(.secondary)
                         .padding(.horizontal, 8)
-                        .padding(.vertical, 4)
+                        .padding(.vertical, 2)
                         .background(.quaternary, in: Capsule())
                 }
                 
@@ -44,7 +44,6 @@ struct ChartListRow: View {
                 .font(.caption)
                 .foregroundStyle(.secondary)
             }
-            .padding(.vertical, 8)
         }
     }
 }
