@@ -16,14 +16,33 @@ struct ChartListRow: View {
         NavigationLink(destination: CustomChartDetailView(serverChart: chart,
                                                           serverUrl: serverUrl,
                                                           basicAuthBase64: basicAuthBase64)) {
-            VStack(alignment: .leading, spacing: 10) {
-                HStack {
-                    Text("\(chart.name) - \(chart.family)")
+            VStack(alignment: .leading, spacing: 8) {
+                HStack(alignment: .firstTextBaseline) {
+                    Text(chart.name)
                         .font(.headline)
+                        .lineLimit(1)
+
+                    Spacer()
+
+                    Text(chart.units)
+                        .font(.caption2.weight(.semibold))
+                        .foregroundStyle(.secondary)
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 4)
+                        .background(.quaternary, in: Capsule())
                 }
                 
                 Text(chart.title)
                     .font(.subheadline)
+                    .foregroundStyle(.secondary)
+                    .lineLimit(2)
+
+                HStack(spacing: 6) {
+                    Text(chart.family)
+                    Text(chart.type)
+                }
+                .font(.caption)
+                .foregroundStyle(.secondary)
             }
             .padding(.vertical, 8)
         }

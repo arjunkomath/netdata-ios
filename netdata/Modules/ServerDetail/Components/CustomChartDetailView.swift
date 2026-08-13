@@ -25,7 +25,24 @@ struct CustomChartDetailView: View {
     
     var body: some View {
         List {
-            Section("\(serverChart.name) (\(units()))") {
+            Section {
+                VStack(alignment: .leading, spacing: 12) {
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text(serverChart.title)
+                            .font(.headline)
+                        Text("\(serverChart.family) · \(units())")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+
+                    ChartView(data: chartData)
+                        .frame(height: 260)
+                }
+                .padding(.vertical, 8)
+            }
+            .readableGuidePadding()
+
+            Section("Latest values") {
                 DataGrid(labels: chartData.labels,
                          data: chartData.data,
                          dataType: self.getDataType(),
