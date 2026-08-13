@@ -19,6 +19,14 @@ struct ServerDetailView: View {
     var body: some View {
         GeometryReader { geometry in
             ScrollView {
+                Picker("Time range", selection: $viewModel.dataMode) {
+                    Text("Current").tag(DataMode.now)
+                    Text("Last 15 min").tag(DataMode.fifteenMins)
+                }
+                .pickerStyle(.segmented)
+                .padding(.horizontal, 16)
+                .padding(.top, 8)
+
                 LazyVGrid(columns: gridLayout(for: geometry.size.width), alignment: .leading, spacing: 12) {
                     RedactedView(loading: viewModel.cpuUsage.labels.count < 1) {
                         ServerDetailItem(label: "CPU Usage (%)") {
@@ -205,14 +213,8 @@ struct ServerDetailView: View {
         }
         .navigationBarTitle(server.name)
         .toolbar {
-            ToolbarItemGroup(placement: .navigation) {
+            ToolbarItem(placement: .navigation) {
                 PulsatingView(live: viewModel.isLive)
-                
-                Picker("Data mode", selection: $viewModel.dataMode) {
-                    Text("Now").tag(DataMode.now)
-                    Text("15 Mins").tag(DataMode.fifteenMins)
-                }
-                .pickerStyle(.segmented)
             }
             
             ToolbarItemGroup(placement: .bottomBar) {
@@ -227,7 +229,7 @@ struct ServerDetailView: View {
                 
                 NavigationLink(destination: AlarmsListView(serverUrl: server.url, basicAuthBase64: server.basicAuthBase64)) {
                     HStack {
-                        Image(systemName: "alarm")
+                        Image(systemName: "exclamationmark.triangle.fill")
                         Text("Alarms")
                     }
                 }
@@ -251,4 +253,3 @@ struct ServerDetailView: View {
         return Array(repeating: .init(.flexible(), alignment: .topLeading), count: max(numberOfColumns, 1)) // Ensuring at least one column
     }
 }
-

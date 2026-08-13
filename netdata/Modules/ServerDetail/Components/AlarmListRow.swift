@@ -11,13 +11,13 @@ struct AlarmListRow: View {
     var alarm: ServerAlarm;
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 10) {
+        VStack(alignment: .leading, spacing: 6) {
             Text(alarm.status ?? "UNKNOWN")
                 .font(.caption)
                 .bold()
                 .foregroundColor(self.isCritical() ? Color.red : Color.orange)
-                .padding(.horizontal, 12)
-                .padding(.vertical, 4)
+                .padding(.horizontal, 8)
+                .padding(.vertical, 2)
                 .background(RoundedRectangle(cornerRadius: 14, style: .continuous)
                     .foregroundColor((self.isCritical() ? Color.red : Color.orange).opacity(0.1)))
 
@@ -33,7 +33,6 @@ struct AlarmListRow: View {
                     .foregroundColor(.gray)
             }
         }
-        .padding(8)
     }
     
     func isCritical() -> Bool {
