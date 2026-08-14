@@ -51,6 +51,20 @@ enum DataMode {
         }
     }
 
+    func clearChartData() {
+        cpuUsage = .empty
+        cpuUsageData = []
+        load = .empty
+        ramUsage = .empty
+        ramUsageGauge = 0
+        diskIO = .empty
+        network = .empty
+        networkIPv4 = .empty
+        networkIPv6 = .empty
+        bookmarkedChartData = Array(repeating: .empty, count: bookmarks.count)
+        refreshFailed = false
+    }
+
     func refresh(dataMode: DataMode) async {
         let anyCoreSucceeded = await withTaskGroup(of: Bool.self, returning: Bool.self) { group in
             group.addTask { await self.fetchCpu(dataMode: dataMode) }

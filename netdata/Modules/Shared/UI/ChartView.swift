@@ -10,6 +10,7 @@ struct ChartDataPoint: Identifiable {
 
 struct ChartView: View {
     var data: ServerData
+    var valueScale = 1.0
     
     var body: some View {
         let chartData = prepareChartData(serverData: data)
@@ -68,14 +69,14 @@ struct ChartView: View {
         for dataRow in serverData.data {
             guard dataRow.count >= serverData.labels.count else { continue }
 
-            let time = dataRow[0] ?? 0.0
+            guard let time = dataRow[0] else { continue }
             for labelIndex in 1..<serverData.labels.count {
                 let label = serverData.labels[labelIndex]
                 if let value = dataRow[labelIndex] {
                     chartData.append(
                         ChartDataPoint(
                             label: label,
-                            value: value,
+                            value: value * valueScale,
                             time: Date(timeIntervalSince1970: time)
                         )
                     )

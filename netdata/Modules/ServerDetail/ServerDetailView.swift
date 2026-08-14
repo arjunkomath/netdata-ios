@@ -128,7 +128,7 @@ struct ServerDetailView: View {
                     }
                     
                     if viewModel.networkIPv4.labels.count > 0 {
-                        ServerDetailItem(label: "system.ip (megabits/s)") {
+                        ServerDetailItem(label: "system.ip (kilobits/s)") {
                             switch viewModel.dataMode {
                             case .now:
                                 DataGrid(labels: viewModel.networkIPv4.labels,
@@ -168,7 +168,7 @@ struct ServerDetailView: View {
                                 if i < viewModel.bookmarks.count {
                                     let bookmark = viewModel.bookmarks[i]
                                     RedactedView(loading: chart.data.count == 0) {
-                                        ServerDetailItem(label: bookmark.id) {
+                                        ServerDetailItem(label: "\(bookmark.id) (\(bookmark.units == "seconds" ? "hours" : bookmark.units))") {
                                             switch viewModel.dataMode {
                                             case .now:
                                                 if self.getDataType(chart: bookmark) == .percentage {
@@ -181,7 +181,10 @@ struct ServerDetailView: View {
                                                          dataType: self.getDataType(chart: bookmark),
                                                          showArrows: false)
                                             case .fifteenMins:
-                                                ChartView(data: chart)
+                                                ChartView(
+                                                    data: chart,
+                                                    valueScale: bookmark.units == "seconds" ? 1.0 / 3600 : 1
+                                                )
                                                     .frame(height: 105)
                                             }
                                         }
@@ -202,6 +205,7 @@ struct ServerDetailView: View {
             let refreshInterval: Duration = dataMode == .now ? .seconds(1) : .seconds(15)
             viewModel.baseUrl = server.url
             viewModel.basicAuthBase64 = server.basicAuthBase64
+            viewModel.clearChartData()
 
             while !Task.isCancelled {
                 await viewModel.refresh(dataMode: dataMode)
