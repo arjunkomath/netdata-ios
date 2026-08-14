@@ -61,13 +61,17 @@ struct ChartView: View {
     }
     
     func prepareChartData(serverData: ServerData) -> [ChartDataPoint] {
+        guard serverData.labels.count > 1 else { return [] }
+
         var chartData: [ChartDataPoint] = []
         
-        for dataIndex in 0..<serverData.data.count {
-            let time = serverData.data[dataIndex][0] ?? 0.0
+        for dataRow in serverData.data {
+            guard dataRow.count >= serverData.labels.count else { continue }
+
+            let time = dataRow[0] ?? 0.0
             for labelIndex in 1..<serverData.labels.count {
                 let label = serverData.labels[labelIndex]
-                if let value = serverData.data[dataIndex][labelIndex] {
+                if let value = dataRow[labelIndex] {
                     chartData.append(
                         ChartDataPoint(
                             label: label,
@@ -85,7 +89,7 @@ struct ChartView: View {
 
 struct ChartView_Previews: PreviewProvider {
     static var previews: some View {
-        ChartView(data: ServerData(labels: [], data: []))
+        ChartView(data: .empty)
     }
 }
 

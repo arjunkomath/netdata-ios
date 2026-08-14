@@ -81,9 +81,11 @@ struct ServerListRow: View {
             
             self.getFavouriteButtons()
             
-            Link(destination: URL(string: server.url)!, label: {
-                Label("Open in browser", systemImage: "safari")
-            })
+            if let serverURL = URL(string: server.url) {
+                Link(destination: serverURL, label: {
+                    Label("Open in browser", systemImage: "safari")
+                })
+            }
             
             Button(role: .destructive, action: {
                 ServerService.shared.requestDelete(server: server)

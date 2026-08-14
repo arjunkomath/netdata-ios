@@ -6,15 +6,12 @@
 //
 
 import SwiftUI
-import Combine
 
 struct ServerDetailView: View {
     var server: NDServer;
     
     @ObservedObject var userSettings = UserSettings()
     @StateObject var viewModel = ServerDetailViewModel()
-    
-    @State var timer: Timer.TimerPublisher = Timer.publish(every: 1, on: .main, in: .common)
     
     var body: some View {
         GeometryReader { geometry in
@@ -26,6 +23,12 @@ struct ServerDetailView: View {
                 .pickerStyle(.segmented)
                 .padding(.horizontal, 16)
                 .padding(.top, 8)
+
+                if viewModel.refreshFailed {
+                    ErrorMessage(message: "Unable to refresh server data. Check the server connection.")
+                        .padding(.horizontal, 16)
+                        .padding(.top, 8)
+                }
 
                 LazyVGrid(columns: gridLayout(for: geometry.size.width), alignment: .leading, spacing: 12) {
                     RedactedView(loading: viewModel.cpuUsage.labels.count < 1) {
@@ -95,38 +98,62 @@ struct ServerDetailView: View {
 
                         if viewModel.diskIO.labels.count > 0 {
                             ServerDetailItem(label: "I/O (KiB/s)") {
-                                DataGrid(labels: viewModel.diskIO.labels,
-                                         data: viewModel.diskIO.data,
-                                         dataType: .absolute,
-                                         showArrows: true)
+                                switch viewModel.dataMode {
+                                case .now:
+                                    DataGrid(labels: viewModel.diskIO.labels,
+                                             data: viewModel.diskIO.data,
+                                             dataType: .absolute,
+                                             showArrows: true)
+                                case .fifteenMins:
+                                    ChartView(data: viewModel.diskIO)
+                                        .frame(height: 105)
+                                }
                             }
                         }
                     }
                     
                     if viewModel.network.labels.count > 0 {
                         ServerDetailItem(label: "system.net (kilobits/s)") {
-                            DataGrid(labels: viewModel.network.labels,
-                                     data: viewModel.network.data,
-                                     dataType: .absolute,
-                                     showArrows: true)
+                            switch viewModel.dataMode {
+                            case .now:
+                                DataGrid(labels: viewModel.network.labels,
+                                         data: viewModel.network.data,
+                                         dataType: .absolute,
+                                         showArrows: true)
+                            case .fifteenMins:
+                                ChartView(data: viewModel.network)
+                                    .frame(height: 105)
+                            }
                         }
                     }
                     
                     if viewModel.networkIPv4.labels.count > 0 {
                         ServerDetailItem(label: "system.ip (megabits/s)") {
-                            DataGrid(labels: viewModel.networkIPv4.labels,
-                                     data: viewModel.networkIPv4.data,
-                                     dataType: .absolute,
-                                     showArrows: true)
+                            switch viewModel.dataMode {
+                            case .now:
+                                DataGrid(labels: viewModel.networkIPv4.labels,
+                                         data: viewModel.networkIPv4.data,
+                                         dataType: .absolute,
+                                         showArrows: true)
+                            case .fifteenMins:
+                                ChartView(data: viewModel.networkIPv4)
+                                    .frame(height: 105)
+                            }
                         }
                     }
 
                     if viewModel.networkIPv6.labels.count > 0 {
                         ServerDetailItem(label: "system.ipv6 (kilobits/s)") {
-                            DataGrid(labels: viewModel.networkIPv6.labels,
-                                     data: viewModel.networkIPv6.data,
-                                     dataType: .absolute,
-                                     showArrows: true)
+                            switch viewModel.dataMode {
+                            case .now:
+                                DataGrid(labels: viewModel.networkIPv6.labels,
+                                         data: viewModel.networkIPv6.data,
+                                         dataType: .absolute,
+                                         showArrows: true)
+                            case .fifteenMins:
+                                ChartView(data: viewModel.networkIPv6)
+                                    .frame(height: 105)
+                            }
                         }
                     }
                 }
@@ -142,15 +169,21 @@ struct ServerDetailView: View {
                                     let bookmark = viewModel.bookmarks[i]
                                     RedactedView(loading: chart.data.count == 0) {
                                         ServerDetailItem(label: bookmark.id) {
-                                            if self.getDataType(chart: bookmark) == .percentage {
-                                                Meter(progress: viewModel.getGaugeData(data: chart.data))
-                                                    .redacted(reason: chart.labels.count < 1 ? .placeholder : .init())
-                                            }
+                                            switch viewModel.dataMode {
+                                            case .now:
+                                                if self.getDataType(chart: bookmark) == .percentage {
+                                                    Meter(progress: viewModel.getGaugeData(data: chart.data))
+                                                        .redacted(reason: chart.labels.count < 1 ? .placeholder : .init())
+                                                }
 
-                                            DataGrid(labels: chart.labels,
-                                                     data: chart.data,
-                                                     dataType: self.getDataType(chart: bookmark),
-                                                     showArrows: false)
+                                                DataGrid(labels: chart.labels,
+                                                         data: chart.data,
+                                                         dataType: self.getDataType(chart: bookmark),
+                                                         showArrows: false)
+                                            case .fifteenMins:
+                                                ChartView(data: chart)
+                                                    .frame(height: 105)
+                                            }
                                         }
                                     }
                                 }
@@ -162,61 +195,26 @@ struct ServerDetailView: View {
             }
         }
         .task {
+            await self.viewModel.updateBookmarks(baseUrl: server.url, basicAuthBase64: server.basicAuthBase64)
+        }
+        .task(id: viewModel.dataMode) {
+            let dataMode = viewModel.dataMode
+            let refreshInterval: Duration = dataMode == .now ? .seconds(1) : .seconds(15)
             viewModel.baseUrl = server.url
             viewModel.basicAuthBase64 = server.basicAuthBase64
-            
-            await self.viewModel.updateBookmarks(baseUrl: server.url, basicAuthBase64: server.basicAuthBase64)
-            
-            // Start timer
-            self.timer = Timer.publish(every: 1, on: .main, in: .common)
-            _ = self.timer.connect()
-        }
-        .onReceive(timer) { _ in
-            Task {
-                await withTaskGroup(of: Void.self) { group in
-                    group.addTask { await viewModel.fetchCpu() }
-                    group.addTask { await viewModel.fetchLoad() }
-                    group.addTask { await viewModel.fetchRam() }
-                    group.addTask { await viewModel.fetchDiskIo() }
-                    group.addTask { await viewModel.fetchNetwork() }
-                    
-                    for await _ in group {}
-                }
-                
-                var bookmarkedChartData = [Int: ServerData]()
-                await withTaskGroup(of: (Int, ServerData?).self) { group in
-                    for (index, bookmark) in viewModel.bookmarks.enumerated() {
-                        group.addTask {
-                            do {
-                                let chartData = try await NetdataClient.shared.getChartData(baseUrl: server.url, basicAuthBase64: server.basicAuthBase64, chart: bookmark.id)
-                                return (index, chartData)
-                            } catch {
-                                debugPrint("[\(bookmark.id)] Failed to fetch chart data")
-                                return (index, nil)
-                            }
-                        }
-                    }
-                    
-                    for await (index, chartData) in group {
-                        if let chartData = chartData {
-                            bookmarkedChartData[index] = chartData
-                        }
-                    }
-                }
-                for (index, data) in bookmarkedChartData {
-                    viewModel.bookmarkedChartData[index] = data
+
+            while !Task.isCancelled {
+                await viewModel.refresh(dataMode: dataMode)
+
+                do {
+                    try await Task.sleep(for: refreshInterval)
+                } catch {
+                    return
                 }
             }
-        }
-        .onDisappear {
-            self.timer.connect().cancel()
         }
         .navigationBarTitle(server.name)
         .toolbar {
-            ToolbarItem(placement: .navigation) {
-                PulsatingView(live: viewModel.isLive)
-            }
-            
             ToolbarItemGroup(placement: .bottomBar) {
                 NavigationLink(destination: ChartsListView(serverUrl: server.url, basicAuthBase64: server.basicAuthBase64)) {
                     HStack {

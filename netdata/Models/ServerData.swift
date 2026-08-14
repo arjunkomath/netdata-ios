@@ -8,6 +8,8 @@
 import Foundation
 
 public struct ServerData: Decodable {
+    static let empty = ServerData(labels: [], data: [])
+
     var labels: [String]
     var data: [[Double?]]
 }

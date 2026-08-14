@@ -100,11 +100,11 @@ class ServerService: ObservableObject, PublicCloudService {
         if let record = server.record {
             do {
                 try await database.deleteRecord(withID: record.recordID)
-                os_log("Successfully deleted server: \(server.name ?? "Unknown")")
+                os_log("Successfully deleted server: \(server.name)")
                 self.isSynching = false
                 serverToDelete = nil
             } catch {
-                os_log(.error, "Failed to delete server: \(server.name ?? "Unknown") - \(error.localizedDescription)")
+                os_log(.error, "Failed to delete server: \(server.name) - \(error.localizedDescription)")
                 // Re-add the server back to the appropriate list since deletion failed
                 if server.isFavourite == 1 {
                     favouriteServers.insert(server, at: 0)
