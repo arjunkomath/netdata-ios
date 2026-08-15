@@ -13,8 +13,8 @@ struct CustomChartDetailView: View {
     var serverUrl: String
     var basicAuthBase64: String
     
-    @State private var chartData = ServerData(labels: [], data: [])
-    @State private var isLive = false
+    @State private var chartData = ServerData.empty
+    @State private var refreshFailed = false
     
     @State private var showAddedToast = false
     @State private var showRemovedToast = false
@@ -25,6 +25,11 @@ struct CustomChartDetailView: View {
     
     var body: some View {
         List {
+            if refreshFailed {
+                ErrorMessage(message: "Unable to refresh chart data. Check the server connection.")
+                    .readableGuidePadding()
+            }
+
             Section("\(serverChart.name) (\(units()))") {
                 DataGrid(labels: chartData.labels,
                          data: chartData.data,
@@ -59,20 +64,15 @@ struct CustomChartDetailView: View {
             Task {
                 do {
                     chartData = try await NetdataClient.shared.getChartData(baseUrl: serverUrl, basicAuthBase64: basicAuthBase64, chart: serverChart.name)
-                    isLive = true
+                    refreshFailed = false
                 } catch {
                     debugPrint("Failed to fetchCustomChartData", serverChart.name)
-                    isLive = false
+                    refreshFailed = true
                 }
             }
         }
         .onDisappear {
             self.timer.upstream.connect().cancel()
-        }
-        .toolbar {
-            ToolbarItem(placement: .navigationBarTrailing) {
-                PulsatingView(live: isLive)
-            }
         }
         .toast(isPresenting: $showAddedToast) {
             AlertToast(displayMode: .banner(.pop), type: .complete(.green), title: "Chart Added")
