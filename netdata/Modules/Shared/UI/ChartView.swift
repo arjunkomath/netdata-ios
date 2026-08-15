@@ -10,6 +10,7 @@ struct ChartDataPoint: Identifiable {
 
 struct ChartView: View {
     var data: ServerData
+    var valueScale = 1.0
     
     var body: some View {
         let chartData = prepareChartData(serverData: data)
@@ -61,17 +62,21 @@ struct ChartView: View {
     }
     
     func prepareChartData(serverData: ServerData) -> [ChartDataPoint] {
+        guard serverData.labels.count > 1 else { return [] }
+
         var chartData: [ChartDataPoint] = []
         
-        for dataIndex in 0..<serverData.data.count {
-            let time = serverData.data[dataIndex][0] ?? 0.0
+        for dataRow in serverData.data {
+            guard dataRow.count >= serverData.labels.count else { continue }
+
+            guard let time = dataRow[0] else { continue }
             for labelIndex in 1..<serverData.labels.count {
                 let label = serverData.labels[labelIndex]
-                if let value = serverData.data[dataIndex][labelIndex] {
+                if let value = dataRow[labelIndex] {
                     chartData.append(
                         ChartDataPoint(
                             label: label,
-                            value: value,
+                            value: value * valueScale,
                             time: Date(timeIntervalSince1970: time)
                         )
                     )
@@ -85,7 +90,7 @@ struct ChartView: View {
 
 struct ChartView_Previews: PreviewProvider {
     static var previews: some View {
-        ChartView(data: ServerData(labels: [], data: []))
+        ChartView(data: .empty)
     }
 }
 

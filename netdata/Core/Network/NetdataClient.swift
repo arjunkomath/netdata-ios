@@ -9,10 +9,10 @@ import Foundation
 import Alamofire
 
 enum NetDataEndpoint: String {
-    case info = "/api/v1/info"
-    case charts = "/api/v1/charts"
-    case data = "/api/v1/data"
-    case alarms = "/api/v1/alarms"
+    case info = "api/v1/info"
+    case charts = "api/v1/charts"
+    case data = "api/v1/data"
+    case alarms = "api/v1/alarms"
 }
 
 enum APIError: Error {
@@ -25,57 +25,65 @@ enum APIError: Error {
 public class NetdataClient {
     public static let shared = NetdataClient()
     
-    var session = URLSession.shared
-    
     func getInfo(baseUrl: String, basicAuthBase64: String = "") async throws -> ServerInfo {
-        let requestUrl = URL(string: baseUrl)!.appendingPathComponent(NetDataEndpoint.info.rawValue)
+        let requestUrl = try makeRequestURL(baseUrl: baseUrl, endpoint: .info)
         
         return try await run(requestUrl: requestUrl, basicAuthBase64: basicAuthBase64)
     }
     
     func getAlarms(baseUrl: String, basicAuthBase64: String = "") async throws -> ServerAlarms {
-        let requestUrl = URL(string: baseUrl)!.appendingPathComponent(NetDataEndpoint.alarms.rawValue)
+        let requestUrl = try makeRequestURL(baseUrl: baseUrl, endpoint: .alarms)
         
         return try await run(requestUrl: requestUrl, basicAuthBase64: basicAuthBase64)
     }
     
     func getCharts(baseUrl: String, basicAuthBase64: String = "") async throws -> ServerCharts {
-        let requestUrl = URL(string: baseUrl)!.appendingPathComponent(NetDataEndpoint.charts.rawValue)
+        let requestUrl = try makeRequestURL(baseUrl: baseUrl, endpoint: .charts)
         
         return try await run(requestUrl: requestUrl, basicAuthBase64: basicAuthBase64)
     }
     
     func getChartData(baseUrl: String, basicAuthBase64: String = "", chart: String) async throws -> ServerData {
-        // after=-10&points=10
-        var request = URLComponents(string: baseUrl + NetDataEndpoint.data.rawValue)!
-        request.queryItems = [
+        let requestUrl = try makeRequestURL(baseUrl: baseUrl, endpoint: .data, queryItems: [
             URLQueryItem(name: "after", value: "-1"),
             URLQueryItem(name: "points", value: "1"),
             URLQueryItem(name: "chart", value: chart)
-        ];
+        ])
         
-        if let url = request.url {
-            return try await run(requestUrl: url, basicAuthBase64: basicAuthBase64)
-        }
-        
-        throw APIError.invalidRequest
+        return try await run(requestUrl: requestUrl, basicAuthBase64: basicAuthBase64)
     }
     
     func getChartDataWithHistory(baseUrl: String, basicAuthBase64: String = "", chart: String) async throws -> ServerData {
-        var request = URLComponents(string: baseUrl + NetDataEndpoint.data.rawValue)!
-        
-        request.queryItems = [
-            URLQueryItem(name: "after", value: "-15"),
+        let requestUrl = try makeRequestURL(baseUrl: baseUrl, endpoint: .data, queryItems: [
+            URLQueryItem(name: "after", value: "-900"),
             URLQueryItem(name: "points", value: "15"),
-            URLQueryItem(name: "gtime", value: "60"),
             URLQueryItem(name: "chart", value: chart)
-        ];
+        ])
         
-        if let url = request.url {
-            return try await run(requestUrl: url, basicAuthBase64: basicAuthBase64)
+        return try await run(requestUrl: requestUrl, basicAuthBase64: basicAuthBase64)
+    }
+
+    private func makeRequestURL(baseUrl: String, endpoint: NetDataEndpoint, queryItems: [URLQueryItem] = []) throws -> URL {
+        guard let baseURL = URL(string: baseUrl),
+              let scheme = baseURL.scheme?.lowercased(),
+              scheme == "http" || scheme == "https",
+              baseURL.host != nil,
+              baseURL.fragment == nil,
+              var components = URLComponents(
+                url: baseURL.appendingPathComponent(endpoint.rawValue),
+                resolvingAgainstBaseURL: false
+              ) else {
+            throw APIError.invalidRequest
         }
-        
-        throw APIError.invalidRequest
+
+        let mergedQueryItems = (components.queryItems ?? []) + queryItems
+        components.queryItems = mergedQueryItems.isEmpty ? nil : mergedQueryItems
+
+        guard let requestURL = components.url else {
+            throw APIError.invalidRequest
+        }
+
+        return requestURL
     }
     
     private func run<T: Decodable>(requestUrl: URL, basicAuthBase64: String) async throws -> T {
@@ -87,21 +95,30 @@ public class NetdataClient {
             headers["Authorization"] = "Basic \(basicAuthBase64)"
         }
         
-        return try await withCheckedThrowingContinuation { continuation in
-            AF.request(
-                requestUrl.absoluteString,
+        do {
+            return try await AF.request(
+                requestUrl,
                 method: .get,
-                encoding: JSONEncoding.default,
                 headers: headers
             )
-            .responseDecodable(of: T.self) { response in
-                switch(response.result) {
-                case let .success(data):
-                    continuation.resume(returning: data)
-                case let .failure(error):
-                    continuation.resume(throwing: error)
-                }
+            .validate(statusCode: 200..<300)
+            .serializingDecodable(T.self)
+            .value
+        } catch {
+            guard !Task.isCancelled else { throw CancellationError() }
+
+            debugPrint("[NetdataClient] Request failed:", error)
+
+            let afError = error as? AFError
+            let urlError = (afError?.underlyingError ?? error) as? URLError
+
+            if afError?.responseCode == 401 || urlError?.code == .userAuthenticationRequired {
+                throw APIError.authenticationFailed
             }
+            if urlError?.code == .notConnectedToInternet {
+                throw APIError.userIsOffline
+            }
+            throw APIError.somethingWentWrong
         }
     }
 }

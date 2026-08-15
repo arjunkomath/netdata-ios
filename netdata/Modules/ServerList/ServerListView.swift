@@ -6,9 +6,11 @@
 //
 
 import SwiftUI
+import UIKit
 
 struct ServerListView: View {
     @EnvironmentObject var serverService: ServerService
+    @Environment(\.openURL) private var openURL
     
     @ObservedObject var userSettings = UserSettings()
     
@@ -38,7 +40,16 @@ struct ServerListView: View {
                 
                 RedactedView(loading: serverService.isSynching) {
                     if !self.serverService.isCloudEnabled && !serverService.isSynching {
-                        ErrorMessage(message: "iCloud not enabled, you need an iCloud account to view / add servers")
+                        VStack(alignment: .leading, spacing: 12) {
+                            ErrorMessage(message: "iCloud not enabled, you need an iCloud account to view / add servers")
+
+                            if let settingsURL = URL(string: UIApplication.openSettingsURLString) {
+                                Button("Open Settings") {
+                                    openURL(settingsURL)
+                                }
+                                .buttonStyle(.bordered)
+                            }
+                        }
                     }
                     
                     if let error = self.serverService.mostRecentError {

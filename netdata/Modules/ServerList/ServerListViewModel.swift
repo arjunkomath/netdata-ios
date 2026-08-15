@@ -53,15 +53,7 @@ import SwiftUI
         } catch {
             self.validatingUrl = false
             self.validationError = true
-            
-            guard let apiError = error as? APIError, apiError != .somethingWentWrong else {
-                self.validationErrorMessage = "Invalid server URL! Please ensure Netdata has been installed on the server."
-                return false
-            }
-            
-            if apiError == APIError.authenticationFailed {
-                self.validationErrorMessage = "Authentication Failed"
-            }
+            self.validationErrorMessage = validationMessage(for: error)
             return false
         }
     }
@@ -96,16 +88,19 @@ import SwiftUI
             FeedbackGenerator.shared.triggerNotification(type: .error)
             self.validatingUrl = false
             self.validationError = true
-            
-            guard let apiError = error as? APIError, apiError != .somethingWentWrong else {
-                self.validationErrorMessage = "Invalid server URL! Please ensure Netdata has been installed on the server."
-                return false
-            }
-            
-            if apiError == APIError.authenticationFailed {
-                self.validationErrorMessage = "Authentication Failed"
-            }
+            self.validationErrorMessage = validationMessage(for: error)
             return false
+        }
+    }
+
+    private func validationMessage(for error: Error) -> String {
+        switch error as? APIError {
+        case .authenticationFailed:
+            return "Authentication Failed"
+        case .userIsOffline:
+            return "You appear to be offline"
+        default:
+            return "Invalid server URL! Please ensure Netdata has been installed on the server."
         }
     }
     

@@ -24,7 +24,6 @@ struct SettingsView: View {
     @State private var hasPushPermission = false
     @State private var alertNotifications = false
     @State private var showApiKeyCopiedToast = false
-    @State private var showUserIdCopiedToast = false
     @State private var showRotateApiKeyAlert = false
 
     private var versionNumber: String {
@@ -189,15 +188,6 @@ struct SettingsView: View {
                     makeRow(image: "server.rack",
                             text: "DB Sync \(Auth.auth().currentUser != nil ? "Active" : "Failed")",
                             color: Auth.auth().currentUser != nil ? .green : .red)
-                    if let id = Auth.auth().currentUser?.uid {
-                        Button(action: {
-                            UIPasteboard.general.string = id
-                            showUserIdCopiedToast = true
-                        }) {
-                            Label("\(id)", systemImage: "person")
-                                .foregroundColor(.accentColor)
-                        }
-                    }
                 }
                 
                 Section(
@@ -239,13 +229,6 @@ struct SettingsView: View {
                     displayMode: .banner(.pop),
                     type: .complete(.green),
                     title: "API key copied to clipboard"
-                )
-            }
-            .toast(isPresenting: $showUserIdCopiedToast) {
-                AlertToast(
-                    displayMode: .banner(.pop),
-                    type: .complete(.green),
-                    title: "User ID copied to clipboard"
                 )
             }
             .alert(isPresented: $showPushPermissionAlert) {
