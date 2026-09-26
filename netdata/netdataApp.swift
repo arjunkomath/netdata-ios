@@ -62,15 +62,12 @@ struct netdataApp: App {
     
     var body: some Scene {
         WindowGroup {
-            NavigationStack {
-                ServerListView()
-            }
-            .navigationViewStyle(.stack)
-            .environmentObject(ServerService.shared)
-            .environmentObject(UserService.shared)
-            .onAppear {
-                self.setupAppearance()
-            }
+            ServerListView()
+                .environmentObject(ServerService.shared)
+                .environmentObject(UserService.shared)
+                .onAppear {
+                    self.setupAppearance()
+                }
         }
     }
     

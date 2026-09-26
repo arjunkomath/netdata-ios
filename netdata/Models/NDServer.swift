@@ -36,8 +36,8 @@ public struct NDServer: CloudModel, Equatable, Identifiable {
         lhs.id == rhs.id
     }
     
-    public init(name: String, description: String, url: String, serverInfo: ServerInfo?, basicAuthBase64: String?, isFavourite: Int?) {
-        self.id = UUID().uuidString
+    public init(id: String = UUID().uuidString, name: String, description: String, url: String, serverInfo: ServerInfo?, basicAuthBase64: String?, isFavourite: Int?) {
+        self.id = id
         self.name = name
         self.description = description
         self.url = url

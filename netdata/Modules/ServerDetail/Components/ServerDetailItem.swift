@@ -15,11 +15,18 @@ struct ServerDetailItem<Content: View>: View {
         VStack(alignment: .leading) {
             Text(label)
                 .font(.headline)
-            HStack {
-                content()
+                .fixedSize(horizontal: false, vertical: true)
+            ViewThatFits(in: .horizontal) {
+                HStack(alignment: .top) {
+                    content()
+                }
+                VStack(alignment: .leading, spacing: 12) {
+                    content()
+                }
             }
         }
         .padding(12)
+        .frame(maxWidth: .infinity, alignment: .leading)
         .background(Color(UIColor.secondarySystemBackground))
         .cornerRadius(10)
     }

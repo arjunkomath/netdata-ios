@@ -67,7 +67,7 @@ struct SettingsView: View {
     }
     
     var body: some View {
-        NavigationView {
+        NavigationStack {
             List {
                 Section(header: Text("Experience")) {
                     ColorPicker(selection: $userSettings.appTintColor, supportsOpacity: false) {
@@ -220,7 +220,7 @@ struct SettingsView: View {
             .navigationTitle("Settings")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                ToolbarItem(placement: .navigation) {
+                ToolbarItem(placement: .cancellationAction) {
                     dismissButton
                 }
             }
@@ -242,15 +242,13 @@ struct SettingsView: View {
                       secondaryButton: .cancel())
             }
         }
-        .navigationViewStyle(StackNavigationViewStyle())
     }
     
     private var dismissButton: some View {
         Button(action: {
             dismiss()
         }) {
-            Image(systemName: "xmark")
-                .imageScale(.medium)
+            Label("Close", systemImage: "xmark")
         }
     }
     
