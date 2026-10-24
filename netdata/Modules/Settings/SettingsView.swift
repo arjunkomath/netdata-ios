@@ -67,7 +67,7 @@ struct SettingsView: View {
     }
     
     var body: some View {
-        NavigationView {
+        NavigationStack {
             List {
                 Section(header: Text("Experience")) {
                     ColorPicker(selection: $userSettings.appTintColor, supportsOpacity: false) {
@@ -196,8 +196,7 @@ struct SettingsView: View {
                 ) {
                     makeRow(image: "desktopcomputer", text: "Source code",
                             link: URL(string: "https://github.com/arjunkomath/netdata-ios")!)
-                    makeRow(image: "ant", text: "Report an issue",
-                            link: URL(string: "https://github.com/arjunkomath/netdata-ios/issues")!)
+                    SupportOptions()
                     
                     Button(action: {
                         requestReview()
@@ -220,7 +219,7 @@ struct SettingsView: View {
             .navigationTitle("Settings")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                ToolbarItem(placement: .navigation) {
+                ToolbarItem(placement: .cancellationAction) {
                     dismissButton
                 }
             }
@@ -242,15 +241,13 @@ struct SettingsView: View {
                       secondaryButton: .cancel())
             }
         }
-        .navigationViewStyle(StackNavigationViewStyle())
     }
     
     private var dismissButton: some View {
         Button(action: {
             dismiss()
         }) {
-            Image(systemName: "xmark")
-                .imageScale(.medium)
+            Label("Close", systemImage: "xmark")
         }
     }
     

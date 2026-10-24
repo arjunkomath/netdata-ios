@@ -1,0 +1,9 @@
+{
+  "id" : "302e13ca-2103-4593-9986-17ed22fde873",
+  "targets" : [
+    {
+      "id" : "ABA558F9-F5AC-4B0D-9A14-E9F8DC4B7619",
+      "name" : "netdata"
+    }
+  ]
+}

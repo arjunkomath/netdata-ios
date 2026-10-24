@@ -15,7 +15,7 @@ struct ChartsListView: View {
     
     @State private var loading = false
     @State private var charts = ServerCharts(version: "", release_channel: "", charts: [:])
-    @State private var searchText = ""
+    @Binding var searchText: String
     
     var body: some View {
         List {
@@ -27,9 +27,7 @@ struct ChartsListView: View {
             }
             
             ForEach(getActiveCharts()) { chart in
-                ChartListRow(chart: chart,
-                             serverUrl: serverUrl,
-                             basicAuthBase64: basicAuthBase64)
+                ChartListRow(chart: chart)
             }
         }
         .listStyle(.plain)
@@ -78,6 +76,6 @@ struct ChartsListView: View {
 
 struct ChartsListView_Previews: PreviewProvider {
     static var previews: some View {
-        ChartsListView(serverUrl: "", basicAuthBase64: "")
+        ChartsListView(serverUrl: "", basicAuthBase64: "", searchText: .constant(""))
     }
 }

@@ -38,6 +38,7 @@ enum DataMode {
     // MARK:- Data mode
     @Published var dataMode: DataMode = .now
     @Published var refreshFailed = false
+    var loadedDataMode: DataMode?
     
     var baseUrl = ""
     var basicAuthBase64 = ""
@@ -226,13 +227,17 @@ enum DataMode {
         if bookmarks.count > 0 {
             do {
                 let charts = try await NetdataClient.shared.getCharts(baseUrl: baseUrl, basicAuthBase64: basicAuthBase64)
-                
-                self.bookmarks = bookmarks
+                guard !Task.isCancelled else { return }
+
+                let updatedBookmarks = bookmarks
                     .compactMap { chart in
                         charts.charts[chart]
                     }
-                
-                self.bookmarkedChartData = Array(repeating: .empty, count: self.bookmarks.count)
+
+                if self.bookmarks.map(\.id) != updatedBookmarks.map(\.id) {
+                    self.bookmarkedChartData = Array(repeating: .empty, count: updatedBookmarks.count)
+                }
+                self.bookmarks = updatedBookmarks
             } catch {
                 guard !Task.isCancelled else { return }
                 debugPrint("fetchCharts", error)

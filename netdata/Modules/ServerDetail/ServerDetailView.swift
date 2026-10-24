@@ -7,14 +7,51 @@
 
 import SwiftUI
 
+enum ServerDetailDestination: Hashable {
+    case charts
+    case alarms
+    case chart(ServerChart)
+}
+
+struct ServerDetailNavigationView: View {
+    let server: NDServer
+    @StateObject private var viewModel = ServerDetailViewModel()
+    @State private var path: [ServerDetailDestination] = []
+    @State private var chartSearchText = ""
+
+    var body: some View {
+        NavigationStack(path: $path) {
+            ServerDetailView(server: server, viewModel: viewModel)
+                .navigationDestination(for: ServerDetailDestination.self) { destination in
+                    switch destination {
+                    case .charts:
+                        ChartsListView(serverUrl: server.url,
+                                       basicAuthBase64: server.basicAuthBase64,
+                                       searchText: $chartSearchText)
+                    case .alarms:
+                        AlarmsListView(serverUrl: server.url, basicAuthBase64: server.basicAuthBase64)
+                    case .chart(let chart):
+                        CustomChartDetailView(serverChart: chart,
+                                              serverUrl: server.url,
+                                              basicAuthBase64: server.basicAuthBase64)
+                    }
+                }
+        }
+    }
+}
+
 struct ServerDetailView: View {
     var server: NDServer;
     
     @ObservedObject var userSettings = UserSettings()
-    @StateObject var viewModel = ServerDetailViewModel()
+    @ObservedObject var viewModel: ServerDetailViewModel
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+    @ScaledMetric(relativeTo: .body) private var minimumCardWidth: CGFloat = 320
+    @ScaledMetric(relativeTo: .body) private var minimumChartHeight: CGFloat = 160
     
     var body: some View {
         GeometryReader { geometry in
+            let chartHeight = max(minimumChartHeight, min(geometry.size.height * 0.35, 240))
             ScrollView {
                 Picker("Time range", selection: $viewModel.dataMode) {
                     Text("Current").tag(DataMode.now)
@@ -54,7 +91,7 @@ struct ServerDetailView: View {
                                 
                             case .fifteenMins:
                                 ChartView(data: viewModel.cpuUsage)
-                                    .frame(height: 280)
+                                    .frame(height: chartHeight)
                             }
                         }
                     }
@@ -73,7 +110,7 @@ struct ServerDetailView: View {
                                     
                                 case .fifteenMins:
                                     ChartView(data: viewModel.ramUsage)
-                                        .frame(height: 105)
+                                        .frame(height: chartHeight)
                                 }
                             }
                         }
@@ -91,7 +128,7 @@ struct ServerDetailView: View {
 
                                 case .fifteenMins:
                                     ChartView(data: viewModel.load)
-                                        .frame(height: 105)
+                                        .frame(height: chartHeight)
                                 }
                             }
                         }
@@ -106,7 +143,7 @@ struct ServerDetailView: View {
                                              showArrows: true)
                                 case .fifteenMins:
                                     ChartView(data: viewModel.diskIO)
-                                        .frame(height: 105)
+                                        .frame(height: chartHeight)
                                 }
                             }
                         }
@@ -122,7 +159,7 @@ struct ServerDetailView: View {
                                          showArrows: true)
                             case .fifteenMins:
                                 ChartView(data: viewModel.network)
-                                    .frame(height: 105)
+                                    .frame(height: chartHeight)
                             }
                         }
                     }
@@ -137,7 +174,7 @@ struct ServerDetailView: View {
                                          showArrows: true)
                             case .fifteenMins:
                                 ChartView(data: viewModel.networkIPv4)
-                                    .frame(height: 105)
+                                    .frame(height: chartHeight)
                             }
                         }
                     }
@@ -152,7 +189,7 @@ struct ServerDetailView: View {
                                          showArrows: true)
                             case .fifteenMins:
                                 ChartView(data: viewModel.networkIPv6)
-                                    .frame(height: 105)
+                                    .frame(height: chartHeight)
                             }
                         }
                     }
@@ -185,7 +222,7 @@ struct ServerDetailView: View {
                                                     data: chart,
                                                     valueScale: bookmark.units == "seconds" ? 1.0 / 3600 : 1
                                                 )
-                                                    .frame(height: 105)
+                                                    .frame(height: chartHeight)
                                             }
                                         }
                                     }
@@ -205,7 +242,10 @@ struct ServerDetailView: View {
             let refreshInterval: Duration = dataMode == .now ? .seconds(1) : .seconds(15)
             viewModel.baseUrl = server.url
             viewModel.basicAuthBase64 = server.basicAuthBase64
-            viewModel.clearChartData()
+            if viewModel.loadedDataMode != dataMode {
+                viewModel.clearChartData()
+                viewModel.loadedDataMode = dataMode
+            }
 
             while !Task.isCancelled {
                 await viewModel.refresh(dataMode: dataMode)
@@ -220,20 +260,12 @@ struct ServerDetailView: View {
         .navigationBarTitle(server.name)
         .toolbar {
             ToolbarItemGroup(placement: .bottomBar) {
-                NavigationLink(destination: ChartsListView(serverUrl: server.url, basicAuthBase64: server.basicAuthBase64)) {
-                    HStack {
-                        Image(systemName: "chart.pie")
-                        Text("Charts")
-                    }
+                NavigationLink(value: ServerDetailDestination.charts) {
+                    Label("Charts", systemImage: "chart.pie")
                 }
                 
-                Spacer()
-                
-                NavigationLink(destination: AlarmsListView(serverUrl: server.url, basicAuthBase64: server.basicAuthBase64)) {
-                    HStack {
-                        Image(systemName: "exclamationmark.triangle.fill")
-                        Text("Alarms")
-                    }
+                NavigationLink(value: ServerDetailDestination.alarms) {
+                    Label("Alarms", systemImage: "exclamationmark.triangle.fill")
                 }
             }
         }
@@ -251,7 +283,9 @@ struct ServerDetailView: View {
     }
     
     private func gridLayout(for width: CGFloat) -> [GridItem] {
-        let numberOfColumns = min(Int(width / 360), 3)
-        return Array(repeating: .init(.flexible(), alignment: .topLeading), count: max(numberOfColumns, 1)) // Ensuring at least one column
+        let availableWidth = max(0, width - 32)
+        let numberOfColumns = dynamicTypeSize.isAccessibilitySize ? 1 :
+            max(1, min(Int((availableWidth + 12) / (minimumCardWidth + 12)), 3))
+        return Array(repeating: GridItem(.flexible(), spacing: 12, alignment: .topLeading), count: numberOfColumns)
     }
 }

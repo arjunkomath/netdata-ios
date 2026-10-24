@@ -70,7 +70,8 @@ import SwiftUI
         
         do {
             let info = try await NetdataClient.shared.getInfo(baseUrl: url, basicAuthBase64: basicAuthBase64)
-            var server = NDServer(name: self.name,
+            var server = NDServer(id: editingServer.id,
+                                  name: self.name,
                                   description: self.description,
                                   url: self.url,
                                   serverInfo: info,
