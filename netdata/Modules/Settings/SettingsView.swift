@@ -196,8 +196,7 @@ struct SettingsView: View {
                 ) {
                     makeRow(image: "desktopcomputer", text: "Source code",
                             link: URL(string: "https://github.com/arjunkomath/netdata-ios")!)
-                    makeRow(image: "ant", text: "Report an issue",
-                            link: URL(string: "https://github.com/arjunkomath/netdata-ios/issues")!)
+                    SupportOptions()
                     
                     Button(action: {
                         requestReview()

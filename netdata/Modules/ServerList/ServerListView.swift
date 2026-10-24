@@ -129,7 +129,7 @@ struct ServerListView: View {
             await serverService.refresh()
         }
         .toolbar {
-            ToolbarItem(placement: .automatic) {
+            ToolbarItem(placement: .navigation) {
                 Button(action: {
                     showSettings = true
                 }) {
@@ -137,16 +137,15 @@ struct ServerListView: View {
                 }
             }
             
-            ToolbarItemGroup(placement: .bottomBar) {
-                if self.serverService.isCloudEnabled {
+            if self.serverService.isCloudEnabled {
+                ToolbarItem(placement: .bottomBar) {
                     Button(action: {
                         showAddServer = true
                     }) {
-                        Label("Add Server", systemImage: "externaldrive.badge.plus")
+                        Label("Add Server", systemImage: "plus")
                     }
+                    .buttonStyle(.borderedProminent)
                 }
-                
-                SupportOptions()
             }
         }
         .navigationTitle("My Servers")
