@@ -57,16 +57,19 @@ struct ServerListRow: View {
 #if targetEnvironment(macCatalyst)
         .buttonStyle(.borderless)
 #endif
-        .task {
-            if let alarms = await viewModel.fetchAlarms(server: server) {
-                withAnimation {
-                    self.fetchingAlarm = false
+        .task(id: [server.url, server.basicAuthBase64, serverService.refreshID.uuidString]) {
+            guard !Task.isCancelled else { return }
+            fetchingAlarm = true
+            serverAlarms = ServerAlarms(status: nil, alarms: nil)
+
+            let alarms = await viewModel.fetchAlarms(server: server)
+            guard !Task.isCancelled else { return }
+
+            withAnimation {
+                if let alarms = alarms {
                     self.serverAlarms = alarms
                 }
-            } else {
-                withAnimation {
-                    self.fetchingAlarm = false
-                }
+                self.fetchingAlarm = false
             }
         }
         .sheet(isPresented: $showEditServerSheet, content: {
@@ -175,6 +178,7 @@ struct ServerListRow_Previews: PreviewProvider {
                                        serverInfo: nil,
                                        basicAuthBase64: nil,
                                        isFavourite: 0))
+            .environmentObject(ServerService.shared)
         
         ServerListRow(server: NDServer(name: "Techulus",
                                        description: "gc us server",
@@ -182,5 +186,6 @@ struct ServerListRow_Previews: PreviewProvider {
                                        serverInfo: nil,
                                        basicAuthBase64: "base64==",
                                        isFavourite: 0))
+            .environmentObject(ServerService.shared)
     }
 }
