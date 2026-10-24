@@ -44,17 +44,18 @@ struct AbsoluteUsageData: View {
                 } else if usage != nil {
                     if convertSecondsToHours ?? false {
                         Text(String(format: "%.f", ((usage!/60)/60)))
-                            .font(.system(size: 16, weight: .regular, design: .rounded))
+                            .font(.system(.body, design: .rounded))
                             .padding(0)
                     } else {
                         Text(String(format: "%.2f", usage!))
-                            .font(.system(size: 16, weight: .regular, design: .rounded))
+                            .font(.system(.body, design: .rounded))
                             .padding(0)
                     }
                 }
             }
         }
-        .frame(height: 50)
+        .fixedSize(horizontal: false, vertical: true)
+        .frame(minHeight: 50, alignment: .leading)
     }
 }
 

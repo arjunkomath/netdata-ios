@@ -17,72 +17,35 @@ struct ServerListView: View {
     @State private var showAddServer = false
     @State private var showWelcome = false
     @State private var showSettings = false
+    @State private var selectedServerID: String?
+
+    private var selectedServer: NDServer? {
+        (serverService.favouriteServers + serverService.defaultServers)
+            .first { $0.id == selectedServerID }
+    }
     
     var body: some View {
-        let layout = [
-            GridItem(.adaptive(minimum: 160), spacing: 8)
-        ]
-        
-        ScrollView {
-            VStack(alignment: .leading) {
-                if serverService.defaultServers.isEmpty && serverService.mostRecentError != nil {
-                    RedactedView(loading: serverService.isSynching) {
-                        Label("Loading...", systemImage: "star.fill")
-                            .font(.headline)
-                            .padding(.top, 16)
-                        LazyVGrid(columns: layout, alignment: .leading, spacing: 8) {
-                            ForEach(1...3, id: \.self) { _ in
-                                ServerListRow(server: NDServer.placeholder())
-                            }
-                        }
-                    }
+        NavigationSplitView {
+            // Let the system align the columns with the fold's reserved region.
+            serverList
+        } detail: {
+            if let server = selectedServer {
+                ServerDetailNavigationView(server: server)
+                    .id([server.id, server.url, server.basicAuthBase64])
+            } else {
+                VStack(spacing: 12) {
+                    Image(systemName: "server.rack")
+                        .font(.largeTitle)
+                    Text("Select a server")
+                        .font(.title2)
+                    Text("Choose a server to view its charts and alarms.")
+                        .foregroundStyle(.secondary)
                 }
-                
-                RedactedView(loading: serverService.isSynching) {
-                    if !self.serverService.isCloudEnabled && !serverService.isSynching {
-                        VStack(alignment: .leading, spacing: 12) {
-                            ErrorMessage(message: "iCloud not enabled, you need an iCloud account to view / add servers")
-
-                            if let settingsURL = URL(string: UIApplication.openSettingsURLString) {
-                                Button("Open Settings") {
-                                    openURL(settingsURL)
-                                }
-                                .buttonStyle(.bordered)
-                            }
-                        }
-                    }
-                    
-                    if let error = self.serverService.mostRecentError {
-                        ErrorMessage(message: error.localizedDescription)
-                    }
-
-                    if serverService.favouriteServers.isEmpty == false {
-                        Label("Favourites", systemImage: "star.fill")
-                            .font(.headline)
-                            .padding(.top, 16)
-                        LazyVGrid(columns: layout, alignment: .leading, spacing: 8) {
-                            ForEach(serverService.favouriteServers, id: \.id) { server in
-                                ServerListRow(server: server)
-                            }
-                        }
-                        .padding(.bottom, 16)
-                    }
-                    
-                    if serverService.defaultServers.isEmpty == false {
-                        Label("All Servers", systemImage: "folder.fill")
-                            .font(.headline)
-                            .padding(.top, 8)
-                        LazyVGrid(columns: layout, alignment: .leading, spacing: 8) {
-                            ForEach(serverService.defaultServers, id: \.id) { server in
-                                ServerListRow(server: server)
-                            }
-                        }
-                        .padding(.bottom, 16)
-                    }
-                }
+                .multilineTextAlignment(.center)
+                .padding()
             }
-            .padding(.horizontal, 16)
         }
+        .navigationSplitViewStyle(.balanced)
         .task {
             await serverService.refresh()
             
@@ -92,44 +55,12 @@ struct ServerListView: View {
                 showWelcome = true
             }
         }
-        .refreshable {
-            await serverService.refresh()
+        .sheet(isPresented: $showSettings) {
+            SettingsView()
         }
-        .toolbar {
-            ToolbarItem(placement: .navigation) {
-                Button(action: {
-                    showSettings = true
-                }) {
-                    Label("Settings", systemImage: "gearshape")
-                }
-                .sheet(isPresented: $showSettings) {
-                    SettingsView()
-                        .environmentObject(UserService.shared)
-                        .environmentObject(self.serverService)
-                }
-            }
-            
-            ToolbarItemGroup(placement: .bottomBar) {
-                if self.serverService.isCloudEnabled {
-                    Button(action: {
-                        showAddServer = true
-                    }) {
-                        HStack {
-                            Image(systemName: "externaldrive.badge.plus")
-                            Text("Add")
-                        }
-                    }
-                    .sheet(isPresented: $showAddServer) {
-                        AddServerForm()
-                    }
-                }
-                
-                Spacer()
-                
-                SupportOptions()
-            }
+        .sheet(isPresented: $showAddServer) {
+            AddServerForm()
         }
-        .navigationTitle("My Servers")
         .sheet(isPresented: $showWelcome) {
             WelcomeScreen()
         }
@@ -141,6 +72,9 @@ struct ServerListView: View {
             Button("Delete", role: .destructive) {
                 Task {
                     await serverService.confirmDelete()
+                    if selectedServer == nil {
+                        selectedServerID = nil
+                    }
                 }
             }
             Button("Cancel", role: .cancel) {
@@ -149,6 +83,72 @@ struct ServerListView: View {
         } message: {
             Text("Are you sure you want to delete '\(serverService.serverToDelete?.name ?? "this server")'? This action cannot be undone.")
         }
+    }
+
+    private var serverList: some View {
+        List(selection: $selectedServerID) {
+            if serverService.isSynching && serverService.favouriteServers.isEmpty && serverService.defaultServers.isEmpty {
+                ProgressView("Loading servers…")
+            }
+
+            if !serverService.isCloudEnabled && !serverService.isSynching {
+                ErrorMessage(message: "iCloud not enabled, you need an iCloud account to view / add servers")
+                if let settingsURL = URL(string: UIApplication.openSettingsURLString) {
+                    Button("Open Settings") {
+                        openURL(settingsURL)
+                    }
+                }
+            }
+
+            if let error = serverService.mostRecentError {
+                ErrorMessage(message: error.localizedDescription)
+            }
+
+            if !serverService.favouriteServers.isEmpty {
+                Section {
+                    ForEach(serverService.favouriteServers) { server in
+                        ServerListRow(server: server)
+                    }
+                } header: {
+                    Label("Favourites", systemImage: "star.fill")
+                }
+            }
+
+            if !serverService.defaultServers.isEmpty {
+                Section {
+                    ForEach(serverService.defaultServers) { server in
+                        ServerListRow(server: server)
+                    }
+                } header: {
+                    Label("All Servers", systemImage: "folder.fill")
+                }
+            }
+        }
+        .listStyle(.sidebar)
+        .refreshable {
+            await serverService.refresh()
+        }
+        .toolbar {
+            ToolbarItem(placement: .navigation) {
+                Button(action: {
+                    showSettings = true
+                }) {
+                    Label("Settings", systemImage: "gearshape")
+                }
+            }
+            
+            if self.serverService.isCloudEnabled {
+                ToolbarItem(placement: .bottomBar) {
+                    Button(action: {
+                        showAddServer = true
+                    }) {
+                        Label("Add Server", systemImage: "plus")
+                    }
+                    .buttonStyle(.borderedProminent)
+                }
+            }
+        }
+        .navigationTitle("My Servers")
     }
 
     func deleteServer(at offsets: IndexSet) {

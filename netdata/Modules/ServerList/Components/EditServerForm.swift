@@ -13,11 +13,12 @@ struct EditServerForm: View {
     @Environment(\.presentationMode) private var presentationMode
     @ObservedObject var userSettings = UserSettings()
     @StateObject var viewModel = ServerListViewModel()
+    @State private var hasLoadedServer = false
     
     let editingServer: NDServer?
     
     var body: some View {
-        NavigationView {
+        NavigationStack {
             Form {
                 Section(header: makeSectionHeader(text: "Server details"),
                         footer: Text("HTTPS is required for connections over the internet\nHTTP is allowed for LAN connections with IP or mDNS domains")) {
@@ -66,15 +67,16 @@ struct EditServerForm: View {
             .submitLabel(.done)
             .navigationBarTitle("Edit Server", displayMode: .inline)
             .toolbar {
-                ToolbarItem(placement: .navigation) {
+                ToolbarItem(placement: .cancellationAction) {
                     dismissButton
                 }
-                ToolbarItemGroup(placement: .bottomBar) {
+                ToolbarItem(placement: .confirmationAction) {
                     saveButton
-                    Spacer()
                 }
             }
             .task {
+                guard !hasLoadedServer else { return }
+                hasLoadedServer = true
                 if let server = self.editingServer {
                     viewModel.name = server.name
                     viewModel.description = server.description
@@ -89,8 +91,7 @@ struct EditServerForm: View {
         Button(action: {
             self.presentationMode.wrappedValue.dismiss()
         }) {
-            Image(systemName: "xmark")
-                .imageScale(.medium)
+            Label("Cancel", systemImage: "xmark")
         }
     }
     
@@ -100,11 +101,7 @@ struct EditServerForm: View {
                 await updateServer()
             }
         }) {
-            HStack {
-                Image(systemName: "checkmark.circle.fill")
-                Text("Save")
-                    .fontWeight(.bold)
-            }
+            Label("Save", systemImage: "checkmark")
         }
         .disabled(viewModel.validatingUrl)
     }

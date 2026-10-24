@@ -21,8 +21,6 @@ struct CustomChartDetailView: View {
     
     @ObservedObject var userSettings = UserSettings()
     
-    let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
-    
     var body: some View {
         List {
             if refreshFailed {
@@ -35,9 +33,9 @@ struct CustomChartDetailView: View {
                          data: chartData.data,
                          dataType: self.getDataType(),
                          showArrows: false)
+                    .readableGuidePadding()
             }
             .headerProminence(.increased)
-            .readableGuidePadding()
             
             if userSettings.bookmarks.contains(serverChart.id) {
                 Button(action: {
@@ -60,19 +58,25 @@ struct CustomChartDetailView: View {
         }
         .listStyle(.insetGrouped)
         .navigationBarTitle(serverChart.name, displayMode: .inline)
-        .onReceive(timer) { _ in
-            Task {
+        .task(id: [serverUrl, basicAuthBase64, serverChart.id]) {
+            while !Task.isCancelled {
                 do {
-                    chartData = try await NetdataClient.shared.getChartData(baseUrl: serverUrl, basicAuthBase64: basicAuthBase64, chart: serverChart.name)
+                    let data = try await NetdataClient.shared.getChartData(baseUrl: serverUrl, basicAuthBase64: basicAuthBase64, chart: serverChart.name)
+                    guard !Task.isCancelled else { return }
+                    chartData = data
                     refreshFailed = false
                 } catch {
+                    guard !Task.isCancelled else { return }
                     debugPrint("Failed to fetchCustomChartData", serverChart.name)
                     refreshFailed = true
                 }
+
+                do {
+                    try await Task.sleep(for: .seconds(1))
+                } catch {
+                    return
+                }
             }
-        }
-        .onDisappear {
-            self.timer.upstream.connect().cancel()
         }
         .toast(isPresenting: $showAddedToast) {
             AlertToast(displayMode: .banner(.pop), type: .complete(.green), title: "Chart Added")

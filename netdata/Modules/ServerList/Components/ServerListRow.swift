@@ -20,7 +20,7 @@ struct ServerListRow: View {
     @State private var serverAlarms = ServerAlarms(status: nil, alarms: nil)
     
     var body: some View {
-        NavigationLink(destination: ServerDetailView(server: server)) {
+        NavigationLink(value: server.id) {
             VStack(alignment: .leading, spacing: 5) {
                 HStack {
                     if self.isOffline() {
@@ -29,8 +29,8 @@ struct ServerListRow: View {
                     }
                     
                     Text(server.name)
-                        .lineLimit(1)
-                        .font(.system(size: 20, weight: .medium, design: .rounded))
+                        .lineLimit(2)
+                        .font(.headline)
                         .foregroundColor(self.isOffline() ? .red : .primary)
                     
                     Spacer()
@@ -45,32 +45,31 @@ struct ServerListRow: View {
                             .fill(self.getAlarmStatusColor())
                             .frame(width: 12, height: 12, alignment: .leading)
                     }
-                    
-                    Image(systemName: "chevron.right")
                 }
                 
                 Text(server.description)
-                    .lineLimit(1)
+                    .lineLimit(2)
                     .font(.subheadline)
                     .foregroundColor(.gray)
             }
-            .padding(12)
-            .background(Color(UIColor.secondarySystemBackground))
-            .cornerRadius(10)
+            .padding(.vertical, 4)
         }
 #if targetEnvironment(macCatalyst)
         .buttonStyle(.borderless)
 #endif
-        .task {
-            if let alarms = await viewModel.fetchAlarms(server: server) {
-                withAnimation {
-                    self.fetchingAlarm = false
+        .task(id: [server.url, server.basicAuthBase64, serverService.refreshID.uuidString]) {
+            guard !Task.isCancelled else { return }
+            fetchingAlarm = true
+            serverAlarms = ServerAlarms(status: nil, alarms: nil)
+
+            let alarms = await viewModel.fetchAlarms(server: server)
+            guard !Task.isCancelled else { return }
+
+            withAnimation {
+                if let alarms = alarms {
                     self.serverAlarms = alarms
                 }
-            } else {
-                withAnimation {
-                    self.fetchingAlarm = false
-                }
+                self.fetchingAlarm = false
             }
         }
         .sheet(isPresented: $showEditServerSheet, content: {
@@ -127,7 +126,8 @@ struct ServerListRow: View {
     }
     
     func updateServer(favourite: Bool) async {
-        var updatedServer = NDServer(name: server.name,
+        var updatedServer = NDServer(id: server.id,
+                                     name: server.name,
                                      description: server.description,
                                      url: server.url,
                                      serverInfo: server.serverInfo,
@@ -178,6 +178,7 @@ struct ServerListRow_Previews: PreviewProvider {
                                        serverInfo: nil,
                                        basicAuthBase64: nil,
                                        isFavourite: 0))
+            .environmentObject(ServerService.shared)
         
         ServerListRow(server: NDServer(name: "Techulus",
                                        description: "gc us server",
@@ -185,5 +186,6 @@ struct ServerListRow_Previews: PreviewProvider {
                                        serverInfo: nil,
                                        basicAuthBase64: "base64==",
                                        isFavourite: 0))
+            .environmentObject(ServerService.shared)
     }
 }

@@ -14,7 +14,7 @@ struct AddServerForm: View {
     @StateObject var viewModel = ServerListViewModel()
     
     var body: some View {
-        NavigationView {
+        NavigationStack {
             Form {
                 Section(header: makeSectionHeader(text: "Install Netdata Agent on Server"),
                         footer: Text("The Netdata Agent is 100% open source and powered by more than 300 contributors. All components are available under the GPL v3 license on GitHub.")) {
@@ -71,11 +71,10 @@ struct AddServerForm: View {
             .submitLabel(.done)
             .navigationBarTitle("Add Server", displayMode: .inline)
             .toolbar {
-                ToolbarItemGroup(placement: .bottomBar) {
+                ToolbarItem(placement: .confirmationAction) {
                     saveButton
-                    Spacer()
                 }
-                ToolbarItem(placement: .navigation) {
+                ToolbarItem(placement: .cancellationAction) {
                     dismissButton
                 }
             }
@@ -108,8 +107,7 @@ struct AddServerForm: View {
         Button(action: {
             self.presentationMode.wrappedValue.dismiss()
         }) {
-            Image(systemName: "xmark")
-                .imageScale(.medium)
+            Label("Cancel", systemImage: "xmark")
         }
     }
     
@@ -119,7 +117,7 @@ struct AddServerForm: View {
                 await addServer()
             }
         }) {
-            Text("Save")
+            Label("Save", systemImage: "checkmark")
         }
         .disabled(viewModel.validatingUrl)
     }

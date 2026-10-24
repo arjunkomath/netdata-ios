@@ -22,6 +22,7 @@ class ServerService: ObservableObject, PublicCloudService {
     @Published public var isCloudEnabled = true
     @Published public var showingDeleteConfirmation = false
     @Published public var serverToDelete: NDServer?
+    @Published public private(set) var refreshID = UUID()
     
     init() {
         container.accountStatus { (status, error) in
@@ -41,7 +42,6 @@ class ServerService: ObservableObject, PublicCloudService {
             DispatchQueue.main.async {
                 self.isCloudEnabled = status == .available
             }
-            self.setError(error: nil)
         } catch {
             self.setError(error: error)
         }
@@ -142,26 +142,28 @@ class ServerService: ObservableObject, PublicCloudService {
     @discardableResult
     func fetchServers() async -> ([NDServer], [NDServer]) {
         self.isSynching = true
+        // Reload row status even when the server records haven't changed.
+        defer { self.refreshID = UUID() }
 
         do {
             let query = CKQuery(recordType: NDServer.RecordType, predicate: NSPredicate(value: true))
             query.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: false)]
             let (matchResults, _) = try await database.records(matching: query, inZoneWith: nil)
 
-            let nativeRecords: [NDServer] = matchResults
-                .compactMap { _, result in try? NDServer(withRecord: result.get()) }
+            let nativeRecords = try matchResults.map { _, result in
+                NDServer(withRecord: try result.get())
+            }
 
             self.favouriteServers = nativeRecords.filter { $0.isFavourite == 1 }
             self.defaultServers = nativeRecords.filter { $0.isFavourite != 1 }
             self.isSynching = false
+            self.setError(error: nil)
 
             return (self.favouriteServers, self.defaultServers)
         } catch {
-            self.favouriteServers = []
-            self.defaultServers = []
             self.setError(error: error)
             self.isSynching = false
-            return ([],[])
+            return (self.favouriteServers, self.defaultServers)
         }
     }
     

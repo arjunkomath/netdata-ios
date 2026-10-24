@@ -9,13 +9,9 @@ import SwiftUI
 
 struct ChartListRow: View {
     var chart: ServerChart;
-    var serverUrl: String
-    var basicAuthBase64: String
     
     var body: some View {
-        NavigationLink(destination: CustomChartDetailView(serverChart: chart,
-                                                          serverUrl: serverUrl,
-                                                          basicAuthBase64: basicAuthBase64)) {
+        NavigationLink(value: ServerDetailDestination.chart(chart)) {
             VStack(alignment: .leading, spacing: 5) {
                 HStack(alignment: .firstTextBaseline) {
                     Text(chart.name)
@@ -56,8 +52,6 @@ struct ChartListRow_Previews: PreviewProvider {
                                         family: "fragments",
                                         context: "ipv4.sockstat_frag_mem",
                                         title: "IPv4 FRAG Sockets Memory (ipv4.sockstat_frag_mem)",
-                                        units: "GiB"),
-        serverUrl: "",
-        basicAuthBase64: "")
+                                        units: "GiB"))
     }
 }

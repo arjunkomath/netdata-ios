@@ -18,6 +18,8 @@ struct DataGrid: View {
     var data: [[Double?]]
     var dataType: GridDataType
     var showArrows: Bool
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+    @ScaledMetric(relativeTo: .body) private var minimumColumnWidth: CGFloat = 100
     
     var body: some View {
         if labels.count > 1 && self.data.count > 0 {
@@ -55,21 +57,12 @@ struct DataGrid: View {
     }
     
     func getGridColumns() -> [GridItem] {
-#if targetEnvironment(macCatalyst)
-        return [GridItem(.adaptive(minimum: 120))]
-#else
-        var columnWidth: CGFloat = self.dataType == GridDataType.percentage ? 65 : 80
-        
-        if UIDevice.current.userInterfaceIdiom == .pad {
-            columnWidth = 120
+        if dynamicTypeSize.isAccessibilitySize {
+            return [GridItem(.flexible(), alignment: .leading)]
         }
-        
-        if self.showArrows {
-            columnWidth = 120
-        }
-        
-        return [GridItem(.adaptive(minimum: columnWidth))]
-#endif
+
+        let columnWidth = minimumColumnWidth + (showArrows ? 34 : 0)
+        return [GridItem(.adaptive(minimum: columnWidth), spacing: 8, alignment: .leading)]
     }
 }
 
