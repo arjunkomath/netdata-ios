@@ -134,10 +134,7 @@ struct ServerListView: View {
                 Button(action: {
                     showSettings = true
                 }) {
-                    HStack {
-                        Image(systemName: "gearshape")
-                        Text("Settings")
-                    }
+                    Label("Settings", systemImage: "gearshape")
                 }
             }
             
