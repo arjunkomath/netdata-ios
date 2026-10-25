@@ -35,10 +35,8 @@ enum DataMode {
     @Published var bookmarks: [ServerChart] = []
     @Published var bookmarkedChartData: [ServerData] = []
     
-    // MARK:- Data mode
-    @Published var dataMode: DataMode = .now
+    // MARK:- Refresh state
     @Published var refreshFailed = false
-    var loadedDataMode: DataMode?
     
     var baseUrl = ""
     var basicAuthBase64 = ""
@@ -50,20 +48,6 @@ enum DataMode {
         case .fifteenMins:
             return try await NetdataClient.shared.getChartDataWithHistory(baseUrl: baseUrl, basicAuthBase64: basicAuthBase64, chart: chart)
         }
-    }
-
-    func clearChartData() {
-        cpuUsage = .empty
-        cpuUsageData = []
-        load = .empty
-        ramUsage = .empty
-        ramUsageGauge = 0
-        diskIO = .empty
-        network = .empty
-        networkIPv4 = .empty
-        networkIPv6 = .empty
-        bookmarkedChartData = Array(repeating: .empty, count: bookmarks.count)
-        refreshFailed = false
     }
 
     func refresh(dataMode: DataMode) async {

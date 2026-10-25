@@ -48,6 +48,12 @@ struct AddServerForm: View {
                         SecureField("Password", text: $viewModel.basicAuthPassword)
                     }
                 }
+
+                Section {
+                    saveButton
+                        .frame(maxWidth: .infinity)
+                        .labelStyle(.titleAndIcon)
+                }
             }
             .onSubmit {
                 Task {
