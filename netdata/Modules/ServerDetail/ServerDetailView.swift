@@ -7,44 +7,58 @@
 
 import SwiftUI
 
-enum ServerDetailDestination: Hashable {
-    case charts
-    case alarms
-    case chart(ServerChart)
-}
-
 struct ServerDetailNavigationView: View {
     let server: NDServer
-    @StateObject private var viewModel = ServerDetailViewModel()
-    @State private var path: [ServerDetailDestination] = []
+    @State private var chartPath: [ServerChart] = []
     @State private var chartSearchText = ""
 
     var body: some View {
-        NavigationStack(path: $path) {
-            ServerDetailView(server: server, viewModel: viewModel)
-                .navigationDestination(for: ServerDetailDestination.self) { destination in
-                    switch destination {
-                    case .charts:
-                        ChartsListView(serverUrl: server.url,
-                                       basicAuthBase64: server.basicAuthBase64,
-                                       searchText: $chartSearchText)
-                    case .alarms:
-                        AlarmsListView(serverUrl: server.url, basicAuthBase64: server.basicAuthBase64)
-                    case .chart(let chart):
+        TabView {
+            NavigationStack {
+                ServerDetailView(server: server, dataMode: .now)
+            }
+            .tabItem {
+                Label("Live", systemImage: "waveform.path.ecg")
+            }
+
+            NavigationStack {
+                ServerDetailView(server: server, dataMode: .fifteenMins)
+            }
+            .tabItem {
+                Label("Last 15 mins", systemImage: "clock.arrow.circlepath")
+            }
+
+            NavigationStack(path: $chartPath) {
+                ChartsListView(serverUrl: server.url,
+                               basicAuthBase64: server.basicAuthBase64,
+                               searchText: $chartSearchText)
+                    .navigationDestination(for: ServerChart.self) { chart in
                         CustomChartDetailView(serverChart: chart,
                                               serverUrl: server.url,
                                               basicAuthBase64: server.basicAuthBase64)
                     }
-                }
+            }
+            .tabItem {
+                Label("Charts", systemImage: "chart.pie")
+            }
+
+            NavigationStack {
+                AlarmsListView(serverUrl: server.url, basicAuthBase64: server.basicAuthBase64)
+            }
+            .tabItem {
+                Label("Alarms", systemImage: "exclamationmark.triangle.fill")
+            }
         }
+        .navigationTitle(server.name)
     }
 }
 
 struct ServerDetailView: View {
     var server: NDServer;
+    let dataMode: DataMode
     
     @ObservedObject var userSettings = UserSettings()
-    @ObservedObject var viewModel: ServerDetailViewModel
+    @StateObject private var viewModel = ServerDetailViewModel()
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @ScaledMetric(relativeTo: .body) private var minimumCardWidth: CGFloat = 320
     @ScaledMetric(relativeTo: .body) private var minimumChartHeight: CGFloat = 160
@@ -53,14 +67,6 @@ struct ServerDetailView: View {
         GeometryReader { geometry in
             let chartHeight = max(minimumChartHeight, min(geometry.size.height * 0.35, 240))
             ScrollView {
-                Picker("Time range", selection: $viewModel.dataMode) {
-                    Text("Current").tag(DataMode.now)
-                    Text("Last 15 min").tag(DataMode.fifteenMins)
-                }
-                .pickerStyle(.segmented)
-                .padding(.horizontal, 16)
-                .padding(.top, 8)
-
                 if viewModel.refreshFailed {
                     ErrorMessage(message: "Unable to refresh server data. Check the server connection.")
                         .padding(.horizontal, 16)
@@ -70,7 +76,7 @@ struct ServerDetailView: View {
                 LazyVGrid(columns: gridLayout(for: geometry.size.width), alignment: .leading, spacing: 12) {
                     RedactedView(loading: viewModel.cpuUsage.labels.count < 1) {
                         ServerDetailItem(label: "CPU Usage (%)") {
-                            switch (viewModel.dataMode) {
+                            switch dataMode {
                             case .now:
                                 VStack {
                                     Meter(progress: viewModel.getGaugeData(data: viewModel.cpuUsage.data))
@@ -99,7 +105,7 @@ struct ServerDetailView: View {
                     VStack(alignment: .leading, spacing: 12) {
                         RedactedView(loading: viewModel.ramUsage.labels.count < 1) {
                             ServerDetailItem(label: "Memory (MiB)") {
-                                switch (viewModel.dataMode) {
+                                switch dataMode {
                                 case .now:
                                     Meter(progress: viewModel.ramUsageGauge)
                                         .redacted(reason: self.viewModel.ramUsage.labels.count < 1 ? .placeholder : .init())
@@ -119,7 +125,7 @@ struct ServerDetailView: View {
                     VStack(alignment: .leading, spacing: 12) {
                         if viewModel.load.labels.count > 0 {
                             ServerDetailItem(label: "Load") {
-                                switch (viewModel.dataMode) {
+                                switch dataMode {
                                 case .now:
                                     DataGrid(labels: viewModel.load.labels,
                                              data: viewModel.load.data,
@@ -135,7 +141,7 @@ struct ServerDetailView: View {
 
                         if viewModel.diskIO.labels.count > 0 {
                             ServerDetailItem(label: "I/O (KiB/s)") {
-                                switch viewModel.dataMode {
+                                switch dataMode {
                                 case .now:
                                     DataGrid(labels: viewModel.diskIO.labels,
                                              data: viewModel.diskIO.data,
@@ -151,7 +157,7 @@ struct ServerDetailView: View {
                     
                     if viewModel.network.labels.count > 0 {
                         ServerDetailItem(label: "system.net (kilobits/s)") {
-                            switch viewModel.dataMode {
+                            switch dataMode {
                             case .now:
                                 DataGrid(labels: viewModel.network.labels,
                                          data: viewModel.network.data,
@@ -166,7 +172,7 @@ struct ServerDetailView: View {
                     
                     if viewModel.networkIPv4.labels.count > 0 {
                         ServerDetailItem(label: "system.ip (kilobits/s)") {
-                            switch viewModel.dataMode {
+                            switch dataMode {
                             case .now:
                                 DataGrid(labels: viewModel.networkIPv4.labels,
                                          data: viewModel.networkIPv4.data,
@@ -181,7 +187,7 @@ struct ServerDetailView: View {
 
                     if viewModel.networkIPv6.labels.count > 0 {
                         ServerDetailItem(label: "system.ipv6 (kilobits/s)") {
-                            switch viewModel.dataMode {
+                            switch dataMode {
                             case .now:
                                 DataGrid(labels: viewModel.networkIPv6.labels,
                                          data: viewModel.networkIPv6.data,
@@ -206,7 +212,7 @@ struct ServerDetailView: View {
                                     let bookmark = viewModel.bookmarks[i]
                                     RedactedView(loading: chart.data.count == 0) {
                                         ServerDetailItem(label: "\(bookmark.id) (\(bookmark.units == "seconds" ? "hours" : bookmark.units))") {
-                                            switch viewModel.dataMode {
+                                            switch dataMode {
                                             case .now:
                                                 if self.getDataType(chart: bookmark) == .percentage {
                                                     Meter(progress: viewModel.getGaugeData(data: chart.data))
@@ -237,15 +243,10 @@ struct ServerDetailView: View {
         .task {
             await self.viewModel.updateBookmarks(baseUrl: server.url, basicAuthBase64: server.basicAuthBase64)
         }
-        .task(id: viewModel.dataMode) {
-            let dataMode = viewModel.dataMode
+        .task {
             let refreshInterval: Duration = dataMode == .now ? .seconds(1) : .seconds(15)
             viewModel.baseUrl = server.url
             viewModel.basicAuthBase64 = server.basicAuthBase64
-            if viewModel.loadedDataMode != dataMode {
-                viewModel.clearChartData()
-                viewModel.loadedDataMode = dataMode
-            }
 
             while !Task.isCancelled {
                 await viewModel.refresh(dataMode: dataMode)
@@ -258,17 +259,6 @@ struct ServerDetailView: View {
             }
         }
         .navigationBarTitle(server.name)
-        .toolbar {
-            ToolbarItemGroup(placement: .bottomBar) {
-                NavigationLink(value: ServerDetailDestination.charts) {
-                    Label("Charts", systemImage: "chart.pie")
-                }
-                
-                NavigationLink(value: ServerDetailDestination.alarms) {
-                    Label("Alarms", systemImage: "exclamationmark.triangle.fill")
-                }
-            }
-        }
     }
     
     func getDataType(chart: ServerChart) -> GridDataType {

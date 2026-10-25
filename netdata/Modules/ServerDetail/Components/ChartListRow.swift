@@ -11,7 +11,7 @@ struct ChartListRow: View {
     var chart: ServerChart;
     
     var body: some View {
-        NavigationLink(value: ServerDetailDestination.chart(chart)) {
+        NavigationLink(value: chart) {
             VStack(alignment: .leading, spacing: 5) {
                 HStack(alignment: .firstTextBaseline) {
                     Text(chart.name)

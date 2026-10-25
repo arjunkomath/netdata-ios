@@ -87,10 +87,6 @@ struct ServerListView: View {
 
     private var serverList: some View {
         List(selection: $selectedServerID) {
-            if serverService.isSynching && serverService.favouriteServers.isEmpty && serverService.defaultServers.isEmpty {
-                ProgressView("Loading servers…")
-            }
-
             if !serverService.isCloudEnabled && !serverService.isSynching {
                 ErrorMessage(message: "iCloud not enabled, you need an iCloud account to view / add servers")
                 if let settingsURL = URL(string: UIApplication.openSettingsURLString) {
@@ -125,6 +121,11 @@ struct ServerListView: View {
             }
         }
         .listStyle(.sidebar)
+        .overlay {
+            if serverService.isSynching && serverService.favouriteServers.isEmpty && serverService.defaultServers.isEmpty {
+                ProgressView("Loading servers…")
+            }
+        }
         .refreshable {
             await serverService.refresh()
         }
@@ -133,7 +134,10 @@ struct ServerListView: View {
                 Button(action: {
                     showSettings = true
                 }) {
-                    Label("Settings", systemImage: "gearshape")
+                    HStack {
+                        Image(systemName: "gearshape")
+                        Text("Settings")
+                    }
                 }
             }
             
@@ -142,7 +146,10 @@ struct ServerListView: View {
                     Button(action: {
                         showAddServer = true
                     }) {
-                        Label("Add Server", systemImage: "plus")
+                        HStack {
+                            Image(systemName: "plus")
+                            Text("Add")
+                        }
                     }
                     .buttonStyle(.borderedProminent)
                 }
