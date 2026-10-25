@@ -21,36 +21,38 @@ struct ServerListRow: View {
     
     var body: some View {
         NavigationLink(value: server.id) {
-            VStack(alignment: .leading, spacing: 5) {
-                HStack {
-                    if self.isOffline() {
-                        Image(systemName: "display.trianglebadge.exclamationmark")
-                            .foregroundColor(.red)
+            HStack {
+                VStack(alignment: .leading, spacing: 5) {
+                    HStack {
+                        if self.isOffline() {
+                            Image(systemName: "display.trianglebadge.exclamationmark")
+                                .foregroundColor(.red)
+                        }
+
+                        Text(server.name)
+                            .lineLimit(2)
+                            .font(.headline)
+                            .foregroundColor(self.isOffline() ? .red : .primary)
                     }
-                    
-                    Text(server.name)
+
+                    Text(server.description)
                         .lineLimit(2)
-                        .font(.headline)
-                        .foregroundColor(self.isOffline() ? .red : .primary)
-                    
-                    Spacer()
-                    
-                    if !server.basicAuthBase64.isEmpty {
-                        Image(systemName: "lock.shield")
-                            .foregroundColor(.accentColor)
-                    }
-                    
-                    RedactedView(loading: fetchingAlarm) {
-                        Circle()
-                            .fill(self.getAlarmStatusColor())
-                            .frame(width: 12, height: 12, alignment: .leading)
-                    }
+                        .font(.subheadline)
+                        .foregroundColor(.gray)
                 }
-                
-                Text(server.description)
-                    .lineLimit(2)
-                    .font(.subheadline)
-                    .foregroundColor(.gray)
+
+                Spacer()
+
+                if !server.basicAuthBase64.isEmpty {
+                    Image(systemName: "lock.shield")
+                        .foregroundColor(.accentColor)
+                }
+
+                RedactedView(loading: fetchingAlarm) {
+                    Circle()
+                        .fill(self.getAlarmStatusColor())
+                        .frame(width: 12, height: 12)
+                }
             }
             .padding(.vertical, 4)
         }
