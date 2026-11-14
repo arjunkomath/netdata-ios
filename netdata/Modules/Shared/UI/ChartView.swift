@@ -34,7 +34,8 @@ struct ChartView: View {
                     )
                     .foregroundStyle(by: .value("Series", dataPoint.label))
                     .lineStyle(.init(lineWidth: 2, lineCap: .round, lineJoin: .round))
-                    .interpolationMethod(.catmullRom)
+                    // Monotone stays smooth without overshooting the real values between points.
+                    .interpolationMethod(.monotone)
                 }
             }
             .chartLegend(position: .bottom, alignment: .leading, spacing: 8)
@@ -66,7 +67,10 @@ struct ChartView: View {
 
         var chartData: [ChartDataPoint] = []
         
-        for dataRow in serverData.data {
+        // Netdata sends the newest row first. Reverse the rows, not the flattened points, so time runs
+        // forwards while series keep Netdata's label order; Swift Charts orders the legend and assigns
+        // colours by first appearance, which then matches the "Now" values.
+        for dataRow in serverData.data.reversed() {
             guard dataRow.count >= serverData.labels.count else { continue }
 
             guard let time = dataRow[0] else { continue }
@@ -84,7 +88,7 @@ struct ChartView: View {
             }
         }
         
-        return Array(chartData.reversed())
+        return chartData
     }
 }
 

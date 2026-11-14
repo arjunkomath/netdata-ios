@@ -18,10 +18,8 @@ enum DataMode {
     
     // MARK:- Real time data
     @Published var cpuUsage: ServerData = .empty
-    @Published var cpuUsageData: [Double] = []
     @Published var load: ServerData = .empty
     @Published var ramUsage: ServerData = .empty
-    @Published var ramUsageGauge : CGFloat = 0
     
     // MARK:- Disk
     @Published var diskIO: ServerData = .empty
@@ -102,13 +100,11 @@ enum DataMode {
             guard !Task.isCancelled else { return false }
             
             self.cpuUsage = data
-            self.cpuUsageData = Array(self.cpuUsage.data).reversed().map({ d in d.count > 1 ? Array(d[1..<d.count]).reduce(0, { acc, val in acc + (val ?? 0) }) : 0 })
             return true
         } catch {
             guard !Task.isCancelled else { return false }
             debugPrint("[fetchCpu] Failed to fetch chart data: \(error)")
             self.cpuUsage = .empty
-            self.cpuUsageData = []
             return false
         }
     }
@@ -134,23 +130,11 @@ enum DataMode {
             guard !Task.isCancelled else { return false }
 
             self.ramUsage = data
-            self.ramUsageGauge = 0
-            
-            if let dataPoint = self.ramUsage.data.first {
-                let free = dataPoint.indices.contains(1) ? (dataPoint[1] ?? 0) : 0
-                let used = dataPoint.indices.contains(2) ? (dataPoint[2] ?? 0) : 0
-                let cached = dataPoint.indices.contains(3) ? (dataPoint[3] ?? 0) : 0
-                let total = free + used + cached
-                if total > 0 {
-                    self.ramUsageGauge = CGFloat(used / total)
-                }
-            }
             return true
         } catch {
             guard !Task.isCancelled else { return false }
             debugPrint("[fetchRam] Failed to fetch chart data")
             self.ramUsage = .empty
-            self.ramUsageGauge = 0
             return false
         }
     }
@@ -232,11 +216,15 @@ enum DataMode {
         }
     }
     
-    func getGaugeData(data: [[Double?]]) -> CGFloat {
-        guard let first = data.first, first.count > 1 else { return 0 }
-        return CGFloat(Array(first[1..<first.count]).reduce(0, { acc, val in acc + (val ?? 0) }) / 100)
+    /// Drops a pin locally so the card disappears immediately, ahead of the chart list refetch.
+    func removeBookmark(id: String) {
+        guard let index = bookmarks.firstIndex(where: { $0.id == id }) else { return }
+        bookmarks.remove(at: index)
+        if bookmarkedChartData.indices.contains(index) {
+            bookmarkedChartData.remove(at: index)
+        }
     }
-    
+
     func validateServer(serverUrl: String) async -> Bool {
         do {
             let _ = try await NetdataClient.shared.getInfo(baseUrl: serverUrl)

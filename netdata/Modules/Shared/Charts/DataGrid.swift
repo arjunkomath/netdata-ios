@@ -13,6 +13,16 @@ enum GridDataType {
     case secondsToHours
 }
 
+extension ServerChart {
+    var gridDataType: GridDataType {
+        switch units {
+        case "percentage": return .percentage
+        case "seconds": return .secondsToHours
+        default: return .absolute
+        }
+    }
+}
+
 struct DataGrid: View {
     var labels: [String]
     var data: [[Double?]]
