@@ -154,6 +154,7 @@ struct ServerListView: View {
             }
             .background(Color(.systemGroupedBackground))
         }
+        .modifier(SidebarColumnBackground())
         .modifier(serverListChrome)
     }
 
@@ -382,5 +383,17 @@ private struct ServerListChrome: ViewModifier {
                 }
             }
             .navigationTitle("My Servers")
+    }
+}
+
+// The split view's sidebar column has its own background, and on wide layouts part of it sits
+// outside the grid. In dark mode that strip shows as a grey bar next to the black grid.
+private struct SidebarColumnBackground: ViewModifier {
+    func body(content: Content) -> some View {
+        if #available(iOS 18.0, *) {
+            content.containerBackground(Color(.systemGroupedBackground), for: .navigation)
+        } else {
+            content
+        }
     }
 }
