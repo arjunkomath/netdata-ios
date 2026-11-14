@@ -371,6 +371,7 @@ private struct AddServerCard: View {
             VStack(alignment: .leading, spacing: 8) {
                 Image(systemName: "plus.circle.fill")
                     .font(.title2)
+                Spacer(minLength: 0)
                 Text("Add Server")
                     .font(.headline)
             }
