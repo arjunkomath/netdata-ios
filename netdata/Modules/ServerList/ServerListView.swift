@@ -368,7 +368,7 @@ private struct AddServerCard: View {
 
     var body: some View {
         Button(action: action) {
-            VStack(spacing: 6) {
+            VStack(alignment: .leading, spacing: 8) {
                 Image(systemName: "plus.circle.fill")
                     .font(.title2)
                 Text("Add Server")
@@ -376,7 +376,7 @@ private struct AddServerCard: View {
             }
             .foregroundStyle(Color.accentColor)
             .padding(12)
-            .frame(maxWidth: .infinity, minHeight: minimumCardHeight, maxHeight: .infinity)
+            .frame(maxWidth: .infinity, minHeight: minimumCardHeight, maxHeight: .infinity, alignment: .topLeading)
             .background(cardShape.fill(Color(.secondarySystemGroupedBackground)))
             .contentShape(cardShape)
         }
