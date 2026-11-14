@@ -232,6 +232,15 @@ enum DataMode {
         }
     }
     
+    /// Drops a pin locally so the card disappears immediately, ahead of the chart list refetch.
+    func removeBookmark(id: String) {
+        guard let index = bookmarks.firstIndex(where: { $0.id == id }) else { return }
+        bookmarks.remove(at: index)
+        if bookmarkedChartData.indices.contains(index) {
+            bookmarkedChartData.remove(at: index)
+        }
+    }
+
     func getGaugeData(data: [[Double?]]) -> CGFloat {
         guard let first = data.first, first.count > 1 else { return 0 }
         return CGFloat(Array(first[1..<first.count]).reduce(0, { acc, val in acc + (val ?? 0) }) / 100)
