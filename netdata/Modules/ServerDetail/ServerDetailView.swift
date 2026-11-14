@@ -13,15 +13,10 @@ struct ServerDetailNavigationView: View {
     @State private var path: [ServerChart] = []
     @State private var selectedTab = DetailTab.live
     @State private var showsNodePicker = false
-    @StateObject private var nodeSelection: NodeSelection
+    @ObservedObject var nodeSelection: NodeSelection
 
     private enum DetailTab: Hashable {
         case live, history, charts, alarms
-    }
-
-    init(server: NDServer) {
-        self.server = server
-        _nodeSelection = StateObject(wrappedValue: NodeSelection(server: server))
     }
 
     /// The selected Child's GUID, or nil while viewing the Agent behind the server URL.

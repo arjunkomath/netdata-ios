@@ -118,6 +118,23 @@ import SwiftUI
     }
 }
 
+/// Hands the server list and the detail screen the same `NodeSelection` per server, so a node picked in
+/// the sidebar switches the detail too.
+@MainActor final class NodeSelectionStore: ObservableObject {
+    private var selections: [String: NodeSelection] = [:]
+
+    func selection(for server: NDServer) -> NodeSelection {
+        // Editing the URL or credentials points at a different Agent, so it gets a fresh node list.
+        let key = [server.id, server.url, server.basicAuthBase64].joined(separator: "|")
+        if let selection = selections[key] {
+            return selection
+        }
+        let selection = NodeSelection(server: server)
+        selections[key] = selection
+        return selection
+    }
+}
+
 /// Title-bar control that names the node being viewed and opens the node list.
 struct NodePickerButton: View {
     let serverName: String
@@ -219,9 +236,11 @@ struct NodePickerSheet: View {
     }
 }
 
-private struct NodeRow: View {
+struct NodeRow: View {
     let node: NetdataNode
     let isSelected: Bool
+    /// Drops the OS and version so a row fits the narrow sidebar on one line.
+    var compact = false
 
     var body: some View {
         HStack(spacing: 12) {
@@ -260,13 +279,13 @@ private struct NodeRow: View {
 
     private var details: String {
         var parts = [node.isReachable ? "Streaming" : "Stale"]
-        if let os = node.os?.nm, !os.isEmpty {
+        if !compact, let os = node.os?.nm, !os.isEmpty {
             parts.append(os)
         }
         if let cpus = node.hw?.cpus, !cpus.isEmpty {
             parts.append("\(cpus) cores")
         }
-        if let version = node.v, !version.isEmpty {
+        if !compact, let version = node.v, !version.isEmpty {
             parts.append(version)
         }
         return parts.joined(separator: " · ")
@@ -280,6 +299,120 @@ private struct NodeRow: View {
             .padding(.vertical, 2)
             .background(color, in: Capsule())
             .accessibilityLabel("\(count) \(label)")
+    }
+}
+
+/// Floats over the bottom of the server list on layouts that show it beside the detail, so the selected
+/// Parent's nodes are a tap away without pushing the server cards around.
+struct SidebarNodesPanel: View {
+    let serverName: String
+    @ObservedObject var selection: NodeSelection
+    /// The tallest the expanded list may grow before it scrolls.
+    let maxListHeight: CGFloat
+
+    @State private var isExpanded = false
+    @State private var listHeight: CGFloat = 0
+
+    private let shape = RoundedRectangle(cornerRadius: 20, style: .continuous)
+
+    var body: some View {
+        if selection.isParent {
+            VStack(spacing: 0) {
+                if isExpanded {
+                    nodeList
+                    Divider()
+                }
+                summary
+            }
+            .background(shape.fill(.regularMaterial))
+            .overlay(shape.strokeBorder(Color.primary.opacity(0.08)))
+            .clipShape(shape)
+            .shadow(color: .black.opacity(0.18), radius: 12, y: 4)
+            .padding(.horizontal, 12)
+            .padding(.bottom, 8)
+            .transition(.move(edge: .bottom).combined(with: .opacity))
+        }
+    }
+
+    private var summary: some View {
+        Button {
+            withAnimation(.snappy) { isExpanded.toggle() }
+        } label: {
+            HStack(spacing: 10) {
+                Circle()
+                    .fill(activeNode?.isReachable == false ? Color.gray : Color.green)
+                    .frame(width: 10, height: 10)
+                    .accessibilityHidden(true)
+
+                VStack(alignment: .leading, spacing: 1) {
+                    Text(activeNode?.nm ?? serverName)
+                        .font(.subheadline.weight(.semibold))
+                        .lineLimit(1)
+                    Text("\(serverName) · \(selection.nodes.count) nodes")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                        .lineLimit(1)
+                }
+
+                Spacer(minLength: 8)
+
+                Image(systemName: "chevron.up")
+                    .font(.footnote.weight(.semibold))
+                    .foregroundStyle(.secondary)
+                    .rotationEffect(.degrees(isExpanded ? 180 : 0))
+            }
+            .padding(.horizontal, 14)
+            .padding(.vertical, 12)
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel("Node: \(activeNode?.nm ?? serverName), \(selection.nodes.count) nodes")
+        .accessibilityHint(isExpanded ? "Hides the node list" : "Shows this Parent's nodes")
+    }
+
+    private var nodeList: some View {
+        ScrollView {
+            VStack(spacing: 0) {
+                ForEach(Array(orderedNodes.enumerated()), id: \.element.id) { index, node in
+                    if index > 0 {
+                        Divider().padding(.leading, 36)
+                    }
+                    Button {
+                        // Stays open so you can flip between nodes; the header collapses it.
+                        selection.select(node)
+                    } label: {
+                        NodeRow(node: node, isSelected: node.mg == activeNode?.mg, compact: true)
+                            .padding(.horizontal, 14)
+                            .padding(.vertical, 10)
+                    }
+                    .buttonStyle(.plain)
+                }
+
+            }
+            .background(GeometryReader { proxy in
+                Color.clear.preference(key: NodeListHeightKey.self, value: proxy.size.height)
+            })
+        }
+        .scrollBounceBehavior(.basedOnSize)
+        .frame(height: min(listHeight, maxListHeight))
+        .onPreferenceChange(NodeListHeightKey.self) { listHeight = $0 }
+    }
+
+    /// The node being viewed: the selected Child, or the Parent itself.
+    private var activeNode: NetdataNode? {
+        selection.selectedNode ?? selection.parentNode
+    }
+
+    private var orderedNodes: [NetdataNode] {
+        [selection.parentNode].compactMap { $0 } + selection.childNodes
+    }
+}
+
+private struct NodeListHeightKey: PreferenceKey {
+    static var defaultValue: CGFloat = 0
+
+    static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {
+        value = max(value, nextValue())
     }
 }
 
