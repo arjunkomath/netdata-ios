@@ -25,10 +25,6 @@ import SwiftUI
     @Published var validationError = false
     @Published var validationErrorMessage = ""
     
-    func fetchAlarms(server: NDServer) async -> ServerAlarms? {
-        return try? await NetdataClient.shared.getAlarms(baseUrl: server.url, basicAuthBase64: server.basicAuthBase64)
-    }
-    
     func addServer() async -> Bool {
         validatingUrl = true
         

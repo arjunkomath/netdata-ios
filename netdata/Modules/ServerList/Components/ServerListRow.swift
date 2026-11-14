@@ -15,16 +15,12 @@ struct ServerListRow: View {
     }
 
     @EnvironmentObject private var serverService: ServerService
-    @StateObject var viewModel = ServerListViewModel()
     @ObservedObject var userSettings = UserSettings()
     
     var server: NDServer
     var presentation: Presentation = .listRow
     
     @State private var showEditServerSheet = false
-    
-    @State private var fetchingAlarm = true
-    @State private var serverAlarms = ServerAlarms(status: nil, alarms: nil)
 
     @ScaledMetric(relativeTo: .body) private var minimumCardHeight: CGFloat = 96
 
@@ -32,21 +28,10 @@ struct ServerListRow: View {
     
     var body: some View {
         content
-        .task(id: [server.url, server.basicAuthBase64, serverService.refreshID.uuidString]) {
-            guard !Task.isCancelled else { return }
-            fetchingAlarm = true
-            serverAlarms = ServerAlarms(status: nil, alarms: nil)
-
-            let alarms = await viewModel.fetchAlarms(server: server)
-            guard !Task.isCancelled else { return }
-
-            withAnimation {
-                if let alarms = alarms {
-                    self.serverAlarms = alarms
-                }
-                self.fetchingAlarm = false
-            }
+        .task(id: [server.url, server.basicAuthBase64, String(serverService.statusGeneration)]) {
+            await serverService.loadStatus(for: server)
         }
+        .animation(.default, value: status?.fetchedAt)
         .sheet(isPresented: $showEditServerSheet, content: {
             EditServerForm(editingServer: server)
         })
@@ -92,7 +77,7 @@ struct ServerListRow: View {
     private func card(isSelected: Bool) -> some View {
         VStack(alignment: .leading, spacing: 8) {
             HStack(spacing: 6) {
-                RedactedView(loading: fetchingAlarm) {
+                RedactedView(loading: isCheckingStatus) {
                     HStack(spacing: 5) {
                         if isOffline() {
                             Image(systemName: "display.trianglebadge.exclamationmark")
@@ -167,7 +152,7 @@ struct ServerListRow: View {
                     .foregroundColor(.accentColor)
             }
 
-            RedactedView(loading: fetchingAlarm) {
+            RedactedView(loading: isCheckingStatus) {
                 Circle()
                     .fill(self.getAlarmStatusColor())
                     .frame(width: 12, height: 12)
@@ -176,11 +161,19 @@ struct ServerListRow: View {
         .padding(.vertical, 4)
     }
 
+    private var status: ServerStatus? {
+        serverService.status(for: server)
+    }
+
+    private var isCheckingStatus: Bool {
+        status == nil
+    }
+
     private var statusTitle: String {
-        if fetchingAlarm { return "Checking" }
-        if isOffline() { return "Offline" }
-        if hasCriticalAlarm() { return "Critical" }
-        if let alarms = serverAlarms.alarms, !alarms.isEmpty { return "Warning" }
+        guard let status else { return "Checking" }
+        if !status.isOnline { return "Offline" }
+        if status.hasCriticalAlarm { return "Critical" }
+        if status.hasActiveAlarms { return "Warning" }
         return "Healthy"
     }
     
@@ -235,28 +228,14 @@ struct ServerListRow: View {
     }
     
     func isOffline() -> Bool {
-        return !fetchingAlarm && !(serverAlarms.status ?? false)
+        guard let status else { return false }
+        return !status.isOnline
     }
-    
+
     func getAlarmStatusColor() -> Color {
-        guard let status = serverAlarms.status, status else {
-            return Color.gray
-        }
-
-        guard let alarms = serverAlarms.alarms, !alarms.isEmpty else {
-            return Color.green
-        }
-
-        if self.hasCriticalAlarm() {
-            return Color.red
-        }
-
-        return Color.orange
-    }
-    
-    func hasCriticalAlarm() -> Bool {
-        guard let alarms = serverAlarms.alarms else { return false }
-        return alarms.values.contains { $0.status == "CRITICAL" }
+        guard let status, status.isOnline else { return .gray }
+        if status.hasCriticalAlarm { return .red }
+        return status.hasActiveAlarms ? .orange : .green
     }
 }
 

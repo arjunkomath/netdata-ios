@@ -225,7 +225,10 @@ struct ServerListView: View {
                 && serverService.favouriteServers.isEmpty && serverService.defaultServers.isEmpty,
             showSettings: $showSettings,
             showAddServer: $showAddServer,
-            refresh: { await serverService.refresh() }
+            refresh: {
+                serverService.invalidateStatuses()
+                await serverService.refresh()
+            }
         )
     }
 
