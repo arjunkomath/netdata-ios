@@ -145,11 +145,13 @@ struct ServerListView: View {
                                       width: geometry.size.width)
                     }
 
-                    if !serverService.defaultServers.isEmpty {
+                    // Shown even when empty while signed in, since it ends with the Add Server card.
+                    if serverService.isCloudEnabled && !isLoadingServers {
                         serverSection(title: "All Servers",
                                       systemImage: "folder.fill",
                                       servers: serverService.defaultServers,
-                                      width: geometry.size.width)
+                                      width: geometry.size.width,
+                                      showsAddCard: true)
                     }
                 }
                 .padding(gridPadding)
@@ -185,7 +187,8 @@ struct ServerListView: View {
     private func serverSection(title: LocalizedStringKey,
                                systemImage: String,
                                servers: [NDServer],
-                               width: CGFloat) -> some View {
+                               width: CGFloat,
+                               showsAddCard: Bool = false) -> some View {
         VStack(alignment: .leading, spacing: 10) {
             Label(title, systemImage: systemImage)
                 .font(.subheadline.weight(.semibold))
@@ -201,6 +204,10 @@ struct ServerListView: View {
                             showsDetailWhenCollapsed = true
                         }
                     )
+                }
+
+                if showsAddCard {
+                    AddServerCard { showAddServer = true }
                 }
             }
         }
@@ -221,13 +228,18 @@ struct ServerListView: View {
         horizontalSizeClass != .compact && server.id == selectedServerID
     }
 
+    private var hasServers: Bool {
+        !serverService.favouriteServers.isEmpty || !serverService.defaultServers.isEmpty
+    }
+
+    private var isLoadingServers: Bool {
+        serverService.isCloudEnabled && serverService.isSynching && !hasServers
+    }
+
     private var serverListChrome: ServerListChrome {
         ServerListChrome(
-            isCloudEnabled: serverService.isCloudEnabled,
-            isLoading: serverService.isCloudEnabled && serverService.isSynching
-                && serverService.favouriteServers.isEmpty && serverService.defaultServers.isEmpty,
+            isLoading: isLoadingServers,
             showSettings: $showSettings,
-            showAddServer: $showAddServer,
             refresh: { await serverService.refresh() }
         )
     }
@@ -246,10 +258,16 @@ struct ServerListView: View {
                 }
             }
 
-            if !serverService.defaultServers.isEmpty {
+            if serverService.isCloudEnabled {
                 Section {
                     ForEach(serverService.defaultServers) { server in
                         ServerListRow(server: server)
+                    }
+
+                    Button {
+                        showAddServer = true
+                    } label: {
+                        Label("Add Server", systemImage: "plus")
                     }
                 } header: {
                     Label("All Servers", systemImage: "folder.fill")
@@ -341,11 +359,35 @@ private struct ICloudSignInPrompt: View {
     }
 }
 
+/// Sized and shaped like a server card so it reads as the next slot in the grid.
+private struct AddServerCard: View {
+    let action: () -> Void
+
+    @ScaledMetric(relativeTo: .body) private var minimumCardHeight: CGFloat = 96
+    private let cardShape = RoundedRectangle(cornerRadius: 16, style: .continuous)
+
+    var body: some View {
+        Button(action: action) {
+            VStack(alignment: .leading, spacing: 8) {
+                Image(systemName: "plus.circle.fill")
+                    .font(.title2)
+                Spacer(minLength: 0)
+                Text("Add Server")
+                    .font(.headline)
+            }
+            .foregroundStyle(Color.accentColor)
+            .padding(12)
+            .frame(maxWidth: .infinity, minHeight: minimumCardHeight, maxHeight: .infinity, alignment: .topLeading)
+            .background(cardShape.fill(Color(.secondarySystemGroupedBackground)))
+            .contentShape(cardShape)
+        }
+        .buttonStyle(.plain)
+    }
+}
+
 private struct ServerListChrome: ViewModifier {
-    let isCloudEnabled: Bool
     let isLoading: Bool
     @Binding var showSettings: Bool
-    @Binding var showAddServer: Bool
     let refresh: () async -> Void
 
     func body(content: Content) -> some View {
@@ -367,20 +409,6 @@ private struct ServerListChrome: ViewModifier {
                             Image(systemName: "gearshape")
                             Text("Settings")
                         }
-                    }
-                }
-
-                if isCloudEnabled {
-                    ToolbarItem(placement: .bottomBar) {
-                        Button(action: {
-                            showAddServer = true
-                        }) {
-                            HStack {
-                                Image(systemName: "plus")
-                                Text("Add")
-                            }
-                        }
-                        .buttonStyle(.borderedProminent)
                     }
                 }
             }

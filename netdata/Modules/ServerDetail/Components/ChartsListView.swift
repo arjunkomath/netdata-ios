@@ -14,7 +14,7 @@ struct ChartsListView: View {
     var basicAuthBase64: String
     
     @State private var loading = false
-    @State private var charts = ServerCharts(version: "", release_channel: "", charts: [:])
+    @State private var charts = ServerCharts.empty
     @Binding var searchText: String
     @StateObject private var userSettings = UserSettings()
     

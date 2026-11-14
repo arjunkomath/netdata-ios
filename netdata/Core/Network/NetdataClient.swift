@@ -13,6 +13,7 @@ enum NetDataEndpoint: String {
     case charts = "api/v1/charts"
     case data = "api/v1/data"
     case alarms = "api/v1/alarms"
+    case contexts = "api/v3/contexts"
 }
 
 enum APIError: Error {
@@ -37,10 +38,36 @@ public class NetdataClient {
         return try await run(requestUrl: requestUrl, basicAuthBase64: basicAuthBase64)
     }
     
+    /// Prefers v3 contexts, which is roughly a tenth of the size of `/api/v1/charts`, and falls back
+    /// to v1 for agents that predate v3.
     func getCharts(baseUrl: String, basicAuthBase64: String = "") async throws -> ServerCharts {
-        let requestUrl = try makeRequestURL(baseUrl: baseUrl, endpoint: .charts)
-        
-        return try await run(requestUrl: requestUrl, basicAuthBase64: basicAuthBase64)
+        do {
+            return try await getChartsV3(baseUrl: baseUrl, basicAuthBase64: basicAuthBase64)
+        } catch APIError.somethingWentWrong {
+            let requestUrl = try makeRequestURL(baseUrl: baseUrl, endpoint: .charts)
+            return try await run(requestUrl: requestUrl, basicAuthBase64: basicAuthBase64)
+        }
+    }
+
+    private func getChartsV3(baseUrl: String, basicAuthBase64: String) async throws -> ServerCharts {
+        let queryItems = [
+            URLQueryItem(name: "options", value: "titles,instances,minify"),
+            // Without a window v3 also lists archived instances (e.g. apps that have exited), which v1 omits.
+            URLQueryItem(name: "after", value: "-600")
+        ]
+        let requestUrl = try makeRequestURL(baseUrl: baseUrl, endpoint: .contexts, queryItems: queryItems)
+        let contexts: ServerContexts = try await run(requestUrl: requestUrl, basicAuthBase64: basicAuthBase64)
+
+        // On a parent, v3 spans every streaming child, but v1 data queries only reach the parent's own
+        // charts, so narrow to the agent we're talking to.
+        guard (contexts.nodes?.count ?? 0) > 1, let machineGuid = contexts.agents?.first?.mg else {
+            return contexts.serverCharts
+        }
+        let scopedUrl = try makeRequestURL(baseUrl: baseUrl, endpoint: .contexts, queryItems: queryItems + [
+            URLQueryItem(name: "scope_nodes", value: machineGuid)
+        ])
+        let scoped: ServerContexts = try await run(requestUrl: scopedUrl, basicAuthBase64: basicAuthBase64)
+        return scoped.serverCharts
     }
     
     func getChartData(baseUrl: String, basicAuthBase64: String = "", chart: String) async throws -> ServerData {
