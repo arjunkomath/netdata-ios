@@ -37,15 +37,14 @@ extension ServerChart {
     /// Netdata titles usually end with the chart id in parentheses, e.g.
     /// "Disk Space Usage (disk_space._)"; drop it when it just repeats the id.
     var displayTitle: String {
-        let trimmed = title.trimmingCharacters(in: .whitespaces)
-        guard !trimmed.isEmpty else { return name }
-        if trimmed.hasSuffix(")"), let open = trimmed.range(of: " (", options: .backwards) {
-            let inner = trimmed[open.upperBound..<trimmed.index(before: trimmed.endIndex)]
-            if [id, name, context].contains(String(inner)) {
-                return String(trimmed[..<open.lowerBound])
-            }
-        }
-        return trimmed
+        let title = title.trimmingCharacters(in: .whitespaces)
+        guard !title.isEmpty else { return name }
+
+        let redundantSuffix = [id, name, context]
+            .map { " (\($0))" }
+            .first { title.hasSuffix($0) }
+
+        return redundantSuffix.map { String(title.dropLast($0.count)) } ?? title
     }
 
     var displayUnits: String {
