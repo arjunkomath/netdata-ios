@@ -34,7 +34,8 @@ struct ChartView: View {
                     )
                     .foregroundStyle(by: .value("Series", dataPoint.label))
                     .lineStyle(.init(lineWidth: 2, lineCap: .round, lineJoin: .round))
-                    .interpolationMethod(.catmullRom)
+                    // Monotone stays smooth without overshooting the real values between points.
+                    .interpolationMethod(.monotone)
                 }
             }
             .chartLegend(position: .bottom, alignment: .leading, spacing: 8)
