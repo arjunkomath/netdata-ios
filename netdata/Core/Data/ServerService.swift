@@ -22,13 +22,8 @@ class ServerService: ObservableObject, PublicCloudService {
     @Published public var isCloudEnabled = true
     @Published public var showingDeleteConfirmation = false
     @Published public var serverToDelete: NDServer?
-    @Published public private(set) var serverStatuses: [String: ServerStatus] = [:]
-    @Published public private(set) var statusGeneration = 0
-
-    private var statusRequests: [String: Task<Void, Never>] = [:]
-    private var statusesInvalidatedAt = Date.distantPast
-    private let statusLifetime: TimeInterval = 60
-
+    @Published public private(set) var refreshID = UUID()
+    
     init() {
         container.accountStatus { (status, error) in
             DispatchQueue.main.async {
@@ -153,6 +148,8 @@ class ServerService: ObservableObject, PublicCloudService {
     @discardableResult
     func fetchServers() async -> ([NDServer], [NDServer]) {
         self.isSynching = true
+        // Reload row status even when the server records haven't changed.
+        defer { self.refreshID = UUID() }
 
         do {
             let query = CKQuery(recordType: NDServer.RecordType, predicate: NSPredicate(value: true))
@@ -165,8 +162,6 @@ class ServerService: ObservableObject, PublicCloudService {
 
             self.favouriteServers = nativeRecords.filter { $0.isFavourite == 1 }
             self.defaultServers = nativeRecords.filter { $0.isFavourite != 1 }
-            let serverIDs = Set(nativeRecords.map(\.id))
-            self.serverStatuses = self.serverStatuses.filter { serverIDs.contains($0.key) }
             self.isSynching = false
             self.setError(error: nil)
 
@@ -178,51 +173,6 @@ class ServerService: ObservableObject, PublicCloudService {
         }
     }
     
-    // MARK: - Server status
-
-    /// The last known status, or nil if it has never been fetched for the server's current URL and credentials.
-    public func status(for server: NDServer) -> ServerStatus? {
-        guard let status = serverStatuses[server.id], status.endpoint == ServerStatus.endpoint(of: server) else {
-            return nil
-        }
-        return status
-    }
-
-    /// Rows call this whenever they appear, so it only hits the network when the cached
-    /// status is missing, expired or invalidated, and concurrent callers share one request.
-    public func loadStatus(for server: NDServer) async {
-        if let status = status(for: server),
-           status.fetchedAt > statusesInvalidatedAt,
-           Date().timeIntervalSince(status.fetchedAt) < statusLifetime {
-            return
-        }
-
-        let endpoint = ServerStatus.endpoint(of: server)
-        let requestKey = "\(server.id)|\(endpoint)"
-        if let request = statusRequests[requestKey] {
-            return await request.value
-        }
-
-        // Unstructured so a row scrolling away or a fold change doesn't cancel a fetch other rows may share.
-        let request = Task {
-            let alarms = try? await NetdataClient.shared.getAlarms(baseUrl: server.url,
-                                                                   basicAuthBase64: server.basicAuthBase64)
-            self.serverStatuses[server.id] = ServerStatus(alarms: alarms ?? ServerAlarms(status: nil, alarms: nil),
-                                                          fetchedAt: Date(),
-                                                          endpoint: endpoint)
-            self.statusRequests[requestKey] = nil
-        }
-        statusRequests[requestKey] = request
-        await request.value
-    }
-
-    /// Marks every cached status as stale and asks visible rows to reload, keeping the old
-    /// status on screen until the new one arrives.
-    public func invalidateStatuses() {
-        statusesInvalidatedAt = Date()
-        statusGeneration += 1
-    }
-
     private func setError(error: Error?) {
         if let error = error {
             self.reportError(error)
@@ -266,20 +216,4 @@ class ServerService: ObservableObject, PublicCloudService {
             os_log("CKError: \(error.localizedDescription)")
         }
     }
-}
-
-public struct ServerStatus {
-    public let alarms: ServerAlarms
-    public let fetchedAt: Date
-    fileprivate let endpoint: String
-
-    fileprivate static func endpoint(of server: NDServer) -> String {
-        "\(server.url)|\(server.basicAuthBase64)"
-    }
-
-    public var isOnline: Bool { alarms.status ?? false }
-
-    public var hasCriticalAlarm: Bool { alarms.criticalAlarmsCount > 0 }
-
-    public var hasActiveAlarms: Bool { !(alarms.alarms?.isEmpty ?? true) }
 }
