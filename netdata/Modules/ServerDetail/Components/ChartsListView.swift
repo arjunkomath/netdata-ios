@@ -12,8 +12,10 @@ struct ChartsListView: View {
     
     var serverUrl: String
     var basicAuthBase64: String
+    var node: String? = nil
     
     @State private var loading = false
+    @State private var fetchError: APIError?
     @State private var charts = ServerCharts.empty
     @Binding var searchText: String
     @StateObject private var userSettings = UserSettings()
@@ -25,6 +27,9 @@ struct ChartsListView: View {
             if loading {
                 ProgressView()
                     .frame(maxWidth: .infinity)
+                    .listRowSeparator(.hidden)
+            } else if let fetchError {
+                ErrorMessage(message: fetchError.listMessage(subject: "charts"))
                     .listRowSeparator(.hidden)
             } else if visibleCharts.isEmpty && !searchText.isEmpty {
                 Text("No charts match “\(searchText)”")
@@ -59,9 +64,12 @@ struct ChartsListView: View {
         loading = true
         defer { loading = false }
         do {
-            charts = try await NetdataClient.shared.getCharts(baseUrl: serverUrl, basicAuthBase64: basicAuthBase64)
+            charts = try await NetdataClient.shared.getCharts(baseUrl: serverUrl, basicAuthBase64: basicAuthBase64, node: node)
+            fetchError = nil
         } catch {
+            guard !Task.isCancelled else { return }
             debugPrint("fetchCharts", error)
+            fetchError = error as? APIError ?? .somethingWentWrong
         }
     }
     

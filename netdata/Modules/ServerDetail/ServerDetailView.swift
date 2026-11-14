@@ -11,6 +11,16 @@ struct ServerDetailNavigationView: View {
     let server: NDServer
     @State private var chartSearchText = ""
     @State private var path: [ServerChart] = []
+    @State private var selectedTab = DetailTab.live
+    @State private var showsNodePicker = false
+    @ObservedObject var nodeSelection: NodeSelection
+
+    private enum DetailTab: Hashable {
+        case live, history, charts, alarms
+    }
+
+    /// The selected Child's GUID, or nil while viewing the Agent behind the server URL.
+    private var node: String? { nodeSelection.selectedGuid }
 
     var body: some View {
         // One stack around the tabs, owned by the split view's detail column. A NavigationStack per
@@ -20,36 +30,83 @@ struct ServerDetailNavigationView: View {
                 .navigationDestination(for: ServerChart.self) { chart in
                     CustomChartDetailView(serverChart: chart,
                                           serverUrl: server.url,
-                                          basicAuthBase64: server.basicAuthBase64)
+                                          basicAuthBase64: server.basicAuthBase64,
+                                          node: node)
                 }
-                .navigationTitle(server.name)
+                .navigationTitle(nodeSelection.selectedNode?.nm ?? server.name)
                 .navigationBarTitleDisplayMode(.inline)
+                .toolbar {
+                    // Always supplying the principal item keeps the title visible; a title alone on the
+                    // tab container doesn't show in the split view's collapsed detail.
+                    ToolbarItem(placement: .principal) {
+                        if nodeSelection.isParent {
+                            NodePickerButton(serverName: server.name, selection: nodeSelection) {
+                                showsNodePicker = true
+                            }
+                        } else {
+                            Text(server.name)
+                                .font(.headline)
+                                .lineLimit(1)
+                        }
+                    }
+                }
+        }
+        .sheet(isPresented: $showsNodePicker) {
+            NodePickerSheet(selection: nodeSelection)
+        }
+        .task {
+            await nodeSelection.load()
+        }
+        .onChange(of: nodeSelection.selectedGuid) { _ in
+            // Charts opened on the previous node don't exist on the new one.
+            path = []
         }
     }
 
     private var tabs: some View {
-        TabView {
-            ServerDetailView(server: server, dataMode: .now, openChart: openChart)
+        // Each tab is keyed on the node so switching tears it down, which cancels its refresh loop
+        // before the new node's first request.
+        TabView(selection: $selectedTab) {
+            ServerDetailView(server: server,
+                             node: node,
+                             nodeInfo: nodeSelection.selectedNode,
+                             dataMode: .now,
+                             openChart: openChart,
+                             chooseNode: { showsNodePicker = true })
+                .id(node)
                 .tabItem {
                     Label("Live", systemImage: "waveform.path.ecg")
                 }
+                .tag(DetailTab.live)
 
-            ServerDetailView(server: server, dataMode: .fifteenMins, openChart: openChart)
+            ServerDetailView(server: server,
+                             node: node,
+                             nodeInfo: nodeSelection.selectedNode,
+                             dataMode: .fifteenMins,
+                             openChart: openChart,
+                             chooseNode: { showsNodePicker = true })
+                .id(node)
                 .tabItem {
                     Label("Last 15 mins", systemImage: "clock.arrow.circlepath")
                 }
+                .tag(DetailTab.history)
 
             ChartsListView(serverUrl: server.url,
                            basicAuthBase64: server.basicAuthBase64,
+                           node: node,
                            searchText: $chartSearchText)
+                .id(node)
                 .tabItem {
                     Label("Charts", systemImage: "chart.pie")
                 }
+                .tag(DetailTab.charts)
 
-            AlarmsListView(serverUrl: server.url, basicAuthBase64: server.basicAuthBase64)
+            AlarmsListView(serverUrl: server.url, basicAuthBase64: server.basicAuthBase64, node: node)
+                .id(node)
                 .tabItem {
                     Label("Alarms", systemImage: "exclamationmark.triangle.fill")
                 }
+                .tag(DetailTab.alarms)
         }
     }
 
@@ -60,8 +117,12 @@ struct ServerDetailNavigationView: View {
 
 struct ServerDetailView: View {
     var server: NDServer;
+    var node: String? = nil
+    /// The selected Child as listed by the Parent; nil for the Agent behind the server URL.
+    var nodeInfo: NetdataNode? = nil
     let dataMode: DataMode
     let openChart: (ServerChart) -> Void
+    var chooseNode: () -> Void = {}
     
     @StateObject private var userSettings = UserSettings()
     @StateObject private var viewModel = ServerDetailViewModel()
@@ -79,8 +140,12 @@ struct ServerDetailView: View {
             let chartHeight = max(minimumChartHeight, min(geometry.size.height * 0.35, 240))
             ScrollView {
                 VStack(alignment: .leading, spacing: spacing) {
-                    if viewModel.refreshFailed {
-                        ErrorMessage(message: "Unable to refresh server data. Check the server connection.")
+                    if let nodeInfo, isStale {
+                        StaleNodeBanner(nodeName: nodeInfo.nm, chooseNode: chooseNode)
+                    }
+
+                    if viewModel.refreshFailed && !(isStale && viewModel.lastError == .notFound) {
+                        ErrorMessage(message: refreshErrorMessage)
                     }
 
                     switch dataMode {
@@ -103,15 +168,16 @@ struct ServerDetailView: View {
                                knownCharts: Dictionary(viewModel.bookmarks.map { ($0.id, $0) }, uniquingKeysWith: { first, _ in first }))
         }
         .task {
-            await self.viewModel.updateBookmarks(baseUrl: server.url, basicAuthBase64: server.basicAuthBase64)
+            await self.viewModel.updateBookmarks(baseUrl: server.url, basicAuthBase64: server.basicAuthBase64, node: node)
         }
         .onChange(of: userSettings.bookmarks) { _ in
-            Task { await viewModel.updateBookmarks(baseUrl: server.url, basicAuthBase64: server.basicAuthBase64) }
+            Task { await viewModel.updateBookmarks(baseUrl: server.url, basicAuthBase64: server.basicAuthBase64, node: node) }
         }
         .task {
             let refreshInterval: Duration = dataMode == .now ? .seconds(1) : .seconds(15)
             viewModel.baseUrl = server.url
             viewModel.basicAuthBase64 = server.basicAuthBase64
+            viewModel.node = node
 
             while !Task.isCancelled {
                 await viewModel.refresh(dataMode: dataMode)
@@ -123,8 +189,23 @@ struct ServerDetailView: View {
                 }
             }
         }
-        .navigationBarTitle(server.name)
-        .navigationBarTitleDisplayMode(.inline)
+    }
+
+    private var isStale: Bool {
+        nodeInfo.map { !$0.isReachable } ?? false
+    }
+
+    private var refreshErrorMessage: String {
+        switch viewModel.lastError {
+        case .authenticationFailed:
+            return "The server rejected the saved credentials. Edit the server to update them."
+        case .userIsOffline:
+            return "You appear to be offline."
+        case .notFound where nodeInfo != nil:
+            return "\(nodeInfo?.nm ?? "This node") has no recent metrics on this Parent. It may be offline or no longer streaming."
+        default:
+            return "Unable to refresh server data. Check the server connection."
+        }
     }
 
     // MARK: - Live
@@ -134,7 +215,7 @@ struct ServerDetailView: View {
         summaryTiles(width: width)
 
         LazyVGrid(columns: gridLayout(for: width), alignment: .leading, spacing: spacing) {
-            CPUUsageCard(data: viewModel.cpuUsage, cores: server.serverInfo?.cores_total)
+            CPUUsageCard(data: viewModel.cpuUsage, cores: (nodeInfo?.serverInfo ?? server.serverInfo)?.cores_total)
                 .redacted(reason: viewModel.cpuUsage.isLoaded ? [] : .placeholder)
 
             MemoryUsageCard(data: viewModel.ramUsage)
