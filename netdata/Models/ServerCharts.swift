@@ -32,3 +32,23 @@ public struct ServerCharts: Encodable, Decodable {
             }
     }
 }
+
+extension ServerChart {
+    /// Netdata titles usually end with the chart id in parentheses, e.g.
+    /// "Disk Space Usage (disk_space._)"; drop it when it just repeats the id.
+    var displayTitle: String {
+        let trimmed = title.trimmingCharacters(in: .whitespaces)
+        guard !trimmed.isEmpty else { return name }
+        if trimmed.hasSuffix(")"), let open = trimmed.range(of: " (", options: .backwards) {
+            let inner = trimmed[open.upperBound..<trimmed.index(before: trimmed.endIndex)]
+            if [id, name, context].contains(String(inner)) {
+                return String(trimmed[..<open.lowerBound])
+            }
+        }
+        return trimmed
+    }
+
+    var displayUnits: String {
+        units == "seconds" ? "hours" : units
+    }
+}

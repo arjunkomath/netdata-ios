@@ -14,6 +14,7 @@ struct CustomChartDetailView: View {
     var basicAuthBase64: String
     
     @State private var chartData = ServerData.empty
+    @State private var historyData = ServerData.empty
     @State private var refreshFailed = false
     
     @State private var showAddedToast = false
@@ -22,42 +23,43 @@ struct CustomChartDetailView: View {
     @ObservedObject var userSettings = UserSettings()
     
     var body: some View {
-        List {
-            if refreshFailed {
-                ErrorMessage(message: "Unable to refresh chart data. Check the server connection.")
-                    .readableGuidePadding()
-            }
+        ScrollView {
+            VStack(alignment: .leading, spacing: 12) {
+                if refreshFailed {
+                    ErrorMessage(message: "Unable to refresh chart data. Check the server connection.")
+                }
 
-            Section("\(serverChart.name) (\(units()))") {
-                DataGrid(labels: chartData.labels,
-                         data: chartData.data,
-                         dataType: self.getDataType(),
-                         showArrows: false)
-                    .readableGuidePadding()
+                PinnedChartCard(chart: serverChart,
+                                data: chartData,
+                                title: "Now",
+                                showsDisclosure: false,
+                                collapsesDimensions: false)
+                    .redacted(reason: chartData.isLoaded ? [] : .placeholder)
+
+                PinnedChartCard(chart: serverChart,
+                                data: historyData,
+                                historyChartHeight: 220,
+                                title: "Last 15 minutes",
+                                showsDisclosure: false,
+                                showsChartID: false)
+                    .redacted(reason: historyData.isLoaded ? [] : .placeholder)
             }
-            .headerProminence(.increased)
-            
-            if userSettings.bookmarks.contains(serverChart.id) {
-                Button(action: {
-                    userSettings.bookmarks = userSettings.bookmarks.filter { $0 != serverChart.id }
-                    showRemovedToast.toggle()
-                }, label: {
-                    Label("Remove pin", systemImage: "pin")
-                })
-                .readableGuidePadding()
-            } else {
-                Button(action: {
-                    // Fix warning https://developer.apple.com/forums/thread/711899
-                    userSettings.bookmarks.insert(serverChart.id, at: 0)
-                    showAddedToast.toggle()
-                }, label: {
-                    Label("Pin chart", systemImage: "pin.fill")
-                })
-                .readableGuidePadding()
+            .padding(16)
+            .readableGuidePadding()
+        }
+        .background(Color(.systemGroupedBackground))
+        .navigationBarTitle(serverChart.displayTitle, displayMode: .inline)
+        .toolbar {
+            ToolbarItem(placement: .primaryAction) {
+                let isPinned = userSettings.bookmarks.contains(serverChart.id)
+                Button {
+                    userSettings.togglePin(serverChart.id)
+                    if isPinned { showRemovedToast.toggle() } else { showAddedToast.toggle() }
+                } label: {
+                    Label(isPinned ? "Unpin" : "Pin", systemImage: isPinned ? "pin.fill" : "pin")
+                }
             }
         }
-        .listStyle(.insetGrouped)
-        .navigationBarTitle(serverChart.name, displayMode: .inline)
         .task(id: [serverUrl, basicAuthBase64, serverChart.id]) {
             while !Task.isCancelled {
                 do {
@@ -78,31 +80,26 @@ struct CustomChartDetailView: View {
                 }
             }
         }
+        .task(id: [serverUrl, basicAuthBase64, serverChart.id]) {
+            while !Task.isCancelled {
+                if let data = try? await NetdataClient.shared.getChartDataWithHistory(baseUrl: serverUrl, basicAuthBase64: basicAuthBase64, chart: serverChart.name) {
+                    guard !Task.isCancelled else { return }
+                    historyData = data
+                }
+
+                do {
+                    try await Task.sleep(for: .seconds(15))
+                } catch {
+                    return
+                }
+            }
+        }
         .toast(isPresenting: $showAddedToast) {
-            AlertToast(displayMode: .banner(.pop), type: .complete(.green), title: "Chart Added")
+            AlertToast(displayMode: .banner(.pop), type: .complete(.green), title: "Chart pinned")
         }
         .toast(isPresenting: $showRemovedToast) {
-            AlertToast(displayMode: .banner(.pop), type: .complete(.green), title: "Chart Removed")
+            AlertToast(displayMode: .banner(.pop), type: .complete(.green), title: "Chart unpinned")
         }
-    }
-    
-    func units() -> String {
-        if serverChart.units == "seconds" {
-            return "hours"
-        }
-        else {
-            return serverChart.units
-        }
-    }
-    
-    func getDataType() -> GridDataType {
-        if serverChart.units == "percentage" {
-            return .percentage
-        }
-        else if serverChart.units == "seconds" {
-            return .secondsToHours
-        }
-        
-        return .absolute
     }
 }
+

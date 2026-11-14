@@ -16,6 +16,7 @@ struct ChartsListView: View {
     @State private var loading = false
     @State private var charts = ServerCharts(version: "", release_channel: "", charts: [:])
     @Binding var searchText: String
+    @StateObject private var userSettings = UserSettings()
     
     var body: some View {
         List {
@@ -27,7 +28,9 @@ struct ChartsListView: View {
             }
             
             ForEach(getActiveCharts()) { chart in
-                ChartListRow(chart: chart)
+                ChartListRow(chart: chart,
+                             isPinned: userSettings.bookmarks.contains(chart.id),
+                             togglePin: { userSettings.togglePin(chart.id) })
             }
         }
         .listStyle(.plain)

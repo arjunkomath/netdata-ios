@@ -9,11 +9,20 @@ import SwiftUI
 
 struct ChartListRow: View {
     var chart: ServerChart;
+    var isPinned = false
+    var togglePin: () -> Void = {}
     
     var body: some View {
         NavigationLink(value: chart) {
             VStack(alignment: .leading, spacing: 5) {
                 HStack(alignment: .firstTextBaseline) {
+                    if isPinned {
+                        Image(systemName: "pin.fill")
+                            .font(.caption)
+                            .foregroundStyle(.orange)
+                            .accessibilityLabel("Pinned")
+                    }
+
                     Text(chart.name)
                         .font(.headline)
                         .lineLimit(1)
@@ -40,6 +49,19 @@ struct ChartListRow: View {
                 .font(.caption)
                 .foregroundStyle(.secondary)
             }
+        }
+        .swipeActions(edge: .leading) {
+            pinButton
+                .tint(.orange)
+        }
+        .contextMenu {
+            pinButton
+        }
+    }
+
+    private var pinButton: some View {
+        Button(action: togglePin) {
+            Label(isPinned ? "Unpin" : "Pin", systemImage: isPinned ? "pin.slash" : "pin")
         }
     }
 }

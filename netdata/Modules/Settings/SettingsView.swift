@@ -169,6 +169,7 @@ struct SettingsView: View {
                             Label(chart, systemImage: "pin")
                         }
                         .onDelete(perform: deleteBookmarks)
+                        .onMove { userSettings.bookmarks.move(fromOffsets: $0, toOffset: $1) }
                     }
                 }
                 

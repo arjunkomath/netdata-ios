@@ -57,6 +57,10 @@ enum MetricFormat {
         return String(format: "%.0f kb/s", value)
     }
 
+    static func number(_ value: Double) -> String {
+        value.formatted(.number.precision(.fractionLength(abs(value) >= 100 ? 0 : 2)))
+    }
+
     static func usageColor(_ percent: Double) -> Color {
         if percent >= 80 { return .red }
         if percent >= 50 { return .orange }
@@ -93,6 +97,7 @@ struct MetricCard<Content: View, Accessory: View>: View {
             HStack(alignment: .firstTextBaseline) {
                 Text(title)
                     .font(.headline)
+                    .lineLimit(2)
                 Spacer(minLength: 8)
                 accessory()
                     .font(.footnote)
@@ -367,6 +372,88 @@ struct ThroughputCard: View {
     // Netdata reports outbound traffic (sent / out) as negative values.
     private static func isOutbound(_ dimension: MetricDimension) -> Bool {
         dimension.value < 0 || ["sent", "out", "writes"].contains(dimension.label)
+    }
+}
+
+struct PinnedChartCard: View {
+    let chart: ServerChart
+    let data: ServerData
+    /// When set, shows the history chart at this height instead of the latest values.
+    var historyChartHeight: CGFloat? = nil
+    var title: String? = nil
+    var showsDisclosure = true
+    var collapsesDimensions = true
+    var showsChartID = true
+
+    @State private var showsAllDimensions = false
+    private let collapsedDimensionCount = 6
+
+    var body: some View {
+        MetricCard(title: title ?? chart.displayTitle) {
+            HStack(spacing: 6) {
+                Text(chart.displayUnits)
+                if showsDisclosure {
+                    Image(systemName: "chevron.right")
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(.tertiary)
+                        .accessibilityHidden(true)
+                }
+            }
+        } content: {
+            // The readable title drops the instance (e.g. which app or disk), so keep the id visible.
+            if showsChartID {
+                Text(chart.id)
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+                    .lineLimit(1)
+                    .truncationMode(.middle)
+                    .padding(.top, -6)
+            }
+
+            if let historyChartHeight {
+                ChartView(data: data, valueScale: chart.units == "seconds" ? 1.0 / 3600 : 1)
+                    .frame(height: historyChartHeight)
+            } else {
+                liveValues
+            }
+        }
+    }
+
+    @ViewBuilder
+    private var liveValues: some View {
+        let dimensions = data.latestDimensions
+        let collapses = collapsesDimensions && !showsAllDimensions
+        let visible = collapses ? Array(dimensions.prefix(collapsedDimensionCount)) : dimensions
+        // Per-core style percentage charts can add up past 100%, where a single bar would mislead.
+        let showsBar = chart.gridDataType == .percentage
+            && dimensions.reduce(0) { $0 + max($1.value, 0) } <= 100.5
+
+        if showsBar {
+            StackedUsageBar(segments: dimensions.map { ($0.value, dimensionColor($0)) }, total: 100)
+        }
+
+        LazyVGrid(columns: [GridItem(.adaptive(minimum: 80), alignment: .leading)], alignment: .leading, spacing: 8) {
+            ForEach(visible) { dimension in
+                LabeledValue(label: dimension.label,
+                             value: format(dimension.value),
+                             dotColor: showsBar ? dimensionColor(dimension) : nil)
+            }
+        }
+
+        if collapsesDimensions && dimensions.count > collapsedDimensionCount {
+            Button(showsAllDimensions ? "Show less" : "Show \(dimensions.count - collapsedDimensionCount) more") {
+                withAnimation(.easeOut(duration: 0.2)) { showsAllDimensions.toggle() }
+            }
+            .font(.footnote)
+        }
+    }
+
+    private func format(_ value: Double) -> String {
+        switch chart.gridDataType {
+        case .percentage: return MetricFormat.percent(value)
+        case .secondsToHours: return String(format: "%.0f h", value / 3600)
+        case .absolute: return MetricFormat.number(value)
+        }
     }
 }
 

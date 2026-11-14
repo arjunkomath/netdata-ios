@@ -58,8 +58,10 @@ struct ServerDetailView: View {
     var server: NDServer;
     let dataMode: DataMode
     
-    @ObservedObject var userSettings = UserSettings()
+    @StateObject private var userSettings = UserSettings()
     @StateObject private var viewModel = ServerDetailViewModel()
+    @State private var presentedChart: ServerChart?
+    @State private var showsPinnedEditor = false
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @ScaledMetric(relativeTo: .body) private var minimumCardWidth: CGFloat = 320
     @ScaledMetric(relativeTo: .body) private var minimumChartHeight: CGFloat = 160
@@ -92,8 +94,23 @@ struct ServerDetailView: View {
             }
             .background(Color(.systemGroupedBackground))
         }
+        .navigationDestination(isPresented: Binding(
+            get: { presentedChart != nil },
+            set: { if !$0 { presentedChart = nil } }
+        )) {
+            if let chart = presentedChart {
+                CustomChartDetailView(serverChart: chart, serverUrl: server.url, basicAuthBase64: server.basicAuthBase64)
+            }
+        }
+        .sheet(isPresented: $showsPinnedEditor) {
+            PinnedChartsEditor(userSettings: userSettings,
+                               knownCharts: Dictionary(viewModel.bookmarks.map { ($0.id, $0) }, uniquingKeysWith: { first, _ in first }))
+        }
         .task {
             await self.viewModel.updateBookmarks(baseUrl: server.url, basicAuthBase64: server.basicAuthBase64)
+        }
+        .onChange(of: userSettings.bookmarks) { _ in
+            Task { await viewModel.updateBookmarks(baseUrl: server.url, basicAuthBase64: server.basicAuthBase64) }
         }
         .task {
             let refreshInterval: Duration = dataMode == .now ? .seconds(1) : .seconds(15)
@@ -228,54 +245,48 @@ struct ServerDetailView: View {
 
     private func pinnedCharts(width: CGFloat, chartHeight: CGFloat) -> some View {
         VStack(alignment: .leading, spacing: 10) {
-            Label("Pinned Charts", systemImage: "pin.circle.fill")
-                .font(.subheadline.weight(.semibold))
-                .foregroundStyle(.secondary)
-                .padding(.top, 8)
+            HStack {
+                Label("Pinned", systemImage: "pin")
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(.secondary)
+                    .accessibilityAddTraits(.isHeader)
+                Spacer()
+                Button("Edit") { showsPinnedEditor = true }
+                    .font(.subheadline)
+            }
+            .padding(.top, 8)
 
             LazyVGrid(columns: gridLayout(for: width), alignment: .leading, spacing: spacing) {
-                ForEach(Array(viewModel.bookmarkedChartData.enumerated()), id: \.offset) { i, chart in
-                    if i < viewModel.bookmarks.count {
-                        let bookmark = viewModel.bookmarks[i]
-                        RedactedView(loading: chart.data.count == 0) {
-                            ServerDetailItem(label: "\(bookmark.id) (\(bookmark.units == "seconds" ? "hours" : bookmark.units))") {
-                                switch dataMode {
-                                case .now:
-                                    if self.getDataType(chart: bookmark) == .percentage {
-                                        Meter(progress: viewModel.getGaugeData(data: chart.data))
-                                            .redacted(reason: chart.labels.count < 1 ? .placeholder : .init())
-                                    }
-
-                                    DataGrid(labels: chart.labels,
-                                             data: chart.data,
-                                             dataType: self.getDataType(chart: bookmark),
-                                             showArrows: false)
-                                case .fifteenMins:
-                                    ChartView(
-                                        data: chart,
-                                        valueScale: bookmark.units == "seconds" ? 1.0 / 3600 : 1
-                                    )
-                                        .frame(height: chartHeight)
-                                }
+                ForEach(Array(viewModel.bookmarks.enumerated()), id: \.element.id) { index, chart in
+                    let data = viewModel.bookmarkedChartData.indices.contains(index) ? viewModel.bookmarkedChartData[index] : .empty
+                    PinnedChartCard(chart: chart,
+                                    data: data,
+                                    historyChartHeight: dataMode == .fifteenMins ? chartHeight : nil)
+                        .redacted(reason: data.isLoaded ? [] : .placeholder)
+                        // A tap gesture rather than a Button so the card's own "Show more" button stays tappable.
+                        .contentShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+                        .onTapGesture { presentedChart = chart }
+                        .accessibilityAddTraits(.isButton)
+                        .accessibilityAction { presentedChart = chart }
+                        .contentShape(.contextMenuPreview, RoundedRectangle(cornerRadius: 16, style: .continuous))
+                        .contextMenu {
+                            Button {
+                                presentedChart = chart
+                            } label: {
+                                Label("Open Chart", systemImage: "chart.xyaxis.line")
+                            }
+                            Button(role: .destructive) {
+                                viewModel.removeBookmark(id: chart.id)
+                                userSettings.bookmarks.removeAll { $0 == chart.id }
+                            } label: {
+                                Label("Unpin", systemImage: "pin.slash")
                             }
                         }
-                    }
                 }
             }
         }
     }
-    
-    func getDataType(chart: ServerChart) -> GridDataType {
-        if chart.units == "percentage" {
-            return .percentage
-        }
-        else if chart.units == "seconds" {
-            return .secondsToHours
-        }
-        
-        return .absolute
-    }
-    
+
     private func gridLayout(for width: CGFloat) -> [GridItem] {
         let availableWidth = max(0, width - padding * 2)
         let numberOfColumns = dynamicTypeSize.isAccessibilitySize ? 1 :
@@ -288,5 +299,48 @@ struct ServerDetailView: View {
         let fitsFour = availableWidth >= minimumSummaryTileWidth * 4 + 8 * 3
         let count = dynamicTypeSize.isAccessibilitySize || !fitsFour ? 2 : 4
         return Array(repeating: GridItem(.flexible(), spacing: 8), count: count)
+    }
+}
+
+private struct PinnedChartsEditor: View {
+    @ObservedObject var userSettings: UserSettings
+    /// Pinned charts that exist on the current server, keyed by chart id.
+    let knownCharts: [String: ServerChart]
+
+    @Environment(\.dismiss) private var dismiss
+
+    var body: some View {
+        NavigationStack {
+            List {
+                Section {
+                    ForEach(userSettings.bookmarks, id: \.self) { id in
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(knownCharts[id]?.displayTitle ?? id)
+                            Text(knownCharts[id] == nil ? "Not available on this server" : id)
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
+                    }
+                    .onMove { userSettings.bookmarks.move(fromOffsets: $0, toOffset: $1) }
+                    .onDelete { userSettings.bookmarks.remove(atOffsets: $0) }
+                } footer: {
+                    Text("Pinned charts sync across your devices and appear on every server that has them. Pin more from the Charts tab.")
+                }
+            }
+            .environment(\.editMode, .constant(.active))
+            .overlay {
+                if userSettings.bookmarks.isEmpty {
+                    Text("No pinned charts")
+                        .foregroundStyle(.secondary)
+                }
+            }
+            .navigationTitle("Pinned Charts")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Done") { dismiss() }
+                }
+            }
+        }
     }
 }
