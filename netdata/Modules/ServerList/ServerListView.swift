@@ -20,7 +20,9 @@ struct ServerListView: View {
     @State private var showWelcome = false
     @State private var showSettings = false
     @State private var selectedServerID: String?
-    @State private var columnVisibility: NavigationSplitViewVisibility = .automatic
+    // .automatic hides the server list on some wide layouts (e.g. the unfolded iPhone Duo), leaving
+    // only "Select a server". Collapsed layouts ignore this and still start on the list.
+    @State private var columnVisibility: NavigationSplitViewVisibility = .all
     // Backs iOS 17's preferredCompactColumn without exposing an iOS 17-only type as stored state.
     @State private var showsDetailWhenCollapsed = false
 
