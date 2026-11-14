@@ -33,18 +33,24 @@ class ServerService: ObservableObject, PublicCloudService {
     }
     
     public func refresh() async {
-        await fetchServers()
-        
-        WidgetCenter.shared.reloadAllTimelines()
-        
+        // Check the account first: fetching while signed out only produces a raw CloudKit
+        // auth error, and a stale one would linger on screen during the next sign-in refresh.
         do {
             let status = try await container.accountStatus()
-            DispatchQueue.main.async {
-                self.isCloudEnabled = status == .available
-            }
+            self.isCloudEnabled = status == .available
         } catch {
             self.setError(error: error)
         }
+
+        guard isCloudEnabled else {
+            self.mostRecentError = nil
+            self.isSynching = false
+            return
+        }
+
+        await fetchServers()
+
+        WidgetCenter.shared.reloadAllTimelines()
     }
     
     public func add(server: NDServer) async {
