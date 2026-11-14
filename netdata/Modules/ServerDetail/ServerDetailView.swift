@@ -50,6 +50,7 @@ struct ServerDetailNavigationView: View {
             }
         }
         .navigationTitle(server.name)
+        .navigationBarTitleDisplayMode(.inline)
     }
 }
 
@@ -62,183 +63,34 @@ struct ServerDetailView: View {
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @ScaledMetric(relativeTo: .body) private var minimumCardWidth: CGFloat = 320
     @ScaledMetric(relativeTo: .body) private var minimumChartHeight: CGFloat = 160
+    @ScaledMetric(relativeTo: .body) private var minimumSummaryTileWidth: CGFloat = 76
+
+    private let spacing: CGFloat = 12
+    private let padding: CGFloat = 16
     
     var body: some View {
         GeometryReader { geometry in
             let chartHeight = max(minimumChartHeight, min(geometry.size.height * 0.35, 240))
             ScrollView {
-                if viewModel.refreshFailed {
-                    ErrorMessage(message: "Unable to refresh server data. Check the server connection.")
-                        .padding(.horizontal, 16)
-                        .padding(.top, 8)
-                }
-
-                LazyVGrid(columns: gridLayout(for: geometry.size.width), alignment: .leading, spacing: 12) {
-                    RedactedView(loading: viewModel.cpuUsage.labels.count < 1) {
-                        ServerDetailItem(label: "CPU Usage (%)") {
-                            switch dataMode {
-                            case .now:
-                                VStack {
-                                    Meter(progress: viewModel.getGaugeData(data: viewModel.cpuUsage.data))
-                                        .redacted(reason: viewModel.cpuUsage.labels.count < 1 ? .placeholder : .init())
-                                    
-                                    if (server.serverInfo != nil && viewModel.cpuUsage.labels.count > 0) {
-                                        Spacer()
-                                        
-                                        AbsoluteUsageData(stringValue: server.serverInfo?.cores_total,
-                                                          title: "cores",
-                                                          showArrows: false)
-                                    }
-                                }
-                                DataGrid(labels: viewModel.cpuUsage.labels,
-                                         data: viewModel.cpuUsage.data,
-                                         dataType: .percentage,
-                                         showArrows: false)
-                                
-                            case .fifteenMins:
-                                ChartView(data: viewModel.cpuUsage)
-                                    .frame(height: chartHeight)
-                            }
-                        }
-                    }
-                    
-                    VStack(alignment: .leading, spacing: 12) {
-                        RedactedView(loading: viewModel.ramUsage.labels.count < 1) {
-                            ServerDetailItem(label: "Memory (MiB)") {
-                                switch dataMode {
-                                case .now:
-                                    Meter(progress: viewModel.ramUsageGauge)
-                                        .redacted(reason: self.viewModel.ramUsage.labels.count < 1 ? .placeholder : .init())
-                                    DataGrid(labels: viewModel.ramUsage.labels,
-                                             data: viewModel.ramUsage.data,
-                                             dataType: .absolute,
-                                             showArrows: false)
-                                    
-                                case .fifteenMins:
-                                    ChartView(data: viewModel.ramUsage)
-                                        .frame(height: chartHeight)
-                                }
-                            }
-                        }
-                    }
-                    
-                    VStack(alignment: .leading, spacing: 12) {
-                        if viewModel.load.labels.count > 0 {
-                            ServerDetailItem(label: "Load") {
-                                switch dataMode {
-                                case .now:
-                                    DataGrid(labels: viewModel.load.labels,
-                                             data: viewModel.load.data,
-                                             dataType: .absolute,
-                                             showArrows: false)
-
-                                case .fifteenMins:
-                                    ChartView(data: viewModel.load)
-                                        .frame(height: chartHeight)
-                                }
-                            }
-                        }
-
-                        if viewModel.diskIO.labels.count > 0 {
-                            ServerDetailItem(label: "I/O (KiB/s)") {
-                                switch dataMode {
-                                case .now:
-                                    DataGrid(labels: viewModel.diskIO.labels,
-                                             data: viewModel.diskIO.data,
-                                             dataType: .absolute,
-                                             showArrows: true)
-                                case .fifteenMins:
-                                    ChartView(data: viewModel.diskIO)
-                                        .frame(height: chartHeight)
-                                }
-                            }
-                        }
-                    }
-                    
-                    if viewModel.network.labels.count > 0 {
-                        ServerDetailItem(label: "system.net (kilobits/s)") {
-                            switch dataMode {
-                            case .now:
-                                DataGrid(labels: viewModel.network.labels,
-                                         data: viewModel.network.data,
-                                         dataType: .absolute,
-                                         showArrows: true)
-                            case .fifteenMins:
-                                ChartView(data: viewModel.network)
-                                    .frame(height: chartHeight)
-                            }
-                        }
-                    }
-                    
-                    if viewModel.networkIPv4.labels.count > 0 {
-                        ServerDetailItem(label: "system.ip (kilobits/s)") {
-                            switch dataMode {
-                            case .now:
-                                DataGrid(labels: viewModel.networkIPv4.labels,
-                                         data: viewModel.networkIPv4.data,
-                                         dataType: .absolute,
-                                         showArrows: true)
-                            case .fifteenMins:
-                                ChartView(data: viewModel.networkIPv4)
-                                    .frame(height: chartHeight)
-                            }
-                        }
+                VStack(alignment: .leading, spacing: spacing) {
+                    if viewModel.refreshFailed {
+                        ErrorMessage(message: "Unable to refresh server data. Check the server connection.")
                     }
 
-                    if viewModel.networkIPv6.labels.count > 0 {
-                        ServerDetailItem(label: "system.ipv6 (kilobits/s)") {
-                            switch dataMode {
-                            case .now:
-                                DataGrid(labels: viewModel.networkIPv6.labels,
-                                         data: viewModel.networkIPv6.data,
-                                         dataType: .absolute,
-                                         showArrows: true)
-                            case .fifteenMins:
-                                ChartView(data: viewModel.networkIPv6)
-                                    .frame(height: chartHeight)
-                            }
-                        }
+                    switch dataMode {
+                    case .now:
+                        liveContent(width: geometry.size.width)
+                    case .fifteenMins:
+                        historyContent(width: geometry.size.width, chartHeight: chartHeight)
+                    }
+
+                    if viewModel.bookmarkedChartData.count > 0 && viewModel.bookmarks.count > 0 {
+                        pinnedCharts(width: geometry.size.width, chartHeight: chartHeight)
                     }
                 }
-                .padding(16)
-                
-                if viewModel.bookmarkedChartData.count > 0 && viewModel.bookmarks.count > 0 {
-                    VStack(alignment: .leading, spacing: 12) {
-                        Label("Pinned Charts", systemImage: "pin.circle.fill")
-
-                        LazyVGrid(columns: gridLayout(for: geometry.size.width), alignment: .leading, spacing: 12) {
-                            ForEach(Array(viewModel.bookmarkedChartData.enumerated()), id: \.offset) { i, chart in
-                                if i < viewModel.bookmarks.count {
-                                    let bookmark = viewModel.bookmarks[i]
-                                    RedactedView(loading: chart.data.count == 0) {
-                                        ServerDetailItem(label: "\(bookmark.id) (\(bookmark.units == "seconds" ? "hours" : bookmark.units))") {
-                                            switch dataMode {
-                                            case .now:
-                                                if self.getDataType(chart: bookmark) == .percentage {
-                                                    Meter(progress: viewModel.getGaugeData(data: chart.data))
-                                                        .redacted(reason: chart.labels.count < 1 ? .placeholder : .init())
-                                                }
-
-                                                DataGrid(labels: chart.labels,
-                                                         data: chart.data,
-                                                         dataType: self.getDataType(chart: bookmark),
-                                                         showArrows: false)
-                                            case .fifteenMins:
-                                                ChartView(
-                                                    data: chart,
-                                                    valueScale: bookmark.units == "seconds" ? 1.0 / 3600 : 1
-                                                )
-                                                    .frame(height: chartHeight)
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    .padding(16)
-                }
+                .padding(padding)
             }
+            .background(Color(.systemGroupedBackground))
         }
         .task {
             await self.viewModel.updateBookmarks(baseUrl: server.url, basicAuthBase64: server.basicAuthBase64)
@@ -259,6 +111,158 @@ struct ServerDetailView: View {
             }
         }
         .navigationBarTitle(server.name)
+        .navigationBarTitleDisplayMode(.inline)
+    }
+
+    // MARK: - Live
+
+    @ViewBuilder
+    private func liveContent(width: CGFloat) -> some View {
+        summaryTiles(width: width)
+
+        LazyVGrid(columns: gridLayout(for: width), alignment: .leading, spacing: spacing) {
+            CPUUsageCard(data: viewModel.cpuUsage, cores: server.serverInfo?.cores_total)
+                .redacted(reason: viewModel.cpuUsage.isLoaded ? [] : .placeholder)
+
+            MemoryUsageCard(data: viewModel.ramUsage)
+                .redacted(reason: viewModel.ramUsage.isLoaded ? [] : .placeholder)
+
+            if viewModel.load.isLoaded || viewModel.diskIO.isLoaded {
+                cardPair {
+                    if viewModel.load.isLoaded {
+                        LoadAverageCard(data: viewModel.load)
+                    }
+                } trailing: {
+                    if viewModel.diskIO.isLoaded {
+                        ThroughputCard(title: "Disk I/O", data: viewModel.diskIO, format: MetricFormat.kibPerSecond)
+                    }
+                }
+            }
+
+            if viewModel.network.isLoaded {
+                ThroughputCard(title: "Network", data: viewModel.network, format: MetricFormat.kilobitsPerSecond)
+            }
+
+            if viewModel.networkIPv4.isLoaded || viewModel.networkIPv6.isLoaded {
+                cardPair {
+                    if viewModel.networkIPv4.isLoaded {
+                        ThroughputCard(title: "IPv4", data: viewModel.networkIPv4, format: MetricFormat.kilobitsPerSecond)
+                    }
+                } trailing: {
+                    if viewModel.networkIPv6.isLoaded {
+                        ThroughputCard(title: "IPv6", data: viewModel.networkIPv6, format: MetricFormat.kilobitsPerSecond)
+                    }
+                }
+            }
+        }
+    }
+
+    private func summaryTiles(width: CGFloat) -> some View {
+        let cpu = viewModel.cpuUsage.latestDimensions.reduce(0) { $0 + $1.value }
+        let memoryDimensions = viewModel.ramUsage.latestDimensions
+        let memoryTotal = memoryDimensions.reduce(0) { $0 + max($1.value, 0) }
+        let memory = memoryTotal > 0 ? (viewModel.ramUsage.latestValue("used") ?? 0) / memoryTotal * 100 : 0
+        let load = viewModel.load.latestDimensions.first?.value ?? 0
+        let network = viewModel.network.latestDimensions.reduce(0) { $0 + abs($1.value) }
+
+        return LazyVGrid(columns: summaryColumns(for: width), spacing: 8) {
+            MetricSummaryTile(title: "CPU", value: MetricFormat.percent(cpu), tint: MetricFormat.usageColor(cpu))
+                .redacted(reason: viewModel.cpuUsage.isLoaded ? [] : .placeholder)
+            MetricSummaryTile(title: "Memory", value: MetricFormat.percent(memory), tint: MetricFormat.usageColor(memory))
+                .redacted(reason: viewModel.ramUsage.isLoaded ? [] : .placeholder)
+            MetricSummaryTile(title: "Load", value: String(format: "%.2f", load))
+                .redacted(reason: viewModel.load.isLoaded ? [] : .placeholder)
+            MetricSummaryTile(title: "Network", value: MetricFormat.kilobitsPerSecond(network))
+                .redacted(reason: viewModel.network.isLoaded ? [] : .placeholder)
+        }
+    }
+
+    // Shows two small cards side by side, or one at full width when the other has no data.
+    private func cardPair<Leading: View, Trailing: View>(
+        @ViewBuilder leading: () -> Leading,
+        @ViewBuilder trailing: () -> Trailing
+    ) -> some View {
+        Group {
+            if dynamicTypeSize.isAccessibilitySize {
+                VStack(spacing: spacing) {
+                    leading()
+                    trailing()
+                }
+            } else {
+                HStack(alignment: .top, spacing: spacing) {
+                    leading()
+                    trailing()
+                }
+                .fixedSize(horizontal: false, vertical: true)
+            }
+        }
+    }
+
+    // MARK: - History
+
+    private func historyContent(width: CGFloat, chartHeight: CGFloat) -> some View {
+        LazyVGrid(columns: gridLayout(for: width), alignment: .leading, spacing: spacing) {
+            historyCard("CPU (%)", data: viewModel.cpuUsage, chartHeight: chartHeight, alwaysShow: true)
+            historyCard("Memory (MiB)", data: viewModel.ramUsage, chartHeight: chartHeight, alwaysShow: true)
+            historyCard("Load", data: viewModel.load, chartHeight: chartHeight)
+            historyCard("Disk I/O (KiB/s)", data: viewModel.diskIO, chartHeight: chartHeight)
+            historyCard("Network (kilobits/s)", data: viewModel.network, chartHeight: chartHeight)
+            historyCard("IPv4 (kilobits/s)", data: viewModel.networkIPv4, chartHeight: chartHeight)
+            historyCard("IPv6 (kilobits/s)", data: viewModel.networkIPv6, chartHeight: chartHeight)
+        }
+    }
+
+    @ViewBuilder
+    private func historyCard(_ title: String, data: ServerData, chartHeight: CGFloat, alwaysShow: Bool = false) -> some View {
+        if alwaysShow || data.isLoaded {
+            RedactedView(loading: !data.isLoaded) {
+                ServerDetailItem(label: title) {
+                    ChartView(data: data)
+                        .frame(height: chartHeight)
+                }
+            }
+        }
+    }
+
+    // MARK: - Pinned charts
+
+    private func pinnedCharts(width: CGFloat, chartHeight: CGFloat) -> some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Label("Pinned Charts", systemImage: "pin.circle.fill")
+                .font(.subheadline.weight(.semibold))
+                .foregroundStyle(.secondary)
+                .padding(.top, 8)
+
+            LazyVGrid(columns: gridLayout(for: width), alignment: .leading, spacing: spacing) {
+                ForEach(Array(viewModel.bookmarkedChartData.enumerated()), id: \.offset) { i, chart in
+                    if i < viewModel.bookmarks.count {
+                        let bookmark = viewModel.bookmarks[i]
+                        RedactedView(loading: chart.data.count == 0) {
+                            ServerDetailItem(label: "\(bookmark.id) (\(bookmark.units == "seconds" ? "hours" : bookmark.units))") {
+                                switch dataMode {
+                                case .now:
+                                    if self.getDataType(chart: bookmark) == .percentage {
+                                        Meter(progress: viewModel.getGaugeData(data: chart.data))
+                                            .redacted(reason: chart.labels.count < 1 ? .placeholder : .init())
+                                    }
+
+                                    DataGrid(labels: chart.labels,
+                                             data: chart.data,
+                                             dataType: self.getDataType(chart: bookmark),
+                                             showArrows: false)
+                                case .fifteenMins:
+                                    ChartView(
+                                        data: chart,
+                                        valueScale: bookmark.units == "seconds" ? 1.0 / 3600 : 1
+                                    )
+                                        .frame(height: chartHeight)
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
     
     func getDataType(chart: ServerChart) -> GridDataType {
@@ -273,9 +277,16 @@ struct ServerDetailView: View {
     }
     
     private func gridLayout(for width: CGFloat) -> [GridItem] {
-        let availableWidth = max(0, width - 32)
+        let availableWidth = max(0, width - padding * 2)
         let numberOfColumns = dynamicTypeSize.isAccessibilitySize ? 1 :
-            max(1, min(Int((availableWidth + 12) / (minimumCardWidth + 12)), 3))
-        return Array(repeating: GridItem(.flexible(), spacing: 12, alignment: .topLeading), count: numberOfColumns)
+            max(1, min(Int((availableWidth + spacing) / (minimumCardWidth + spacing)), 3))
+        return Array(repeating: GridItem(.flexible(), spacing: spacing, alignment: .topLeading), count: numberOfColumns)
+    }
+
+    private func summaryColumns(for width: CGFloat) -> [GridItem] {
+        let availableWidth = max(0, width - padding * 2)
+        let fitsFour = availableWidth >= minimumSummaryTileWidth * 4 + 8 * 3
+        let count = dynamicTypeSize.isAccessibilitySize || !fitsFour ? 2 : 4
+        return Array(repeating: GridItem(.flexible(), spacing: 8), count: count)
     }
 }

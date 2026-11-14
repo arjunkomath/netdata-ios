@@ -47,6 +47,7 @@
 		559843B424CEFAAC0034E92D /* ServerDetailViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 559843B324CEFAAC0034E92D /* ServerDetailViewModel.swift */; };
 		55A3A0ED2B367FEC00E4DB07 /* RedactedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55A3A0EC2B367FEC00E4DB07 /* RedactedView.swift */; };
 		55A3A0EF2B368DC200E4DB07 /* ServerDetailItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55A3A0EE2B368DC200E4DB07 /* ServerDetailItem.swift */; };
+		C0FFEE0B2E00000100A1B2C3 /* LiveMetricCards.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0FFEE0A2E00000100A1B2C3 /* LiveMetricCards.swift */; };
 		55A8FE6C25C7E4AD00E2C2F8 /* SmallWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55A8FE6B25C7E4AD00E2C2F8 /* SmallWidget.swift */; };
 		55BA431024C332C900599345 /* ServerInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55BA430F24C332C900599345 /* ServerInfo.swift */; };
 		55BA431224C3395400599345 /* ServerData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55BA431124C3395400599345 /* ServerData.swift */; };
@@ -145,6 +146,7 @@
 		559843B324CEFAAC0034E92D /* ServerDetailViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerDetailViewModel.swift; sourceTree = "<group>"; };
 		55A3A0EC2B367FEC00E4DB07 /* RedactedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RedactedView.swift; sourceTree = "<group>"; };
 		55A3A0EE2B368DC200E4DB07 /* ServerDetailItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerDetailItem.swift; sourceTree = "<group>"; };
+		C0FFEE0A2E00000100A1B2C3 /* LiveMetricCards.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveMetricCards.swift; sourceTree = "<group>"; };
 		55A8FE6B25C7E4AD00E2C2F8 /* SmallWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SmallWidget.swift; sourceTree = "<group>"; };
 		55BA430F24C332C900599345 /* ServerInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerInfo.swift; sourceTree = "<group>"; };
 		55BA431124C3395400599345 /* ServerData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerData.swift; sourceTree = "<group>"; };
@@ -432,6 +434,7 @@
 				559300E824D587C0006C6DB4 /* ChartListRow.swift */,
 				552C2C2524D6B9BB00D3DFBE /* CustomChartDetailView.swift */,
 				55A3A0EE2B368DC200E4DB07 /* ServerDetailItem.swift */,
+				C0FFEE0A2E00000100A1B2C3 /* LiveMetricCards.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -599,6 +602,7 @@
 				55D3077424D19D1E00CF076B /* AlarmListRow.swift in Sources */,
 				5548A9BC273147FD003ACBBD /* ChartView.swift in Sources */,
 				55A3A0EF2B368DC200E4DB07 /* ServerDetailItem.swift in Sources */,
+				C0FFEE0B2E00000100A1B2C3 /* LiveMetricCards.swift in Sources */,
 				558CABAC24B99931002D115B /* CloudModel.swift in Sources */,
 				55E2FCD62B370D4B00AB15A2 /* UserService.swift in Sources */,
 				55D3076F24D18F9600CF076B /* UserDefaults+Color.swift in Sources */,
