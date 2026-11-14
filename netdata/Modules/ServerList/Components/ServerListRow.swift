@@ -33,17 +33,12 @@ struct ServerListRow: View {
     var body: some View {
         content
         .task(id: [server.url, server.basicAuthBase64, serverService.refreshID.uuidString]) {
-            guard !Task.isCancelled else { return }
-            fetchingAlarm = true
-            serverAlarms = ServerAlarms(status: nil, alarms: nil)
-
+            // Keep showing the previous status while refetching; "Checking" is only for the first load.
             let alarms = await viewModel.fetchAlarms(server: server)
             guard !Task.isCancelled else { return }
 
             withAnimation {
-                if let alarms = alarms {
-                    self.serverAlarms = alarms
-                }
+                self.serverAlarms = alarms ?? ServerAlarms(status: nil, alarms: nil)
                 self.fetchingAlarm = false
             }
         }
