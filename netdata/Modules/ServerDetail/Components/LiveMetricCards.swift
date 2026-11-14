@@ -329,44 +329,74 @@ struct ThroughputCard: View {
     let title: String
     let data: ServerData
     let format: (Double) -> String
+    /// Half-width cards always stack each label above its value, so paired cards (IPv4 / IPv6)
+    /// look the same instead of one dropping its labels when its numbers are wider.
+    var isCompact = false
 
     var body: some View {
         MetricCard(title: title) {
-            // Half-width cards can't fit "received 642 kb/s"; the arrow alone still says which way.
-            // Decided per card so every row in it drops its label together.
-            ViewThatFits(in: .horizontal) {
-                rows(showsLabels: true)
-                rows(showsLabels: false)
+            if isCompact {
+                rows(stacked: true)
+            } else {
+                ViewThatFits(in: .horizontal) {
+                    rows(stacked: false)
+                    rows(stacked: true)
+                }
             }
         }
     }
 
-    private func rows(showsLabels: Bool) -> some View {
-        VStack(alignment: .leading, spacing: 6) {
+    private func rows(stacked: Bool) -> some View {
+        VStack(alignment: .leading, spacing: stacked ? 8 : 6) {
             ForEach(data.latestDimensions) { dimension in
-                row(dimension, showsLabel: showsLabels)
-                    .font(.subheadline)
-                    .lineLimit(1)
-                    .accessibilityElement(children: .ignore)
-                    .accessibilityLabel("\(dimension.label) \(format(dimension.value))")
+                Group {
+                    if stacked {
+                        stackedRow(dimension)
+                    } else {
+                        inlineRow(dimension)
+                    }
+                }
+                .accessibilityElement(children: .ignore)
+                .accessibilityLabel("\(dimension.label) \(format(dimension.value))")
             }
         }
     }
 
-    private func row(_ dimension: MetricDimension, showsLabel: Bool) -> some View {
+    private func inlineRow(_ dimension: MetricDimension) -> some View {
         HStack(spacing: 6) {
-            Image(systemName: Self.isOutbound(dimension) ? "arrow.up.circle.fill" : "arrow.down.circle.fill")
-                .foregroundStyle(Self.isOutbound(dimension) ? Color.blue : Color.green)
-            if showsLabel {
-                Text(dimension.label)
-                    .foregroundStyle(.secondary)
-                    .fixedSize()
-            }
+            arrow(for: dimension)
+            Text(dimension.label)
+                .foregroundStyle(.secondary)
+                .fixedSize()
             Spacer(minLength: 4)
             Text(format(dimension.value))
                 .monospacedDigit()
                 .fixedSize()
         }
+        .font(.subheadline)
+        .lineLimit(1)
+    }
+
+    private func stackedRow(_ dimension: MetricDimension) -> some View {
+        HStack(alignment: .center, spacing: 8) {
+            arrow(for: dimension)
+                .font(.subheadline)
+            VStack(alignment: .leading, spacing: 1) {
+                Text(dimension.label)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                Text(format(dimension.value))
+                    .font(.subheadline)
+                    .monospacedDigit()
+            }
+            .lineLimit(1)
+            .minimumScaleFactor(0.8)
+        }
+    }
+
+    private func arrow(for dimension: MetricDimension) -> some View {
+        Image(systemName: Self.isOutbound(dimension) ? "arrow.up.circle.fill" : "arrow.down.circle.fill")
+            .foregroundStyle(Self.isOutbound(dimension) ? Color.blue : Color.green)
     }
 
     // Netdata reports outbound traffic (sent / out) as negative values.

@@ -147,7 +147,7 @@ struct ServerDetailView: View {
                     }
                 } trailing: {
                     if viewModel.diskIO.isLoaded {
-                        ThroughputCard(title: "Disk I/O", data: viewModel.diskIO, format: MetricFormat.kibPerSecond)
+                        ThroughputCard(title: "Disk I/O", data: viewModel.diskIO, format: MetricFormat.kibPerSecond, isCompact: true)
                     }
                 }
             }
@@ -159,11 +159,11 @@ struct ServerDetailView: View {
             if viewModel.networkIPv4.isLoaded || viewModel.networkIPv6.isLoaded {
                 cardPair {
                     if viewModel.networkIPv4.isLoaded {
-                        ThroughputCard(title: "IPv4", data: viewModel.networkIPv4, format: MetricFormat.kilobitsPerSecond)
+                        ThroughputCard(title: "IPv4", data: viewModel.networkIPv4, format: MetricFormat.kilobitsPerSecond, isCompact: true)
                     }
                 } trailing: {
                     if viewModel.networkIPv6.isLoaded {
-                        ThroughputCard(title: "IPv6", data: viewModel.networkIPv6, format: MetricFormat.kilobitsPerSecond)
+                        ThroughputCard(title: "IPv6", data: viewModel.networkIPv6, format: MetricFormat.kilobitsPerSecond, isCompact: true)
                     }
                 }
             }
