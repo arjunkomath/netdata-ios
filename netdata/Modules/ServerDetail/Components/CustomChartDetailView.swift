@@ -12,6 +12,7 @@ struct CustomChartDetailView: View {
     var serverChart: ServerChart
     var serverUrl: String
     var basicAuthBase64: String
+    var node: String? = nil
     
     @State private var chartData = ServerData.empty
     @State private var historyData = ServerData.empty
@@ -60,10 +61,10 @@ struct CustomChartDetailView: View {
                 }
             }
         }
-        .task(id: [serverUrl, basicAuthBase64, serverChart.id]) {
+        .task(id: [serverUrl, basicAuthBase64, node ?? "", serverChart.id]) {
             while !Task.isCancelled {
                 do {
-                    let data = try await NetdataClient.shared.getChartData(baseUrl: serverUrl, basicAuthBase64: basicAuthBase64, chart: serverChart.name)
+                    let data = try await NetdataClient.shared.getChartData(baseUrl: serverUrl, basicAuthBase64: basicAuthBase64, node: node, chart: serverChart.name)
                     guard !Task.isCancelled else { return }
                     chartData = data
                     refreshFailed = false
@@ -80,9 +81,9 @@ struct CustomChartDetailView: View {
                 }
             }
         }
-        .task(id: [serverUrl, basicAuthBase64, serverChart.id]) {
+        .task(id: [serverUrl, basicAuthBase64, node ?? "", serverChart.id]) {
             while !Task.isCancelled {
-                if let data = try? await NetdataClient.shared.getChartDataWithHistory(baseUrl: serverUrl, basicAuthBase64: basicAuthBase64, chart: serverChart.name) {
+                if let data = try? await NetdataClient.shared.getChartDataWithHistory(baseUrl: serverUrl, basicAuthBase64: basicAuthBase64, node: node, chart: serverChart.name) {
                     guard !Task.isCancelled else { return }
                     historyData = data
                 }

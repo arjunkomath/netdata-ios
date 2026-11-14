@@ -20,6 +20,7 @@ struct ServerListView: View {
     @State private var showWelcome = false
     @State private var showSettings = false
     @State private var selectedServerID: String?
+    @StateObject private var nodeStore = NodeSelectionStore()
     // .automatic hides the server list on some wide layouts (e.g. the unfolded iPhone Duo), leaving
     // only "Select a server". Collapsed layouts ignore this and still start on the list.
     @State private var columnVisibility: NavigationSplitViewVisibility = .all
@@ -116,7 +117,7 @@ struct ServerListView: View {
     @ViewBuilder
     private var detail: some View {
         if let server = selectedServer {
-            ServerDetailNavigationView(server: server)
+            ServerDetailNavigationView(server: server, nodeSelection: nodeStore.selection(for: server))
                 .id([server.id, server.url, server.basicAuthBase64])
         } else {
             VStack(spacing: 12) {
@@ -157,9 +158,28 @@ struct ServerListView: View {
                 .padding(gridPadding)
             }
             .background(Color(.systemGroupedBackground))
+            .safeAreaInset(edge: .bottom, spacing: 0) {
+                nodesPanel(maxListHeight: geometry.size.height * 0.4)
+            }
         }
         .modifier(SidebarColumnBackground())
         .modifier(serverListChrome)
+    }
+
+    @ViewBuilder
+    private func nodesPanel(maxListHeight: CGFloat) -> some View {
+        if let server = sidebarNodesServer {
+            SidebarNodesPanel(serverName: server.name,
+                              selection: nodeStore.selection(for: server),
+                              maxListHeight: maxListHeight)
+            // A different server starts collapsed.
+            .id(server.id)
+        }
+    }
+
+    /// When collapsed, picking a server pushes its detail over the list, so the detail's own picker is enough.
+    private var sidebarNodesServer: NDServer? {
+        horizontalSizeClass == .compact ? nil : selectedServer
     }
 
     private var needsICloudSignIn: Bool {
@@ -275,6 +295,9 @@ struct ServerListView: View {
             }
         }
         .listStyle(.sidebar)
+        .safeAreaInset(edge: .bottom, spacing: 0) {
+            nodesPanel(maxListHeight: 280)
+        }
         .modifier(serverListChrome)
     }
 

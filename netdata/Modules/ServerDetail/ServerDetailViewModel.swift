@@ -35,16 +35,24 @@ enum DataMode {
     
     // MARK:- Refresh state
     @Published var refreshFailed = false
+    /// Most recent request failure, so the banner can say why a refresh failed.
+    @Published var lastError: APIError?
     
     var baseUrl = ""
     var basicAuthBase64 = ""
+    var node: String?
 
     func fetchChart(_ chart: String, dataMode: DataMode) async throws -> ServerData {
-        switch dataMode {
-        case .now:
-            return try await NetdataClient.shared.getChartData(baseUrl: baseUrl, basicAuthBase64: basicAuthBase64, chart: chart)
-        case .fifteenMins:
-            return try await NetdataClient.shared.getChartDataWithHistory(baseUrl: baseUrl, basicAuthBase64: basicAuthBase64, chart: chart)
+        do {
+            switch dataMode {
+            case .now:
+                return try await NetdataClient.shared.getChartData(baseUrl: baseUrl, basicAuthBase64: basicAuthBase64, node: node, chart: chart)
+            case .fifteenMins:
+                return try await NetdataClient.shared.getChartDataWithHistory(baseUrl: baseUrl, basicAuthBase64: basicAuthBase64, node: node, chart: chart)
+            }
+        } catch let error as APIError {
+            lastError = error
+            throw error
         }
     }
 
@@ -187,14 +195,14 @@ enum DataMode {
         return succeeded
     }
     
-    func updateBookmarks(baseUrl: String, basicAuthBase64: String) async {
+    func updateBookmarks(baseUrl: String, basicAuthBase64: String, node: String? = nil) async {
         // Always fetch latest bookmarks, avoid adding user settings
         let bookmarks = NSUbiquitousKeyValueStore.default.array(forKey: "bookmarks") as? [String] ?? []
         
         // Fetch charts for bookmarks
         if bookmarks.count > 0 {
             do {
-                let charts = try await NetdataClient.shared.getCharts(baseUrl: baseUrl, basicAuthBase64: basicAuthBase64)
+                let charts = try await NetdataClient.shared.getCharts(baseUrl: baseUrl, basicAuthBase64: basicAuthBase64, node: node)
                 guard !Task.isCancelled else { return }
 
                 let updatedBookmarks = bookmarks
