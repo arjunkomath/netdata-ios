@@ -13,8 +13,10 @@ struct AlarmsListView: View {
     
     var serverUrl: String
     var basicAuthBase64: String
+    var node: String? = nil
     
     @State private var loading = false
+    @State private var fetchError: APIError?
     @State private var serverAlarms = ServerAlarms(status: nil, alarms: nil)
     
     var body: some View {
@@ -26,6 +28,13 @@ struct AlarmsListView: View {
                 .padding()
             }
             
+            if let fetchError {
+                ErrorMessage(message: fetchError.listMessage(subject: "alarms"))
+            } else if !loading && serverAlarms.status == false {
+                Text("Health monitoring isn't running for this node, so there are no alarms to show.")
+                    .foregroundStyle(.secondary)
+            }
+
             if self.getActiveAlarms().isEmpty && serverAlarms.status == true {
                 VStack(alignment: .leading, spacing: 16) {
                     Image(systemName: "hand.thumbsup.fill")
@@ -74,11 +83,14 @@ struct AlarmsListView: View {
     private func fetchAlarms() async {
         loading = true
         do {
-            serverAlarms = try await NetdataClient.shared.getAlarms(baseUrl: serverUrl, basicAuthBase64: basicAuthBase64)
+            serverAlarms = try await NetdataClient.shared.getAlarms(baseUrl: serverUrl, basicAuthBase64: basicAuthBase64, node: node)
+            fetchError = nil
             loading = false
         } catch {
             loading = false
+            guard !Task.isCancelled else { return }
             debugPrint("getAlarms", error)
+            fetchError = error as? APIError ?? .somethingWentWrong
         }
     }
     
