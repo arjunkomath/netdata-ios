@@ -174,6 +174,12 @@ class ServerService: ObservableObject, PublicCloudService {
     }
     
     private func setError(error: Error?) {
+        // A cancelled fetch (e.g. SwiftUI cancelling an interrupted pull-to-refresh) didn't fail,
+        // so it shouldn't replace the banner with "Operation … was cancelled".
+        if let error = error, Self.isCancellation(error) {
+            return
+        }
+
         if let error = error {
             self.reportError(error)
         }
@@ -183,6 +189,10 @@ class ServerService: ObservableObject, PublicCloudService {
         }
     }
     
+    private static func isCancellation(_ error: Error) -> Bool {
+        error is CancellationError || (error as? CKError)?.code == .operationCancelled
+    }
+
     private func reportError(_ error: Error) {
         guard let ckerror = error as? CKError else {
             os_log("Not a CKError: \(error.localizedDescription)")
