@@ -145,13 +145,13 @@ struct ServerListView: View {
                                       width: geometry.size.width)
                     }
 
-                    // Shown even when empty while signed in, since its header holds the Add button.
-                    if serverService.isCloudEnabled {
+                    // Shown even when empty while signed in, since it ends with the Add Server card.
+                    if serverService.isCloudEnabled && !isLoadingServers {
                         serverSection(title: "All Servers",
                                       systemImage: "folder.fill",
                                       servers: serverService.defaultServers,
                                       width: geometry.size.width,
-                                      showsAddButton: true)
+                                      showsAddCard: true)
                     }
                 }
                 .padding(gridPadding)
@@ -188,25 +188,12 @@ struct ServerListView: View {
                                systemImage: String,
                                servers: [NDServer],
                                width: CGFloat,
-                               showsAddButton: Bool = false) -> some View {
+                               showsAddCard: Bool = false) -> some View {
         VStack(alignment: .leading, spacing: 10) {
-            HStack {
-                Label(title, systemImage: systemImage)
-                    .font(.subheadline.weight(.semibold))
-                    .foregroundStyle(.secondary)
-                    .accessibilityAddTraits(.isHeader)
-                if showsAddButton {
-                    Spacer()
-                    addServerButton
-                        .font(.subheadline)
-                }
-            }
-
-            if showsAddButton && !hasServers && !isLoadingServers {
-                Text("No servers yet. Add one to start monitoring.")
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
-            }
+            Label(title, systemImage: systemImage)
+                .font(.subheadline.weight(.semibold))
+                .foregroundStyle(.secondary)
+                .accessibilityAddTraits(.isHeader)
 
             LazyVGrid(columns: gridColumns(for: width), alignment: .leading, spacing: gridSpacing) {
                 ForEach(servers) { server in
@@ -217,6 +204,10 @@ struct ServerListView: View {
                             showsDetailWhenCollapsed = true
                         }
                     )
+                }
+
+                if showsAddCard {
+                    AddServerCard { showAddServer = true }
                 }
             }
         }
@@ -243,15 +234,6 @@ struct ServerListView: View {
 
     private var isLoadingServers: Bool {
         serverService.isCloudEnabled && serverService.isSynching && !hasServers
-    }
-
-    private var addServerButton: some View {
-        Button {
-            showAddServer = true
-        } label: {
-            Label("Add", systemImage: "plus")
-        }
-        .accessibilityLabel("Add server")
     }
 
     private var serverListChrome: ServerListChrome {
@@ -281,12 +263,14 @@ struct ServerListView: View {
                     ForEach(serverService.defaultServers) { server in
                         ServerListRow(server: server)
                     }
-                } header: {
-                    HStack {
-                        Label("All Servers", systemImage: "folder.fill")
-                        Spacer()
-                        addServerButton
+
+                    Button {
+                        showAddServer = true
+                    } label: {
+                        Label("Add Server", systemImage: "plus")
                     }
+                } header: {
+                    Label("All Servers", systemImage: "folder.fill")
                 }
             }
         }
@@ -372,6 +356,31 @@ private struct ICloudSignInPrompt: View {
                 .fill(Color(.secondarySystemGroupedBackground))
         )
         .frame(maxWidth: .infinity)
+    }
+}
+
+/// Sized and shaped like a server card so it reads as the next slot in the grid.
+private struct AddServerCard: View {
+    let action: () -> Void
+
+    @ScaledMetric(relativeTo: .body) private var minimumCardHeight: CGFloat = 96
+    private let cardShape = RoundedRectangle(cornerRadius: 16, style: .continuous)
+
+    var body: some View {
+        Button(action: action) {
+            VStack(spacing: 6) {
+                Image(systemName: "plus.circle.fill")
+                    .font(.title2)
+                Text("Add Server")
+                    .font(.headline)
+            }
+            .foregroundStyle(Color.accentColor)
+            .padding(12)
+            .frame(maxWidth: .infinity, minHeight: minimumCardHeight, maxHeight: .infinity)
+            .background(cardShape.fill(Color(.secondarySystemGroupedBackground)))
+            .contentShape(cardShape)
+        }
+        .buttonStyle(.plain)
     }
 }
 
