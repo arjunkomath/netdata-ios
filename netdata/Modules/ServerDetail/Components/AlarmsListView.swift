@@ -66,7 +66,6 @@ struct AlarmsListView: View {
         .refreshable {
             await self.fetchAlarms()
         }
-        .navigationTitle(Text("Alarms"))
         .task {
             await self.fetchAlarms()
         }

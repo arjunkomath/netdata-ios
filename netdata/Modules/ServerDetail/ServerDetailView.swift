@@ -9,58 +9,62 @@ import SwiftUI
 
 struct ServerDetailNavigationView: View {
     let server: NDServer
-    @State private var chartPath: [ServerChart] = []
     @State private var chartSearchText = ""
+    @State private var path: [ServerChart] = []
 
     var body: some View {
-        TabView {
-            NavigationStack {
-                ServerDetailView(server: server, dataMode: .now)
-            }
-            .tabItem {
-                Label("Live", systemImage: "waveform.path.ecg")
-            }
-
-            NavigationStack {
-                ServerDetailView(server: server, dataMode: .fifteenMins)
-            }
-            .tabItem {
-                Label("Last 15 mins", systemImage: "clock.arrow.circlepath")
-            }
-
-            NavigationStack(path: $chartPath) {
-                ChartsListView(serverUrl: server.url,
-                               basicAuthBase64: server.basicAuthBase64,
-                               searchText: $chartSearchText)
-                    .navigationDestination(for: ServerChart.self) { chart in
-                        CustomChartDetailView(serverChart: chart,
-                                              serverUrl: server.url,
-                                              basicAuthBase64: server.basicAuthBase64)
-                    }
-            }
-            .tabItem {
-                Label("Charts", systemImage: "chart.pie")
-            }
-
-            NavigationStack {
-                AlarmsListView(serverUrl: server.url, basicAuthBase64: server.basicAuthBase64)
-            }
-            .tabItem {
-                Label("Alarms", systemImage: "exclamationmark.triangle.fill")
-            }
+        // One stack around the tabs, owned by the split view's detail column. A NavigationStack per
+        // tab doesn't work there: those bars never show and their links can't push.
+        NavigationStack(path: $path) {
+            tabs
+                .navigationDestination(for: ServerChart.self) { chart in
+                    CustomChartDetailView(serverChart: chart,
+                                          serverUrl: server.url,
+                                          basicAuthBase64: server.basicAuthBase64)
+                }
+                .navigationTitle(server.name)
+                .navigationBarTitleDisplayMode(.inline)
         }
-        .navigationTitle(server.name)
-        .navigationBarTitleDisplayMode(.inline)
+    }
+
+    private var tabs: some View {
+        TabView {
+            ServerDetailView(server: server, dataMode: .now, openChart: openChart)
+                .tabItem {
+                    Label("Live", systemImage: "waveform.path.ecg")
+                }
+
+            ServerDetailView(server: server, dataMode: .fifteenMins, openChart: openChart)
+                .tabItem {
+                    Label("Last 15 mins", systemImage: "clock.arrow.circlepath")
+                }
+
+            ChartsListView(serverUrl: server.url,
+                           basicAuthBase64: server.basicAuthBase64,
+                           searchText: $chartSearchText)
+                .tabItem {
+                    Label("Charts", systemImage: "chart.pie")
+                }
+
+            AlarmsListView(serverUrl: server.url, basicAuthBase64: server.basicAuthBase64)
+                .tabItem {
+                    Label("Alarms", systemImage: "exclamationmark.triangle.fill")
+                }
+        }
+    }
+
+    private func openChart(_ chart: ServerChart) {
+        path.append(chart)
     }
 }
 
 struct ServerDetailView: View {
     var server: NDServer;
     let dataMode: DataMode
+    let openChart: (ServerChart) -> Void
     
     @StateObject private var userSettings = UserSettings()
     @StateObject private var viewModel = ServerDetailViewModel()
-    @State private var presentedChart: ServerChart?
     @State private var showsPinnedEditor = false
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @ScaledMetric(relativeTo: .body) private var minimumCardWidth: CGFloat = 320
@@ -93,14 +97,6 @@ struct ServerDetailView: View {
                 .padding(padding)
             }
             .background(Color(.systemGroupedBackground))
-        }
-        .navigationDestination(isPresented: Binding(
-            get: { presentedChart != nil },
-            set: { if !$0 { presentedChart = nil } }
-        )) {
-            if let chart = presentedChart {
-                CustomChartDetailView(serverChart: chart, serverUrl: server.url, basicAuthBase64: server.basicAuthBase64)
-            }
         }
         .sheet(isPresented: $showsPinnedEditor) {
             PinnedChartsEditor(userSettings: userSettings,
@@ -265,13 +261,13 @@ struct ServerDetailView: View {
                         .redacted(reason: data.isLoaded ? [] : .placeholder)
                         // A tap gesture rather than a Button so the card's own "Show more" button stays tappable.
                         .contentShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
-                        .onTapGesture { presentedChart = chart }
+                        .onTapGesture { openChart(chart) }
                         .accessibilityAddTraits(.isButton)
-                        .accessibilityAction { presentedChart = chart }
+                        .accessibilityAction { openChart(chart) }
                         .contentShape(.contextMenuPreview, RoundedRectangle(cornerRadius: 16, style: .continuous))
                         .contextMenu {
                             Button {
-                                presentedChart = chart
+                                openChart(chart)
                             } label: {
                                 Label("Open Chart", systemImage: "chart.xyaxis.line")
                             }
