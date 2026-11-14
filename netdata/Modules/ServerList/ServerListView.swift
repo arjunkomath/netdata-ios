@@ -145,11 +145,13 @@ struct ServerListView: View {
                                       width: geometry.size.width)
                     }
 
-                    if !serverService.defaultServers.isEmpty {
+                    // Shown even when empty while signed in, since its header holds the Add button.
+                    if serverService.isCloudEnabled {
                         serverSection(title: "All Servers",
                                       systemImage: "folder.fill",
                                       servers: serverService.defaultServers,
-                                      width: geometry.size.width)
+                                      width: geometry.size.width,
+                                      showsAddButton: true)
                     }
                 }
                 .padding(gridPadding)
@@ -185,12 +187,26 @@ struct ServerListView: View {
     private func serverSection(title: LocalizedStringKey,
                                systemImage: String,
                                servers: [NDServer],
-                               width: CGFloat) -> some View {
+                               width: CGFloat,
+                               showsAddButton: Bool = false) -> some View {
         VStack(alignment: .leading, spacing: 10) {
-            Label(title, systemImage: systemImage)
-                .font(.subheadline.weight(.semibold))
-                .foregroundStyle(.secondary)
-                .accessibilityAddTraits(.isHeader)
+            HStack {
+                Label(title, systemImage: systemImage)
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(.secondary)
+                    .accessibilityAddTraits(.isHeader)
+                if showsAddButton {
+                    Spacer()
+                    addServerButton
+                        .font(.subheadline)
+                }
+            }
+
+            if showsAddButton && !hasServers && !isLoadingServers {
+                Text("No servers yet. Add one to start monitoring.")
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+            }
 
             LazyVGrid(columns: gridColumns(for: width), alignment: .leading, spacing: gridSpacing) {
                 ForEach(servers) { server in
@@ -221,13 +237,27 @@ struct ServerListView: View {
         horizontalSizeClass != .compact && server.id == selectedServerID
     }
 
+    private var hasServers: Bool {
+        !serverService.favouriteServers.isEmpty || !serverService.defaultServers.isEmpty
+    }
+
+    private var isLoadingServers: Bool {
+        serverService.isCloudEnabled && serverService.isSynching && !hasServers
+    }
+
+    private var addServerButton: some View {
+        Button {
+            showAddServer = true
+        } label: {
+            Label("Add", systemImage: "plus")
+        }
+        .accessibilityLabel("Add server")
+    }
+
     private var serverListChrome: ServerListChrome {
         ServerListChrome(
-            isCloudEnabled: serverService.isCloudEnabled,
-            isLoading: serverService.isCloudEnabled && serverService.isSynching
-                && serverService.favouriteServers.isEmpty && serverService.defaultServers.isEmpty,
+            isLoading: isLoadingServers,
             showSettings: $showSettings,
-            showAddServer: $showAddServer,
             refresh: { await serverService.refresh() }
         )
     }
@@ -246,13 +276,17 @@ struct ServerListView: View {
                 }
             }
 
-            if !serverService.defaultServers.isEmpty {
+            if serverService.isCloudEnabled {
                 Section {
                     ForEach(serverService.defaultServers) { server in
                         ServerListRow(server: server)
                     }
                 } header: {
-                    Label("All Servers", systemImage: "folder.fill")
+                    HStack {
+                        Label("All Servers", systemImage: "folder.fill")
+                        Spacer()
+                        addServerButton
+                    }
                 }
             }
         }
@@ -342,10 +376,8 @@ private struct ICloudSignInPrompt: View {
 }
 
 private struct ServerListChrome: ViewModifier {
-    let isCloudEnabled: Bool
     let isLoading: Bool
     @Binding var showSettings: Bool
-    @Binding var showAddServer: Bool
     let refresh: () async -> Void
 
     func body(content: Content) -> some View {
@@ -367,20 +399,6 @@ private struct ServerListChrome: ViewModifier {
                             Image(systemName: "gearshape")
                             Text("Settings")
                         }
-                    }
-                }
-
-                if isCloudEnabled {
-                    ToolbarItem(placement: .bottomBar) {
-                        Button(action: {
-                            showAddServer = true
-                        }) {
-                            HStack {
-                                Image(systemName: "plus")
-                                Text("Add")
-                            }
-                        }
-                        .buttonStyle(.borderedProminent)
                     }
                 }
             }
