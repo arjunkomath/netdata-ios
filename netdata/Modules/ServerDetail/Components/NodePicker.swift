@@ -51,7 +51,26 @@ import SwiftUI
         return nodes.first { $0.mg == selectedGuid }
     }
 
-    func load() async {
+    private var loadTask: Task<Void, Never>?
+
+    /// Fetches the node list in a task this object owns rather than the caller's. SwiftUI can cancel a view's
+    /// `.task` while the screen stays up (seen when switching servers on iPhone), which dropped the result and
+    /// hid the picker until relaunch. Calls while a fetch is running join it instead of starting another.
+    func refresh() {
+        guard loadTask == nil else { return }
+        loadTask = Task {
+            await load()
+            loadTask = nil
+        }
+    }
+
+    /// For pull-to-refresh, which keeps its spinner up until the list is in.
+    func refreshAndWait() async {
+        refresh()
+        await loadTask?.value
+    }
+
+    private func load() async {
         isLoading = true
         defer { isLoading = false }
 
@@ -204,7 +223,7 @@ struct NodePickerSheet: View {
                 }
             }
             .searchable(text: $searchText, prompt: "Search nodes")
-            .refreshable { await selection.load() }
+            .refreshable { await selection.refreshAndWait() }
             .overlay {
                 if selection.nodes.isEmpty && selection.isLoading {
                     ProgressView()
@@ -218,7 +237,7 @@ struct NodePickerSheet: View {
                 }
             }
         }
-        .task { await selection.load() }
+        .onAppear { selection.refresh() }
     }
 
     private func matches(_ node: NetdataNode) -> Bool {
