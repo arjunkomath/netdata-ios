@@ -11,7 +11,9 @@ struct ChartDataPoint: Identifiable {
 struct ChartView: View {
     var data: ServerData
     var valueScale = 1.0
-    
+
+    @Environment(\.redactionReasons) private var redactionReasons
+
     var body: some View {
         let chartData = prepareChartData(serverData: data)
         
@@ -59,6 +61,11 @@ struct ChartView: View {
                     .clipShape(RoundedRectangle(cornerRadius: 8))
             }
             .padding(.top, 8)
+            // Redaction greys out text but not chart marks, so the lines need muting by hand while a
+            // placeholder; otherwise the previous range's data still reads as current.
+            .saturation(redactionReasons.contains(.placeholder) ? 0 : 1)
+            .opacity(redactionReasons.contains(.placeholder) ? 0.35 : 1)
+            .animation(.easeInOut(duration: 0.2), value: redactionReasons.contains(.placeholder))
         }
     }
     

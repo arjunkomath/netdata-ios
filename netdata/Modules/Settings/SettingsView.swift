@@ -83,7 +83,7 @@ struct SettingsView: View {
                 }
                 
                 if userService.userData != nil {
-                    Section(header: Text("Alert Notifications (beta)"),
+                    Section(header: Text("Alert Notifications"),
                             footer: Text("Get instant push notifications for alerts from your Netdata instance. Requires access to the terminal where Netdata Agent is running to configure custom notifications.")) {
                         Toggle(isOn: $alertNotifications) {
                             Label("Enable alerts", systemImage: "bell")

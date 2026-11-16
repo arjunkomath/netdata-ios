@@ -13,6 +13,7 @@ struct ServerDetailNavigationView: View {
     @State private var path: [ServerChart] = []
     @State private var selectedTab = DetailTab.live
     @State private var showsNodePicker = false
+    @AppStorage(HistoryRange.storageKey) private var historyRange: HistoryRange = .defaultRange
     @ObservedObject var nodeSelection: NodeSelection
 
     private enum DetailTab: Hashable {
@@ -82,12 +83,12 @@ struct ServerDetailNavigationView: View {
             ServerDetailView(server: server,
                              node: node,
                              nodeInfo: nodeSelection.selectedNode,
-                             dataMode: .fifteenMins,
+                             dataMode: .history(historyRange),
                              openChart: openChart,
                              chooseNode: { showsNodePicker = true })
                 .id(node)
                 .tabItem {
-                    Label("Last 15 mins", systemImage: "clock.arrow.circlepath")
+                    Label("History", systemImage: "clock.arrow.circlepath")
                 }
                 .tag(DetailTab.history)
 
@@ -151,7 +152,8 @@ struct ServerDetailView: View {
                     switch dataMode {
                     case .now:
                         liveContent(width: geometry.size.width)
-                    case .fifteenMins:
+                    case .history:
+                        HistoryRangePicker()
                         historyContent(width: geometry.size.width, chartHeight: chartHeight)
                     }
 
@@ -173,8 +175,13 @@ struct ServerDetailView: View {
         .onChange(of: userSettings.bookmarks) { _ in
             Task { await viewModel.updateBookmarks(baseUrl: server.url, basicAuthBase64: server.basicAuthBase64, node: node) }
         }
-        .task {
-            let refreshInterval: Duration = dataMode == .now ? .seconds(1) : .seconds(15)
+        // Keyed on the mode so picking another range restarts the loop with that range's window.
+        .task(id: dataMode) {
+            let refreshInterval: Duration
+            switch dataMode {
+            case .now: refreshInterval = .seconds(1)
+            case .history(let range): refreshInterval = range.refreshInterval
+            }
             viewModel.baseUrl = server.url
             viewModel.basicAuthBase64 = server.basicAuthBase64
             viewModel.node = node
@@ -189,6 +196,11 @@ struct ServerDetailView: View {
                 }
             }
         }
+    }
+
+    /// True right after picking another range, while the charts still hold the previous range's data.
+    private var isLoadingNewRange: Bool {
+        viewModel.loadedMode != dataMode
     }
 
     private var isStale: Bool {
@@ -309,7 +321,7 @@ struct ServerDetailView: View {
     @ViewBuilder
     private func historyCard(_ title: String, data: ServerData, chartHeight: CGFloat, alwaysShow: Bool = false) -> some View {
         if alwaysShow || data.isLoaded {
-            RedactedView(loading: !data.isLoaded) {
+            RedactedView(loading: !data.isLoaded || isLoadingNewRange) {
                 ServerDetailItem(label: title) {
                     ChartView(data: data)
                         .frame(height: chartHeight)
@@ -338,8 +350,8 @@ struct ServerDetailView: View {
                     let data = viewModel.bookmarkedChartData.indices.contains(index) ? viewModel.bookmarkedChartData[index] : .empty
                     PinnedChartCard(chart: chart,
                                     data: data,
-                                    historyChartHeight: dataMode == .fifteenMins ? chartHeight : nil)
-                        .redacted(reason: data.isLoaded ? [] : .placeholder)
+                                    historyChartHeight: dataMode == .now ? nil : chartHeight)
+                        .redacted(reason: data.isLoaded && !isLoadingNewRange ? [] : .placeholder)
                         // A tap gesture rather than a Button so the card's own "Show more" button stays tappable.
                         .contentShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
                         .onTapGesture { openChart(chart) }
@@ -376,6 +388,31 @@ struct ServerDetailView: View {
         let fitsFour = availableWidth >= minimumSummaryTileWidth * 4 + 8 * 3
         let count = dynamicTypeSize.isAccessibilitySize || !fitsFour ? 2 : 4
         return Array(repeating: GridItem(.flexible(), spacing: 8), count: count)
+    }
+}
+
+/// Shared by the History tab and chart details; the choice is remembered across launches.
+struct HistoryRangePicker: View {
+    @AppStorage(HistoryRange.storageKey) private var range: HistoryRange = .defaultRange
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+
+    var body: some View {
+        // Five segments don't fit at accessibility sizes, so fall back to a menu there.
+        if dynamicTypeSize.isAccessibilitySize {
+            Picker("Time range", selection: $range) { options }
+                .pickerStyle(.menu)
+        } else {
+            Picker("Time range", selection: $range) { options }
+                .pickerStyle(.segmented)
+        }
+    }
+
+    private var options: some View {
+        ForEach(HistoryRange.allCases) { range in
+            Text(dynamicTypeSize.isAccessibilitySize ? range.title : range.shortTitle)
+                .accessibilityLabel(range.title)
+                .tag(range)
+        }
     }
 }
 

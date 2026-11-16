@@ -9,9 +9,9 @@ import Foundation
 import Combine
 import SwiftUI
 
-enum DataMode {
+enum DataMode: Hashable {
     case now
-    case fifteenMins
+    case history(HistoryRange)
 }
 
 @MainActor class ServerDetailViewModel: ObservableObject {
@@ -37,7 +37,10 @@ enum DataMode {
     @Published var refreshFailed = false
     /// Most recent request failure, so the banner can say why a refresh failed.
     @Published var lastError: APIError?
-    
+    /// The mode the published data was fetched for. Until it matches the requested mode, the data
+    /// on screen belongs to the previous range.
+    @Published var loadedMode: DataMode?
+
     var baseUrl = ""
     var basicAuthBase64 = ""
     var node: String?
@@ -47,8 +50,8 @@ enum DataMode {
             switch dataMode {
             case .now:
                 return try await NetdataClient.shared.getChartData(baseUrl: baseUrl, basicAuthBase64: basicAuthBase64, node: node, chart: chart)
-            case .fifteenMins:
-                return try await NetdataClient.shared.getChartDataWithHistory(baseUrl: baseUrl, basicAuthBase64: basicAuthBase64, node: node, chart: chart)
+            case .history(let range):
+                return try await NetdataClient.shared.getChartDataWithHistory(baseUrl: baseUrl, basicAuthBase64: basicAuthBase64, node: node, chart: chart, range: range)
             }
         } catch let error as APIError {
             lastError = error
@@ -94,12 +97,14 @@ enum DataMode {
         }
 
         guard !Task.isCancelled else { return }
-        guard bookmarks.map(\.id) == self.bookmarks.map(\.id) else { return }
-
-        self.bookmarkedChartData = bookmarks.indices.map {
-            chartDataByIndex[$0] ?? .empty
+        // Pins edited mid-refresh would misalign the results; the next refresh fills them in.
+        if bookmarks.map(\.id) == self.bookmarks.map(\.id) {
+            self.bookmarkedChartData = bookmarks.indices.map {
+                chartDataByIndex[$0] ?? .empty
+            }
         }
         self.refreshFailed = !anyCoreSucceeded
+        self.loadedMode = dataMode
     }
     
     func fetchCpu(dataMode: DataMode) async -> Bool {

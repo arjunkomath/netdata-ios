@@ -111,10 +111,10 @@ public class NetdataClient {
         return try await run(requestUrl: requestUrl, basicAuthBase64: basicAuthBase64)
     }
     
-    func getChartDataWithHistory(baseUrl: String, basicAuthBase64: String = "", node: String? = nil, chart: String) async throws -> ServerData {
+    func getChartDataWithHistory(baseUrl: String, basicAuthBase64: String = "", node: String? = nil, chart: String, range: HistoryRange) async throws -> ServerData {
         let requestUrl = try makeRequestURL(baseUrl: baseUrl, node: node, endpoint: .data, queryItems: [
-            URLQueryItem(name: "after", value: "-900"),
-            URLQueryItem(name: "points", value: "15"),
+            URLQueryItem(name: "after", value: "-\(range.seconds)"),
+            URLQueryItem(name: "points", value: "\(range.points)"),
             URLQueryItem(name: "chart", value: chart)
         ])
         
