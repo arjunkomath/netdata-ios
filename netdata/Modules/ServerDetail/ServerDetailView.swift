@@ -15,6 +15,16 @@ struct ServerDetailNavigationView: View {
     @State private var showsNodePicker = false
     @AppStorage(HistoryRange.storageKey) private var historyRange: HistoryRange = .defaultRange
     @ObservedObject var nodeSelection: NodeSelection
+    @StateObject private var alarmsStore: AlarmsStore
+    // Shared with the Alarms tab: UserSettings instances don't sync hidden alarms with each other,
+    // so the badge must read the same one the tab writes to.
+    @StateObject private var userSettings = UserSettings()
+
+    init(server: NDServer, nodeSelection: NodeSelection) {
+        self.server = server
+        self.nodeSelection = nodeSelection
+        _alarmsStore = StateObject(wrappedValue: AlarmsStore(serverUrl: server.url, basicAuthBase64: server.basicAuthBase64))
+    }
 
     private enum DetailTab: Hashable {
         case live, history, charts, alarms
@@ -57,8 +67,10 @@ struct ServerDetailNavigationView: View {
         }
         .onAppear {
             nodeSelection.refresh()
+            alarmsStore.refresh(node: node)
         }
         .onChange(of: nodeSelection.selectedGuid) { _ in
+            alarmsStore.refresh(node: node)
             // Charts opened on the previous node don't exist on the new one.
             path = []
         }
@@ -102,11 +114,16 @@ struct ServerDetailNavigationView: View {
                 }
                 .tag(DetailTab.charts)
 
-            AlarmsListView(serverUrl: server.url, basicAuthBase64: server.basicAuthBase64, node: node)
+            AlarmsListView(store: alarmsStore,
+                           userSettings: userSettings,
+                           serverUrl: server.url,
+                           basicAuthBase64: server.basicAuthBase64,
+                           node: node)
                 .id(node)
                 .tabItem {
                     Label("Alarms", systemImage: "exclamationmark.triangle.fill")
                 }
+                .badge(alarmsStore.criticalCount(ignoring: userSettings.ignoredAlarms))
                 .tag(DetailTab.alarms)
         }
     }
