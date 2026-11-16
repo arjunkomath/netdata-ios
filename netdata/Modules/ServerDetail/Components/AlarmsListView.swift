@@ -125,7 +125,9 @@ struct AlarmsListView: View {
         }
 
         if store.alarms == nil {
-            if store.isLoading {
+            // Only before the first answer: after a failure, each poll would otherwise flash
+            // placeholders under the error.
+            if store.isLoading && store.lastError == nil {
                 Section {
                     ForEach(0..<3, id: \.self) { _ in
                         AlarmListRow(alarm: .placeholder)

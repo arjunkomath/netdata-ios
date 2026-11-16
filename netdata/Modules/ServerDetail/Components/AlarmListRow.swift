@@ -67,8 +67,9 @@ struct AlarmListRow: View {
 }
 
 extension ServerAlarm {
-    /// Stand-in content for the redacted loading rows.
-    static let placeholder = ServerAlarm(status: "WARNING",
+    /// Stand-in content for the redacted loading rows. No status, so the dot stays grey: redaction
+    /// doesn't recolour shapes, and an orange dot would hint at a warning that may not exist.
+    static let placeholder = ServerAlarm(status: nil,
                                          name: "placeholder_alarm",
                                          chart: "system.placeholder",
                                          info: "Placeholder description of what this alarm watches",
