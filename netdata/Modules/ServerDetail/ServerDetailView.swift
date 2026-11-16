@@ -55,8 +55,8 @@ struct ServerDetailNavigationView: View {
         .sheet(isPresented: $showsNodePicker) {
             NodePickerSheet(selection: nodeSelection)
         }
-        .task {
-            await nodeSelection.load()
+        .onAppear {
+            nodeSelection.refresh()
         }
         .onChange(of: nodeSelection.selectedGuid) { _ in
             // Charts opened on the previous node don't exist on the new one.
