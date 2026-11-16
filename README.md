@@ -19,7 +19,7 @@ Monitor everything in real time on your mobile device
 - ### Seamless connection
 Works out-of-the-box with any self hosted Netdata instance
 
-- ### Push notifications for alerts (beta)
+- ### Push notifications for alerts
 Get notified when alerts are triggered in your server.
 You can find the backend implementation [here](https://github.com/arjunkomath/netdata-functions).
 
