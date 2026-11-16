@@ -20,7 +20,10 @@ struct CustomChartDetailView: View {
     
     @State private var showAddedToast = false
     @State private var showRemovedToast = false
-    
+    @AppStorage(HistoryRange.storageKey) private var historyRange: HistoryRange = .defaultRange
+    /// The range `historyData` was fetched for, so a just-picked range shows as loading.
+    @State private var historyDataRange: HistoryRange?
+
     @ObservedObject var userSettings = UserSettings()
     
     var body: some View {
@@ -37,13 +40,16 @@ struct CustomChartDetailView: View {
                                 collapsesDimensions: false)
                     .redacted(reason: chartData.isLoaded ? [] : .placeholder)
 
+                HistoryRangePicker()
+                    .padding(.top, 8)
+
                 PinnedChartCard(chart: serverChart,
                                 data: historyData,
                                 historyChartHeight: 220,
-                                title: "Last 15 minutes",
+                                title: historyRange.title,
                                 showsDisclosure: false,
                                 showsChartID: false)
-                    .redacted(reason: historyData.isLoaded ? [] : .placeholder)
+                    .redacted(reason: historyData.isLoaded && historyDataRange == historyRange ? [] : .placeholder)
             }
             .padding(16)
             .readableGuidePadding()
@@ -81,15 +87,17 @@ struct CustomChartDetailView: View {
                 }
             }
         }
-        .task(id: [serverUrl, basicAuthBase64, node ?? "", serverChart.id]) {
+        .task(id: [serverUrl, basicAuthBase64, node ?? "", serverChart.id, historyRange.rawValue]) {
+            let range = historyRange
             while !Task.isCancelled {
-                if let data = try? await NetdataClient.shared.getChartDataWithHistory(baseUrl: serverUrl, basicAuthBase64: basicAuthBase64, node: node, chart: serverChart.name) {
+                if let data = try? await NetdataClient.shared.getChartDataWithHistory(baseUrl: serverUrl, basicAuthBase64: basicAuthBase64, node: node, chart: serverChart.name, range: range) {
                     guard !Task.isCancelled else { return }
                     historyData = data
+                    historyDataRange = range
                 }
 
                 do {
-                    try await Task.sleep(for: .seconds(15))
+                    try await Task.sleep(for: range.refreshInterval)
                 } catch {
                     return
                 }

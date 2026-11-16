@@ -7,119 +7,308 @@
 
 import SwiftUI
 
-struct AlarmsListView: View {
-    @Environment(\.presentationMode) private var presentationMode
-    @ObservedObject var userSettings = UserSettings()
-    
-    var serverUrl: String
-    var basicAuthBase64: String
-    var node: String? = nil
-    
-    @State private var loading = false
-    @State private var fetchError: APIError?
-    @State private var serverAlarms = ServerAlarms(status: nil, alarms: nil)
-    
-    var body: some View {
-        List {
-            if loading {
-                VStack(alignment: .center, spacing: 16) {
-                    ProgressView()
-                }
-                .padding()
-            }
-            
-            if let fetchError {
-                ErrorMessage(message: fetchError.listMessage(subject: "alarms"))
-            } else if !loading && serverAlarms.status == false {
-                Text("Health monitoring isn't running for this node, so there are no alarms to show.")
-                    .foregroundStyle(.secondary)
-            }
+/// Alarms for one server, or the selected Child on a Parent. Owned by the detail screen rather than the
+/// Alarms tab so the tab's badge is right before the tab is first opened.
+@MainActor final class AlarmsStore: ObservableObject {
+    @Published private(set) var alarms: ServerAlarms?
+    @Published private(set) var lastError: APIError?
+    @Published private(set) var lastUpdated: Date?
+    @Published private(set) var isLoading = false
 
-            if self.getActiveAlarms().isEmpty && serverAlarms.status == true {
-                VStack(alignment: .leading, spacing: 16) {
-                    Image(systemName: "hand.thumbsup.fill")
-                        .imageScale(.large)
-                        .foregroundColor(.green)
-                    
-                    Text("No active alarms.")
-                        .font(.headline)
-                }
-            }
-            
-            ForEach(self.getActiveAlarms(), id: \.self) { key in
-                if let alarm = serverAlarms.alarms?[key] {
-                    AlarmListRow(alarm: alarm)
-                        .contextMenu {
-                            Button(action: {
-                                withAnimation {
-                                    if let name = alarm.name {
-                                        userSettings.ignoredAlarms.append(name)
-                                    }
-                                }
-                            }, label: {
-                                Label("Hide alarm", systemImage: "eye.slash.fill")
-                            })
-                        }
-                }
-            }
-            
-            if self.hiddenAlarmsCount() > 0 {
-                Section {
-                    Text("\(self.hiddenAlarmsCount()) hidden alert(s)")
-                        .font(.footnote)
-                        .foregroundColor(.gray)
-                }
-            }
-        }
-        .listStyle(.plain)
-        .refreshable {
-            await self.fetchAlarms()
-        }
-        .task {
-            await self.fetchAlarms()
-        }
+    private let serverUrl: String
+    private let basicAuthBase64: String
+    private var node: String?
+    private var loadTask: Task<Void, Never>?
+
+    init(serverUrl: String, basicAuthBase64: String) {
+        self.serverUrl = serverUrl
+        self.basicAuthBase64 = basicAuthBase64
     }
-    
-    private func fetchAlarms() async {
-        loading = true
+
+    /// Fetches in a task this object owns, like `NodeSelection.refresh()`, so a view's cancelled `.task`
+    /// can't drop the result. Calls while a fetch for the same node is running join it.
+    func refresh(node: String?) {
+        if node != self.node {
+            // The old node's alarms would show under the new node's name. Drop them; a load still
+            // running for the old node finishes without publishing.
+            self.node = node
+            alarms = nil
+            lastError = nil
+            lastUpdated = nil
+            loadTask = nil
+        }
+        guard loadTask == nil else { return }
+        loadTask = Task { await load(node: node) }
+    }
+
+    func refreshAndWait(node: String?) async {
+        refresh(node: node)
+        await loadTask?.value
+    }
+
+    func criticalCount(ignoring ignored: [String]) -> Int {
+        guard let alarms = alarms?.alarms else { return 0 }
+        return alarms.values.filter { $0.isCritical && !ignored.contains($0.name ?? "") }.count
+    }
+
+    private func load(node: String?) async {
+        isLoading = true
         do {
-            serverAlarms = try await NetdataClient.shared.getAlarms(baseUrl: serverUrl, basicAuthBase64: basicAuthBase64, node: node)
-            fetchError = nil
-            loading = false
+            let result = try await NetdataClient.shared.getAlarms(baseUrl: serverUrl, basicAuthBase64: basicAuthBase64, node: node)
+            guard node == self.node else { return }
+            alarms = result
+            lastError = nil
+            lastUpdated = Date()
         } catch {
-            loading = false
-            guard !Task.isCancelled else { return }
+            guard node == self.node else { return }
             debugPrint("getAlarms", error)
-            fetchError = error as? APIError ?? .somethingWentWrong
+            lastError = error as? APIError ?? .somethingWentWrong
         }
-    }
-    
-    private func getActiveAlarms() -> [String] {
-        guard let alarms = serverAlarms.alarms else { return [] }
-        return alarms.keys.sorted().filter { key in
-            guard let alarm = alarms[key], let name = alarm.name else { return false }
-            return !userSettings.ignoredAlarms.contains(name)
-        }
-    }
-
-    private func hiddenAlarmsCount() -> Int {
-        return (serverAlarms.alarms?.keys.count ?? 0) - self.getActiveAlarms().count
-    }
-    
-    private var dismissButton: some View {
-        Button(action: {
-            self.presentationMode.wrappedValue.dismiss()
-        }) {
-            Image(systemName: "xmark")
-                .imageScale(.medium)
-        }
+        isLoading = false
+        loadTask = nil
     }
 }
 
-struct AlarmsListView_Previews: PreviewProvider {
-    static var previews: some View {
-        AlarmsListView(serverUrl: "", basicAuthBase64: "")
-        
-        AlarmsListView(serverUrl: "", basicAuthBase64: "")
+struct AlarmsListView: View {
+    @ObservedObject var store: AlarmsStore
+    @ObservedObject var userSettings: UserSettings
+
+    var serverUrl: String
+    var basicAuthBase64: String
+    var node: String? = nil
+
+    /// Real chart metadata for the alarms' charts, so an opened chart gets its proper title and units.
+    @State private var charts: [String: ServerChart] = [:]
+    @State private var showsHidden = false
+
+    private let refreshInterval: Duration = .seconds(15)
+
+    private struct Entry: Identifiable {
+        let id: String
+        let alarm: ServerAlarm
+    }
+
+    var body: some View {
+        let entries = visibleEntries
+
+        List {
+            statusSection(entries: entries)
+
+            alarmSection("Critical", entries: entries.filter { $0.alarm.isCritical })
+            alarmSection("Warning", entries: entries.filter { $0.alarm.isWarning })
+            alarmSection("Other", entries: entries.filter { !$0.alarm.isCritical && !$0.alarm.isWarning })
+
+            hiddenSection
+        }
+        .listStyle(.insetGrouped)
+        .refreshable {
+            await store.refreshAndWait(node: node)
+        }
+        .task {
+            // Polls only while the tab is on screen; the detail screen refreshes once for the badge.
+            while !Task.isCancelled {
+                store.refresh(node: node)
+                try? await Task.sleep(for: refreshInterval)
+            }
+        }
+        .task(id: store.alarms?.alarms?.isEmpty == false) {
+            await loadCharts()
+        }
+    }
+
+    // MARK: - Sections
+
+    @ViewBuilder
+    private func statusSection(entries: [Entry]) -> some View {
+        if let lastError = store.lastError {
+            ErrorMessage(message: lastError.listMessage(subject: "alarms"))
+        }
+
+        if store.alarms == nil {
+            // Only before the first answer: after a failure, each poll would otherwise flash
+            // placeholders under the error.
+            if store.isLoading && store.lastError == nil {
+                Section {
+                    ForEach(0..<3, id: \.self) { _ in
+                        AlarmListRow(alarm: .placeholder)
+                    }
+                }
+                .redacted(reason: .placeholder)
+            }
+        } else if store.alarms?.status == false {
+            Text("Health monitoring isn't running for this node, so there are no alarms to show.")
+                .foregroundStyle(.secondary)
+        } else {
+            Section {
+                summaryRow(entries: entries)
+            }
+        }
+    }
+
+    private func summaryRow(entries: [Entry]) -> some View {
+        let critical = entries.filter { $0.alarm.isCritical }.count
+        let warning = entries.filter { $0.alarm.isWarning }.count
+        let other = entries.count - critical - warning
+
+        return HStack(spacing: 12) {
+            Image(systemName: entries.isEmpty ? "checkmark.circle.fill" : "exclamationmark.triangle.fill")
+                .font(.title2)
+                .foregroundStyle(critical > 0 ? Color.red : entries.isEmpty ? Color.green : Color.orange)
+                .accessibilityHidden(true)
+
+            VStack(alignment: .leading, spacing: 2) {
+                Text(entries.isEmpty ? "No active alarms" : summaryText(critical: critical, warning: warning, other: other))
+                    .font(.headline)
+                if let lastUpdated = store.lastUpdated {
+                    Text("Updated \(lastUpdated, style: .relative) ago")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+            }
+        }
+        .padding(.vertical, 4)
+        .accessibilityElement(children: .combine)
+    }
+
+    private func summaryText(critical: Int, warning: Int, other: Int) -> String {
+        [(critical, "critical"), (warning, "warning"), (other, "other")]
+            .filter { $0.0 > 0 }
+            .map { "\($0.0) \($0.1)" }
+            .joined(separator: " · ")
+    }
+
+    @ViewBuilder
+    private func alarmSection(_ title: String, entries: [Entry]) -> some View {
+        if !entries.isEmpty {
+            Section(title) {
+                ForEach(entries) { entry in
+                    alarmRow(entry.alarm)
+                }
+            }
+        }
+    }
+
+    @ViewBuilder
+    private func alarmRow(_ alarm: ServerAlarm) -> some View {
+        Group {
+            if let chart = chart(for: alarm) {
+                NavigationLink(value: chart) {
+                    AlarmListRow(alarm: alarm)
+                }
+            } else {
+                AlarmListRow(alarm: alarm)
+            }
+        }
+        .swipeActions(edge: .trailing) {
+            Button {
+                hide(alarm)
+            } label: {
+                Label("Hide", systemImage: "eye.slash")
+            }
+            .tint(.gray)
+        }
+        .contextMenu {
+            Button {
+                hide(alarm)
+            } label: {
+                Label("Hide Alarm", systemImage: "eye.slash")
+            }
+        }
+    }
+
+    @ViewBuilder
+    private var hiddenSection: some View {
+        let hidden = hiddenEntries
+        if !hidden.isEmpty {
+            Section {
+                DisclosureGroup(isExpanded: $showsHidden) {
+                    ForEach(hidden) { entry in
+                        HStack {
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text(entry.alarm.title)
+                                    .lineLimit(2)
+                                if let name = entry.alarm.name {
+                                    Text(name)
+                                        .font(.caption)
+                                        .foregroundStyle(.secondary)
+                                }
+                            }
+                            Spacer()
+                            Button("Unhide") { unhide(entry.alarm) }
+                                .buttonStyle(.borderless)
+                        }
+                    }
+                } label: {
+                    Text("\(hidden.count) hidden")
+                        .foregroundStyle(.secondary)
+                }
+            } footer: {
+                Text("Hiding an alarm hides every alarm with the same name, on all your servers and devices.")
+            }
+        }
+    }
+
+    // MARK: - Data
+
+    private var visibleEntries: [Entry] {
+        sortedEntries.filter { !isHidden($0.alarm) }
+    }
+
+    private var hiddenEntries: [Entry] {
+        sortedEntries.filter { isHidden($0.alarm) }
+    }
+
+    /// Most recent status change first, so a just-raised alarm sits at the top of its section. Alarms
+    /// often change together (same timestamp), so the key breaks ties; otherwise dictionary order would
+    /// reshuffle the rows on every refresh.
+    private var sortedEntries: [Entry] {
+        (store.alarms?.alarms ?? [:])
+            .map { Entry(id: $0.key, alarm: $0.value) }
+            .sorted {
+                let lhs = $0.alarm.last_status_change ?? 0
+                let rhs = $1.alarm.last_status_change ?? 0
+                return lhs != rhs ? lhs > rhs : $0.id < $1.id
+            }
+    }
+
+    private func isHidden(_ alarm: ServerAlarm) -> Bool {
+        guard let name = alarm.name else { return false }
+        return userSettings.ignoredAlarms.contains(name)
+    }
+
+    private func hide(_ alarm: ServerAlarm) {
+        guard let name = alarm.name, !userSettings.ignoredAlarms.contains(name) else { return }
+        withAnimation {
+            userSettings.ignoredAlarms.append(name)
+        }
+    }
+
+    private func unhide(_ alarm: ServerAlarm) {
+        guard let name = alarm.name else { return }
+        withAnimation {
+            userSettings.ignoredAlarms.removeAll { $0 == name }
+        }
+    }
+
+    private func chart(for alarm: ServerAlarm) -> ServerChart? {
+        guard let id = alarm.chart, !id.isEmpty else { return nil }
+        if let chart = charts[id] {
+            return chart
+        }
+        // Until the chart list arrives (or if it fails), the id alone is enough to load the chart's data.
+        return ServerChart(id: id,
+                           name: id,
+                           type: id.split(separator: ".").first.map(String.init) ?? id,
+                           family: "",
+                           context: "",
+                           title: id,
+                           units: alarm.units ?? "")
+    }
+
+    private func loadCharts() async {
+        guard charts.isEmpty, store.alarms?.alarms?.isEmpty == false else { return }
+        if let result = try? await NetdataClient.shared.getCharts(baseUrl: serverUrl, basicAuthBase64: basicAuthBase64, node: node) {
+            charts = result.charts
+        }
     }
 }
