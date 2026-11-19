@@ -89,7 +89,7 @@ struct SettingsView: View {
                             Label("Enable alerts", systemImage: "bell")
                         }
                         .toggleStyle(SwitchToggleStyle(tint: .accentColor))
-                        .onChange(of: alertNotifications) { enabled in
+                        .onChange(of: alertNotifications) { _, enabled in
                             Task {
                                 do {
                                     if enabled && !hasPushPermission {
@@ -110,7 +110,7 @@ struct SettingsView: View {
                                 }
                             }
                         }
-                        .onChange(of: scenePhase) { newScenePhase in
+                        .onChange(of: scenePhase) { _, newScenePhase in
                             switch newScenePhase {
                             case .active:
                                 print("App is in the foreground")
