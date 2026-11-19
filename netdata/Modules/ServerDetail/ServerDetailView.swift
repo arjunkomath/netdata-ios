@@ -69,7 +69,7 @@ struct ServerDetailNavigationView: View {
             nodeSelection.refresh()
             alarmsStore.refresh(node: node)
         }
-        .onChange(of: nodeSelection.selectedGuid) { _ in
+        .onChange(of: nodeSelection.selectedGuid) {
             alarmsStore.refresh(node: node)
             // Charts opened on the previous node don't exist on the new one.
             path = []
@@ -189,7 +189,7 @@ struct ServerDetailView: View {
         .task {
             await self.viewModel.updateBookmarks(baseUrl: server.url, basicAuthBase64: server.basicAuthBase64, node: node)
         }
-        .onChange(of: userSettings.bookmarks) { _ in
+        .onChange(of: userSettings.bookmarks) {
             Task { await viewModel.updateBookmarks(baseUrl: server.url, basicAuthBase64: server.basicAuthBase64, node: node) }
         }
         // Keyed on the mode so picking another range restarts the loop with that range's window.
