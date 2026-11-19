@@ -98,4 +98,55 @@ extension ServerChart {
     var displayUnits: String {
         units == "seconds" ? "hours" : units
     }
+
+    /// Groups charts by the first part of their context ("disk" for "disk.io"). The type would split
+    /// one kind of chart per device or container ("disk_sda", "cgroup_nginx").
+    var category: String {
+        let prefix = context.split(separator: ".").first.map(String.init) ?? ""
+        return ChartCategory.canonical(prefix.isEmpty ? type : prefix)
+    }
+}
+
+enum ChartCategory {
+    /// Host-wide categories first, in the order people usually look at them; unknown collectors
+    /// sort alphabetically after these, with Netdata's own monitoring last.
+    private static let leading = ["system", "cpu", "mem", "disk", "net", "ip", "ipv4", "ipv6",
+                                  "app", "user", "usergroup", "systemd", "services", "cgroup", "k8s"]
+    private static let trailing = ["netdata"]
+
+    /// Older agents name the per-process contexts in the plural ("apps.cpu"), newer ones in the
+    /// singular ("app.cpu_utilization").
+    private static let aliases = ["apps": "app", "users": "user", "groups": "usergroup"]
+
+    static func canonical(_ category: String) -> String {
+        aliases[category] ?? category
+    }
+
+    private static let titles = [
+        "system": "System", "cpu": "CPU", "mem": "Memory", "disk": "Disks", "net": "Network",
+        "ip": "IP", "ipv4": "IPv4", "ipv6": "IPv6", "app": "Applications", "user": "Users",
+        "usergroup": "User Groups",
+        "systemd": "systemd", "services": "Services", "cgroup": "Containers & VMs",
+        "k8s": "Kubernetes", "netdata": "Netdata", "nfs": "NFS", "nfsd": "NFS Server",
+        "zfs": "ZFS", "btrfs": "Btrfs", "mdstat": "RAID", "nvme": "NVMe", "sctp": "SCTP",
+        "netfilter": "Netfilter", "smartctl": "S.M.A.R.T.", "sensors": "Sensors",
+    ]
+
+    static func title(for category: String) -> String {
+        titles[category] ?? category
+            .split(separator: "_")
+            .map { $0.prefix(1).uppercased() + $0.dropFirst() }
+            .joined(separator: " ")
+    }
+
+    static func areInIncreasingOrder(_ lhs: String, _ rhs: String) -> Bool {
+        func rank(_ category: String) -> Int {
+            if let index = leading.firstIndex(of: category) { return index }
+            return trailing.contains(category) ? Int.max : leading.count
+        }
+
+        let (lhsRank, rhsRank) = (rank(lhs), rank(rhs))
+        if lhsRank != rhsRank { return lhsRank < rhsRank }
+        return title(for: lhs).localizedStandardCompare(title(for: rhs)) == .orderedAscending
+    }
 }

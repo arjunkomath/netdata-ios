@@ -52,7 +52,7 @@ struct ServerListView: View {
             }
         }
         // Picks up an iCloud sign-in made in Settings while the app was in the background.
-        .onChange(of: scenePhase) { phase in
+        .onChange(of: scenePhase) { _, phase in
             guard phase == .active, !serverService.isCloudEnabled else { return }
             Task { await serverService.refresh() }
         }
@@ -90,27 +90,18 @@ struct ServerListView: View {
         }
     }
 
-    @ViewBuilder
     private var splitView: some View {
         // Let the system align the columns with the fold's reserved region.
-        if #available(iOS 17.0, *) {
-            NavigationSplitView(
-                columnVisibility: $columnVisibility,
-                preferredCompactColumn: Binding(
-                    get: { showsDetailWhenCollapsed ? .detail : .sidebar },
-                    set: { showsDetailWhenCollapsed = $0 == .detail }
-                )
-            ) {
-                serverGrid
-            } detail: {
-                detail
-            }
-        } else {
-            NavigationSplitView(columnVisibility: $columnVisibility) {
-                serverList
-            } detail: {
-                detail
-            }
+        NavigationSplitView(
+            columnVisibility: $columnVisibility,
+            preferredCompactColumn: Binding(
+                get: { showsDetailWhenCollapsed ? .detail : .sidebar },
+                set: { showsDetailWhenCollapsed = $0 == .detail }
+            )
+        ) {
+            serverGrid
+        } detail: {
+            detail
         }
     }
 
@@ -262,53 +253,6 @@ struct ServerListView: View {
             showSettings: $showSettings,
             refresh: { await serverService.refresh() }
         )
-    }
-
-    private var serverList: some View {
-        List(selection: $selectedServerID) {
-            statusMessages
-
-            if !serverService.favouriteServers.isEmpty {
-                Section {
-                    ForEach(serverService.favouriteServers) { server in
-                        ServerListRow(server: server)
-                    }
-                } header: {
-                    Label("Favourites", systemImage: "star.fill")
-                }
-            }
-
-            if serverService.isCloudEnabled {
-                Section {
-                    ForEach(serverService.defaultServers) { server in
-                        ServerListRow(server: server)
-                    }
-
-                    Button {
-                        showAddServer = true
-                    } label: {
-                        Label("Add Server", systemImage: "plus")
-                    }
-                } header: {
-                    Label("All Servers", systemImage: "folder.fill")
-                }
-            }
-        }
-        .listStyle(.sidebar)
-        .safeAreaInset(edge: .bottom, spacing: 0) {
-            nodesPanel(maxListHeight: 280)
-        }
-        .modifier(serverListChrome)
-    }
-
-    func deleteServer(at offsets: IndexSet) {
-        guard let index = offsets.first else { return }
-        serverService.requestDelete(server: serverService.defaultServers[index])
-    }
-
-    func deleteFavouriteServer(at offsets: IndexSet) {
-        guard let index = offsets.first else { return }
-        serverService.requestDelete(server: serverService.favouriteServers[index])
     }
 }
 
